@@ -1,0 +1,1 @@
+#TapI18n.register()
