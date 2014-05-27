@@ -80,12 +80,35 @@ EOF
     run_meteor_test $port
 }
 
-test_enabled_custom () {
+test_enabled_custom_supported_languages () {
     local test_name="enabled_custom" port=3000
 
-    echo "Unit Test: tap-i18n is enabled in the project level custom configuration"
+    echo "Unit Test: tap-i18n is enabled in the project level custom supported language is set on project-tap.i18n"
 
-    echo '{"supported_languages": ["pt", "pt-BR", "fr"], "build_files_path": "public/x", "browser_path": "http://localhost:3000/translations/"}' > project-tap.i18n
+    echo '{"supported_languages": ["bb", "cc-CC", "dd-00", "xx-XX"]}' > project-tap.i18n
+
+    package_js_on_test="$(cat <<EOF
+    api.use('tap-i18n', ['client']);
+
+    api.add_files('project-tap.i18n', ['client']);
+
+    api.add_files('unittest/tests/enabled_custom_supported_languages.coffee', ['client']);
+EOF
+    )"
+
+    # Note that we only use the enabled unittest since the customisations only
+    # affect the build process.
+    add_package_js_test_section "enabled" "$package_js_on_test"
+
+    run_meteor_test $port
+}
+
+test_enabled_custom_build_files_path () {
+    local test_name="enabled_custom" port=3000
+
+    echo "Unit Test: tap-i18n is enabled in the project level custom build files path is set on project-tap.i18n"
+
+    echo '{"build_files_path": "public/x", "browser_path": "/x"}' > project-tap.i18n
 
     package_js_on_test="$(cat <<EOF
     api.use('tap-i18n', ['client']);
@@ -94,8 +117,6 @@ test_enabled_custom () {
 EOF
     )"
 
-    # note that we use the enabled unittest since the customisations only
-    # affect the build process.
     add_package_js_test_section "enabled" "$package_js_on_test"
 
     run_meteor_test $port
@@ -104,7 +125,8 @@ EOF
 if [[ $test_name == "all" ]]; then
     test_disabled
     test_enabled
-    test_enabled_custom
+    test_enabled_custom_supported_languages
+    test_enabled_custom_build_files_path
 else
     test_"$test_name"
 fi

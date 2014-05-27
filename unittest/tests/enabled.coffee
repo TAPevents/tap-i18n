@@ -1,3 +1,2 @@
-# Note that this unittest runs for both the enabled and enabled_custom tests
-# (since custom project-tap.i18n only affect the build process
+# Note that this unittest runs for all the tests in which tap-i18n is enabled
 document.title = "UnitTest: tap-i18n enabled in the project level default configuration"

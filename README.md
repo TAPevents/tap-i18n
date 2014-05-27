@@ -429,9 +429,17 @@ the new constellation.
 
 You can also test a specific constellation:
 
-    $ ./unittest/unittest-disabled # tap-i18n is disabled in the project level
-    $ ./unittest/unittest-enabled # tap-i18n enabled in the project level - default project-tap.i18n
-    $ ./unittest/unittest-enabled_custom # tap-i18n enabled in the project level - custom project-tap.i18n
+    # tap-i18n is disabled in the project level
+    $ ./unittest/unittest-disabled 
+
+    # tap-i18n enabled in the project level - default project-tap.i18n
+    $ ./unittest/unittest-enabled
+
+    # tap-i18n enabled in the project level - custom supported language is set on project-tap.i18n
+    $ ./unittest/unittest-enabled_custom_supported_languages
+
+    # tap-i18n enabled in the project level - custom build files path is set on project-tap.i18n
+    $ ./unittest/unittest-enabled_custom_build_files_path 
 
 Credits
 -------
