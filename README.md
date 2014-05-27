@@ -416,14 +416,22 @@ client language get changed (by TapI18n.setLanguage)
 Unit Testing
 ------------
 
-In order to run the package unit-tests run:
+We have more than one unittest to test the different ways tap-i18n might be used in a
+certain project, to test all of them run:
 
-    $ ./unit-test.bash
+    $ ./unittest/unittest-all
 
-When testing the build system it is useful to be able to restart the unittest
-fast, with the following you can ctrl-c to restart:
+The unittest will be available on: [http://localhost:3000](http://localhost:3000) .
 
-    $ while : ; do ./unit-test.bash disabled; sleep 1; done
+Every time you'll break the run of the above command (every time you'll
+press ctrl+c) the next test constellation will run, refresh your browser to load
+the new constellation.
+
+You can also test a specific constellation:
+
+    $ ./unittest/unittest-disabled # tap-i18n is disabled in the project level
+    $ ./unittest/unittest-enabled # tap-i18n enabled in the project level - default project-tap.i18n
+    $ ./unittest/unittest-enabled_custom # tap-i18n enabled in the project level - custom project-tap.i18n
 
 Credits
 -------

@@ -27,5 +27,3 @@ Package._transitional_registerBuildPlugin({
   ]
 });
 
-Package.on_test(function (api) {  
-});
