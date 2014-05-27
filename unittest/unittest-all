@@ -32,6 +32,11 @@ add_package_js_test_section () {
 
     cat <<EOF >> package.js
 Package.on_test(function (api) {
+  //
+  // DO NOT ADD THIS Package.on_test TO GIT!!!
+  // DO NOT ADD THIS Package.on_test TO GIT!!!
+  // DO NOT ADD THIS Package.on_test TO GIT!!!
+  //
   api.use('coffeescript', ['client', 'server']);
   api.use(['tinytest', 'test-helpers'], ['client', 'server']);
 
