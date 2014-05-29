@@ -349,7 +349,7 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   # That of course means the package build must be agnostic to the containing
   # project configuration.
   #
-  # The packages default language is registered to TapI18next (our isolated
+  # The packages default language is registered to TAPi18next (our isolated
   # i18next copy) under the language name: dev which is the default i18n
   # fallback language that way packages can use at the same time their
   # different default languages when tap-i18n is disabled in the project-level. 
@@ -374,11 +374,11 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   package_i18n_js_file =
     """
     // add the package default language (for case tap-i18n is not enabled in the project level)
-    TapI18next.addResourceBundle('dev', '#{package_name}', #{JSON.stringify lang_json});
+    TAPi18next.addResourceBundle('dev', '#{package_name}', #{JSON.stringify lang_json});
 
     // add the package's proxies to tap-i18next
-    __ = TapI18n._getPackageI18nextProxy("#{package_name}");
-    registerTemplate = TapI18n._getPackageRegisterTemplateHelperProxy("#{package_name}");
+    __ = TAPi18n._getPackageI18nextProxy("#{package_name}");
+    registerTemplate = TAPi18n._getPackageRegisterTemplateHelperProxy("#{package_name}");
 
     // Record list of templates prior to package load
     _ = Package.underscore._;
@@ -414,12 +414,12 @@ Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
   # Build the unified languages files
   buildProjectUnifiedLangFilesOnce compileStep._fullInputPath
 
-  # Add the project configurations to the TapI18n object and set "en" as the
+  # Add the project configurations to the TAPi18n object and set "en" as the
   # fallback language (instead of "en")
   project_i18n_js_file =
     """
-    TapI18next.fallbackLng = ["en"];
-    TapI18n.conf = #{JSON.stringify loadProjectTapI18n()};
+    TAPi18next.fallbackLng = ["en"];
+    TAPi18n.conf = #{JSON.stringify loadProjectTapI18n()};
 
     """
 

@@ -1,1 +1,1 @@
-#TapI18n.register()
+#TAPi18n.register()

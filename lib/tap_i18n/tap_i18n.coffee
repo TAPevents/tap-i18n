@@ -1,14 +1,14 @@
-# Put TapI18n in the global namespace
-TapI18n = {}
+# Put TAPi18n in the global namespace
+TAPi18n = {}
 
 fallback_language = "en"
 
-sessions_prefix = "TapI18n::"
+sessions_prefix = "TAPi18n::"
 loaded_lang_session_key = "#{sessions_prefix}loaded_lang"
 # Before the first language is ready - loaded_lang is null
 Session.set loaded_lang_session_key, null
 
-_.extend TapI18n,
+_.extend TAPi18n,
   conf: null # This parameter will be set by the js that is being added by the
              # build plugin of project-tap.i18n (which exist only if tap-i18n
              # is enabled in the project level)
@@ -21,7 +21,7 @@ _.extend TapI18n,
 
   _loaded_languages: []
   _loadLanguage: (languageTag) ->
-    # Load languageTag and its dependencies languages to TapI18next if we
+    # Load languageTag and its dependencies languages to TAPi18next if we
     # haven't loaded them already.
     #
     # languageTag dependencies languages are:
@@ -29,11 +29,11 @@ _.extend TapI18n,
     # * The fallback language (en) if we haven't loaded it already.
     #
     # Returns a deferred object that resolves with no arguments if all files
-    # loaded successfully to TapI18next and rejects with array of error
+    # loaded successfully to TAPi18next and rejects with array of error
     # messages otherwise
     #
     # Example:
-    # TapI18n._loadLanguage("pt-BR")
+    # TAPi18n._loadLanguage("pt-BR")
     #   .done(function () {
     #     console.log("languageLoaded successfully");
     #   })
@@ -57,7 +57,7 @@ _.extend TapI18n,
 
           jqXHR.done (data) ->
             for package_name, package_keys of data
-              TapI18next.addResourceBundle(languageTag, package_name, package_keys)
+              TAPi18next.addResourceBundle(languageTag, package_name, package_keys)
 
             self._loaded_languages.push languageTag
 
@@ -108,16 +108,16 @@ _.extend TapI18n,
       self._registerTemplateHelper(package_name, template)
 
   _getPackageI18nextProxy: (package_name) ->
-    # A proxy to TapI18next.t where the namespace is preset to the package's
+    # A proxy to TAPi18next.t where the namespace is preset to the package's
     (key, options) ->
       # If inside a reactive computation, we want to invalidate the computation if the client lang changes
       Session.get loaded_lang_session_key
 
-      TapI18next.t "#{package_name}:#{key}", options
+      TAPi18next.t "#{package_name}:#{key}", options
 
   setLanguage: (lang_tag) ->
     @_loadLanguage(lang_tag).then ->
-      TapI18next.setLng(lang_tag)
+      TAPi18next.setLng(lang_tag)
 
       Session.set loaded_lang_session_key, lang_tag
 

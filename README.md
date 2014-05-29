@@ -184,9 +184,9 @@ The following functions are added to your package namespace by tap-i18n:
 
 Translates key to the current client's language. If inside a reactive
 computation, invalidate the computation the next time the client language get
-changed (by TapI18n.setLanguage).
+changed (by TAPi18n.setLanguage).
 
-The function is a proxy to i18next.t() method. 
+The function is a proxy to the i18next.t() method. 
 Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
 to learn about its possible options.
 
@@ -322,7 +322,7 @@ Assuming the client language is en.
 Notes:
 
 * The translation will get updated automatically after you change the language
-  with TapI18n.setLanguage().
+  with TAPi18n.setLanguage().
 * Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
   to learn more about its possible options.
 
@@ -365,7 +365,7 @@ Notes:
       Meteor.startup(function () {
         Session.set("showLoadingIndicator", true);
     
-        TapI18n.setLanguage(getUserLanguage())
+        TAPi18n.setLanguage(getUserLanguage())
           .done(function () {
             Session.set("showLoadingIndicator", false);
           })
@@ -377,7 +377,7 @@ Notes:
     }
 
 Notes:
-* Read TapI18n.setLanguage documentation in the API section below.
+* Read TAPi18n.setLanguage documentation in the API section below.
 * If you won't set a language on startup your project will be served by the
   fallback language: English.
 * You probably want to show a loading indicator until the language is ready (as
@@ -389,9 +389,9 @@ Notes:
 1. Remove **project-tap.i18n**.
 2. Remove the unified languages files that were built to your project's build\_files\_path.
 
-### TapI18n API:
+### TAPi18n API:
 
-**TapI18n.setLanguage(language\_tag) (Client)**
+**TAPi18n.setLanguage(language\_tag) (Client)**
 
 Sets the client's translation language.
 
@@ -405,13 +405,13 @@ Notes:
   * jQuery deferred docs: [jQuery Deferred](http://api.jquery.com/jQuery.Deferred/)
   * language\_tag has to be a supported language.
 
-**TapI18n.getLanguage() (Client)**
+**TAPi18n.getLanguage() (Client)**
 
 Returns the language tag of the client's translation language or null if
 tap-i18n is not enabled in the project level.
 
 If inside a reactive computation, invalidate the computation the next time the
-client language get changed (by TapI18n.setLanguage)
+client language get changed (by TAPi18n.setLanguage)
 
 Unit Testing
 ------------
