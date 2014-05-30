@@ -69,14 +69,10 @@ test_disabled () {
 test_enabled () {
     local test_name="enabled" port=3000
 
-    echo "Unit Test: tap-i18n is enabled in the project level default configuration"
-
-    echo "{}" > project-tap.i18n
+    echo "Unit Test: tap-i18n is enabled in the project level - no project-tap.i18n"
 
     package_js_on_test="$(cat <<EOF
     api.use('tap-i18n', ['client']);
-
-    api.add_files('project-tap.i18n', ['client']);
 EOF
     )"
 

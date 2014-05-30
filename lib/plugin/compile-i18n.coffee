@@ -75,37 +75,39 @@ escapeRegExp = (str) ->
 removeFileTrailingSeparator = (file) ->
   file.trim().replace RegExp("#{escapeRegExp path.sep}$"), ""
 
-loadProjectTapI18n = (file_path=path.join(project_root, 'project-tap.i18n')) ->
-  # Load and parse project-tap.i18n files
+loadProjectConf = (conf_file=path.join(project_root, 'project-tap.i18n')) ->
+  # Returns the project's tap-i18n configuration if tap-i18n is installed
+  # (enabled) on that project, or null if tap-i18n is not installed (disabled).
   #
-  # Returns a clean and verified tap-i18n project configuration object as
-  # defined by projectTapI18nSchema if file_path exists, null otherwise.
+  # If tap-i18n is enabled and conf_file exists we try to load the
+  # configurations from it, otherwise we return the default configurations.
   # 
-  # If path is not a valid JSON or doesn't pass our verifications we throw a
-  # Meteor error.
-  #
-  # We consider projects with empty project-tap.i18n file to be tap-i18n
-  # enabled. So if file_path points to an empty file we treat it as if it was
-  # an empty JSON object.
+  # If conf_file is not a valid JSON or doesn't pass our verifications we throw
+  # a Meteor error.
   #
   # Attributes:
-  # file_path: the path to the project's project-tap.i18n file. If file_path is
-  # undefined we try to load it from its default path.
-
-  if fs.existsSync file_path
-    fstats = fs.statSync file_path
-  else
-    # tap-i18n disabled in the project level
-    return null
-
-  if fstats.size == 0
-    return projectTapI18nSchema.clean({})
+  # conf_file: the path to the project's project-tap.i18n file.
 
   try
-    project_tap_i18n_json = JSON.parse(fs.readFileSync(file_path))
+    project_packages = fs.readFileSync(path.resolve(project_root, ".meteor", "packages"), {encoding: "utf8"}).split("\n")
+  catch error
+    throw new Meteor.Error 500, "Can't determine whether tap-i18n is enabled or not (can't load .meteor/packages)",
+      {conf_file: conf_file, error: error}
+
+  # tap-i18n is disabled return null
+  if not _.contains project_packages, "tap-i18n"
+    return null
+
+  # If conf_file doesn't exist return the defaults
+  if not fs.existsSync conf_file
+    return projectTapI18nSchema.clean({})
+
+  # load project-tap.i18n, clean and validate it
+  try
+    project_tap_i18n_json = JSON.parse(fs.readFileSync(conf_file))
   catch error
     throw new Meteor.Error 500, "Can't load project-tap.i18n JSON",
-      {file_path: file_path, error: error}
+      {conf_file: conf_file, error: error}
 
   projectTapI18nSchema.clean(project_tap_i18n_json)
 
@@ -284,19 +286,36 @@ buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_lan
   log "Done building unified languages files"
 
 build_project_unified_lang_files_once_log = {}
-buildProjectUnifiedLangFilesOnce = (current_step_file) ->
-  # Get the project tap-i18n configurations and call buildUnifiedLangFiles once
-  # per build cycle.
-  # We assume that if the same file triggered a call to the function we are in
-  # a new cycle.
+buildProjectUnifiedLangFilesOnce = (compileStep) ->
+  # Build the unified languages files once per build cycle
+
+  # To tell whether or not we are in a new build cycle we assume that if the
+  # same file triggered a call to that function we are in a new cycle.
+
+  current_step_file = compileStep._fullInputPath
 
   # If the log is empty or if the current_step_file is already in the log - we
   # are in a new build cycle
   if _.isEmpty(build_project_unified_lang_files_once_log) or (current_step_file of build_project_unified_lang_files_once_log)
     build_project_unified_lang_files_once_log = {}
-    projectTapI18n = loadProjectTapI18n()
+    projectTapI18n = loadProjectConf()
     # Build only if tap-i18n is enabled in the project level
     if projectTapI18n?
+      # Add the project configurations to the TAPi18n object and set "en" as the
+      # fallback language (instead of "dev")
+      project_i18n_js_file =
+        """
+        TAPi18next.fallbackLng = ["en"];
+        TAPi18n.conf = #{JSON.stringify projectTapI18n};
+
+        """
+
+      compileStep.addJavaScript
+        path: "project-i18n.js",
+        sourcePath: compileStep.inputPath,
+        data: project_i18n_js_file,
+        bare: false
+
       buildUnifiedLangFiles projectTapI18n.build_files_path, projectTapI18n.supported_languages
     else
       log "tap-i18n is not enabled in the project level, don't build unified languages files"
@@ -338,7 +357,7 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   # (and since we are here it for sure does).
   # Remember that whenever any of the package's i18n.json files will change
   # Meteor will build the entire package so this plugin will be called.
-  buildProjectUnifiedLangFilesOnce compileStep._fullInputPath
+  buildProjectUnifiedLangFilesOnce compileStep
 
   # We make the package default language an integral part of the package build.
   # We do this regardless of whether or not the containing project enables
@@ -403,7 +422,7 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   current_package_name = package_name
 
 Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
-  # Since project-tap.i18n should be in the project root Meteor will try to
+  # Since project-tap.i18n should be in the project root, Meteor will try to
   # build it both for the browser and the server arch - for non-browser we want
   # to do nothing
   if not compileStep.archMatches 'browser'
@@ -412,22 +431,7 @@ Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
   log "project-tap.i18n file found #{compileStep._fullInputPath}: building"
 
   # Build the unified languages files
-  buildProjectUnifiedLangFilesOnce compileStep._fullInputPath
-
-  # Add the project configurations to the TAPi18n object and set "en" as the
-  # fallback language (instead of "en")
-  project_i18n_js_file =
-    """
-    TAPi18next.fallbackLng = ["en"];
-    TAPi18n.conf = #{JSON.stringify loadProjectTapI18n()};
-
-    """
-
-  compileStep.addJavaScript
-    path: "project-i18n.js",
-    sourcePath: compileStep.inputPath,
-    data: project_i18n_js_file,
-    bare: false
+  buildProjectUnifiedLangFilesOnce compileStep
 
 Plugin.registerSourceHandler "i18n.json", (compileStep) ->
   # See the above note titled: templatesRegistrationsNeeded and the process of
