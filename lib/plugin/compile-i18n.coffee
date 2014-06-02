@@ -95,7 +95,11 @@ loadProjectConf = (conf_file=path.join(project_root, 'project-tap.i18n')) ->
       {conf_file: conf_file, error: error}
 
   # tap-i18n is disabled return null
-  if not _.contains project_packages, "tap-i18n"
+  # XXX I allow the use of the environmental variable TAP_I18N to indicate that
+  # tap-i18n is enabled since the packages in use when testing
+  # (package.on_test) aren't listed in .meteor/packages and I don't know of a
+  # more straightforward way to indicate enabled tap-i18n environment for testing
+  if (not _.contains project_packages, "tap-i18n") and (process.env.TAP_I18N != "enabled")
     return null
 
   # If conf_file doesn't exist return the defaults

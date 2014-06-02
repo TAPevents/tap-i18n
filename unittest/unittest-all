@@ -78,7 +78,7 @@ EOF
 
     add_package_js_test_section "$test_name" "$package_js_on_test"
 
-    run_meteor_test $port
+    TAP_I18N="enabled" run_meteor_test $port
 }
 
 test_enabled_custom_supported_languages () {
@@ -101,7 +101,7 @@ EOF
     # affect the build process.
     add_package_js_test_section "enabled" "$package_js_on_test"
 
-    run_meteor_test $port
+    TAP_I18N="enabled" run_meteor_test $port
 }
 
 test_enabled_custom_build_files_path () {
@@ -120,7 +120,7 @@ EOF
 
     add_package_js_test_section "enabled" "$package_js_on_test"
 
-    run_meteor_test $port
+    TAP_I18N="enabled" run_meteor_test $port
 }
 
 if [[ $test_name == "all" ]]; then
