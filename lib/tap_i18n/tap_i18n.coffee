@@ -19,7 +19,8 @@ _.extend TAPi18n,
     # read the comment of @conf
     @conf?
 
-  _loaded_languages: []
+  # en, which is our fallback language is built into the project, so we don't need to load it again
+  _loaded_languages: ["en"]
   _loadLanguage: (languageTag) ->
     # Load languageTag and its dependencies languages to TAPi18next if we
     # haven't loaded them already.

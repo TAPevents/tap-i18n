@@ -6,13 +6,15 @@ project_root = process.cwd()
 
 langauges_tags_regex = "([a-z]{2})(-[A-Z]{2})?"
 
+fallback_language = "en"
+
 # package-tap.i18n Schemas
 packageTapI18nSchema =
   new SimpleSchema
-    default_language:
-      type: String
-      defaultValue: "en"
-      label: "Default Language"
+    #default_language:
+    #  type: String
+    #  defaultValue: "en"
+    #  label: "Default Language"
     languages_files_dir:
       type: String
       defaultValue: "i18n"
@@ -191,6 +193,10 @@ loadPackageTapMap = (package_tap_i18n_file_path) ->
 buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_languages=default_supported_languages) ->
   log "Building unified files directory: #{lang_files_path}"
 
+  # We build the fallback language into the project, hence there is no need to
+  # create a unified file for it
+  supported_languages = _.without(supported_languages, fallback_language)
+
   lang_files_path = removeFileTrailingSeparator lang_files_path
   lang_files_backup_path = "#{lang_files_path}~"
 
@@ -305,11 +311,10 @@ buildProjectUnifiedLangFilesOnce = (compileStep) ->
     projectTapI18n = loadProjectConf()
     # Build only if tap-i18n is enabled in the project level
     if projectTapI18n?
-      # Add the project configurations to the TAPi18n object and set "en" as the
-      # fallback language (instead of "dev")
+      # Add the project configurations to the TAPi18n object (it is null for
+      # tap-i18n disabled projects)
       project_i18n_js_file =
         """
-        TAPi18next.fallbackLng = ["en"];
         TAPi18n.conf = #{JSON.stringify projectTapI18n};
 
         """
@@ -363,7 +368,7 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   # Meteor will build the entire package so this plugin will be called.
   buildProjectUnifiedLangFilesOnce compileStep
 
-  # We make the package default language an integral part of the package build.
+  # We make English an integral part of the package build.
   # We do this regardless of whether or not the containing project enables
   # tap-i18n since the same Meteor package copy might be shared by more than
   # one Meteor projects (meteorite for instance stores all the packages in a
@@ -371,33 +376,27 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   # packages dir).
   # That of course means the package build must be agnostic to the containing
   # project configuration.
-  #
-  # The packages default language is registered to TAPi18next (our isolated
-  # i18next copy) under the language name: dev which is the default i18n
-  # fallback language that way packages can use at the same time their
-  # different default languages when tap-i18n is disabled in the project-level. 
   package_map = loadPackageTapMap compileStep._fullInputPath
   package_name = package_map.name
-  default_language = package_map.conf.default_language
   lang_files_paths = package_map.lang_files_paths
 
-  if not (default_language of lang_files_paths)
-    throw new Meteor.Error 500, "There is no language file for the default language (#{default_language}) of the package #{package_name}"
+  if not (fallback_language of lang_files_paths)
+    throw new Meteor.Error 500, "Package #{package_name} has no language file for the fallback language (#{fallback_language})"
 
   try
-    lang_json = JSON.parse(fs.readFileSync(lang_files_paths[default_language]))
+    lang_json = JSON.parse(fs.readFileSync(lang_files_paths[fallback_language]))
   catch error
-    throw new Meteor.Error 500, "Invalid JSON in the default language file: `#{lang_files_paths[default_language]}' of package #{package_name}",
-      {file_path: lang_files_paths[default_language], error: error}
+    throw new Meteor.Error 500, "Package #{package_name} fallback language file (#{fallback_language}) has an invalid JSON: `#{lang_files_paths[fallback_language]}'",
+      {file_path: lang_files_paths[fallback_language], error: error}
 
   if not _.isObject lang_json
-    throw new Meteor.Error 500, "Language file should contain a JSON object. #{lang_files_paths[default_language]}",
-      {file_path: lang_files_paths[default_language], error: error}
+    throw new Meteor.Error 500, "Package #{package_name} fallback language file (#{fallback_language}) should contain a JSON object: `#{lang_files_paths[fallback_language]}'",
+      {file_path: lang_files_paths[fallback_language], error: error}
 
   package_i18n_js_file =
     """
-    // add the package default language (for case tap-i18n is not enabled in the project level)
-    TAPi18next.addResourceBundle('dev', '#{package_name}', #{JSON.stringify lang_json});
+    // add the package translations for the fallback language
+    TAPi18next.addResourceBundle('#{fallback_language}', '#{package_name}', #{JSON.stringify lang_json});
 
     // add the package's proxies to tap-i18next
     __ = TAPi18n._getPackageI18nextProxy("#{package_name}");
