@@ -23,7 +23,6 @@ packageTapI18nSchema =
 # project-tap.i18n Schemas
 default_build_files_path = path.join project_root, "public", "i18n"
 default_browser_path = "/i18n"
-default_supported_languages = ["en"]
 projectTapI18nSchema =
   new SimpleSchema
     #default_language:
@@ -34,19 +33,23 @@ projectTapI18nSchema =
     supported_languages:
       type: [String]
       label: "Supported Languages"
+      optional: true
       autoValue: ->
-        value = if @isSet then @value else default_supported_languages
-        
+        if (not @isSet) or @value == null
+          return null
+
+        value = @value
+
         value = _.filter(value, (lang_tag) -> RegExp("^#{langauges_tags_regex}$").test(lang_tag))
         
         dialects_base_languages = value.map (lang_tag) -> lang_tag.replace(RegExp("^#{langauges_tags_regex}$"), "$1")
         
+        # add the fallback_language and the supported dialects base languages - they are always supported
+        _.union [fallback_language], dialects_base_languages, value
+
         # # add "en", the default_language and the supported dialects base
         # languages - they are always supported
         # _.union ["en", (@field "default_language").value], dialects_base_languages, value
-
-        # add "en" and the supported dialects base languages - they are always supported
-        _.union ["en"], dialects_base_languages, value
     build_files_path:
       type: String
       label: "Build Files Path"
@@ -141,9 +144,9 @@ loadPackageTapI18n = (file_path) ->
   # Attributes:
   # file_path: the path to the package-tap.i18n file.
 
-  if fs.existsSync file_path
+  try # use try/catch to avoid the additional syscall to fs.existsSync
     fstats = fs.statSync file_path
-  else
+  catch
     throw new Meteor.Error 500, "Package file `#{file_path}' doesn't exist",
       {file_path: file_path}
 
@@ -190,12 +193,21 @@ loadPackageTapMap = (package_tap_i18n_file_path) ->
 
   return map
 
-buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_languages=default_supported_languages) ->
-  log "Building unified files directory: #{lang_files_path}"
+buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_languages=null) ->
+  # Build the unified languages files on lang_files_path
+  #
+  # Returns a list of all the languages to which a unified file was built
+  #
+  # Attributes:
+  # lang_files_path (string): the path we build the unified languages files to
+  # supported_languages (array or null): Array of languages tags to which
+  # unified files will be built. If null, a unified language file will be built
+  # for any language the project or the packages it uses have a been translated
+  # to. It's guarenteed that a unified language file will be generated for each
+  # supported language even if no translations for this language is available
+  # (in which case the file will have an empty JSON object).
 
-  # We build the fallback language into the project, hence there is no need to
-  # create a unified file for it
-  supported_languages = _.without(supported_languages, fallback_language)
+  log "Building unified files directory: #{lang_files_path}"
 
   lang_files_path = removeFileTrailingSeparator lang_files_path
   lang_files_backup_path = "#{lang_files_path}~"
@@ -235,12 +247,34 @@ buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_lan
 
   unified_languages_files = {}
   _.each packageTapI18nMaps, (package_map) ->
-    # pick from the package_map.lang_files_path only the supported languages
-    supported_languages_files = _.pick(package_map.lang_files_paths, _.intersection(_.keys(package_map.lang_files_paths), supported_languages))
+    languages_files = package_map.lang_files_paths
+
+    # Make sure package has a translation file for the fallback language
+    if not (fallback_language of languages_files)
+      rollback()
+      throw new Meteor.Error 500, "Package #{package_map.name} has no language file for the fallback language (#{fallback_language})"
+
+    # Make sure we have the base language translations file for every dialect
+    dialects = _.filter _.keys(languages_files), (lang) ->
+      "-" in lang
+    _.each dialects, (dialect) ->
+      base_language = (dialect.split "-")[0]
+      if not (base_language of languages_files)
+        rollback()
+        throw new Meteor.Error 500, "Package #{package_map.name} has no language file for the base language (#{base_language}) of the dialect (#{dialect})"
+
+    if supported_languages
+      # pick from languages_files only the supported languages
+      languages_files = _.pick(languages_files, _.intersection(_.keys(languages_files), supported_languages))
 
     log "Gathering #{package_map.name} languages files"
-    _.each supported_languages_files, (file_path, lang)->
-      # Make sure all languages JSONs are valid
+    _.each languages_files, (file_path, lang)->
+      # Skip the fallback language since it is built into the project there is
+      # no need to build a unified file for it
+      if lang == fallback_language
+        return
+
+      # Make sure the language JSON is valid
       try
         lang_json = JSON.parse(fs.readFileSync(file_path))
       catch error
@@ -255,7 +289,7 @@ buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_lan
         throw new Meteor.Error 500, "Failed to build unified languages files. The JSON in language file: `#{file_path}' of package #{package_map.name} is not an object.",
           {file_path: file_path, error: error}
 
-      # if we haven't created a file for this language of the current file yet
+      # if we haven't created a unified file for this file's language, create one
       if not (lang of unified_languages_files)
         lang_file_path = getLangFilePath lang
 
@@ -267,33 +301,36 @@ buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_lan
           throw new Meteor.Error 500, "Failed to build unified languages files. Failed to create a file: #{lang_file_path}",
             {lang_file_path: lang_file_path, error: error}
 
-        # add the package property to the lang unified JSON
         fs.writeSync unified_languages_files[lang], "{\"#{package_map.name}\": "
-      else # if there is already a file for this language
-        # add the package property to the lang unified JSON
+      else # if there is already a unified file for this language
         fs.writeSync unified_languages_files[lang], ",\"#{package_map.name}\": "
 
-      # write the package strings to the unified JSON
+      # write the package translations to the unified JSON
       fs.writeSync unified_languages_files[lang], JSON.stringify lang_json
 
-  supported_languages.forEach (supported_lang) ->
-    if supported_lang of unified_languages_files
-      fs.writeSync unified_languages_files[supported_lang], "}"
-      # Failse even with the catch for a reason...
-      #try
-      #  fs.closeSync unified_languages_files[supported_lang]
-      #catch
-    else
-      try
-        lang_file_path = getLangFilePath supported_lang
-        fs.writeFileSync lang_file_path, "{}"
-      catch error
-        rollback()
+  # Close the unified files JSONs
+  _.each unified_languages_files, (v, lang) ->
+    fs.writeSync unified_languages_files[lang], "}"
+    # Fails even with the catch for a reason...
+    #try
+    #  fs.closeSync unified_languages_files[supported_lang]
+    #catch
 
-        throw new Meteor.Error 500, "Failed to build unified languages files. Failed to create a file: #{lang_file_path}",
-          {lang_file_path: lang_file_path, error: error}
+  # If a list of supported_languages had been given, create an empty unified
+  # lang file for every supported language haven't found translations for
+  _.each _.difference(supported_languages, _.keys(unified_languages_files)), (language) ->
+    try
+      unified_languages_files[language] = getLangFilePath language
+      fs.writeFileSync unified_languages_files[language], "{}"
+    catch error
+      rollback()
+
+      throw new Meteor.Error 500, "Failed to build unified languages files. Failed to create a file: #{lang_file_path}",
+        {lang_file_path: unified_languages_files[language], error: error}
 
   log "Done building unified languages files"
+
+  return _.keys unified_languages_files
 
 build_project_unified_lang_files_once_log = {}
 buildProjectUnifiedLangFilesOnce = (compileStep) ->
@@ -309,8 +346,17 @@ buildProjectUnifiedLangFilesOnce = (compileStep) ->
   if _.isEmpty(build_project_unified_lang_files_once_log) or (current_step_file of build_project_unified_lang_files_once_log)
     build_project_unified_lang_files_once_log = {}
     projectTapI18n = loadProjectConf()
+
     # Build only if tap-i18n is enabled in the project level
     if projectTapI18n?
+      langs_with_unified_lang_files =
+        buildUnifiedLangFiles projectTapI18n.build_files_path, projectTapI18n.supported_languages
+
+      # If the supported languages for that project haven't been specified - all
+      # the languages we have a unified language file for (and the fallback
+      # language) are supported 
+      projectTapI18n.supported_languages ?= _.union([fallback_language], langs_with_unified_lang_files)
+
       # Add the project configurations to the TAPi18n object (it is null for
       # tap-i18n disabled projects)
       project_i18n_js_file =
@@ -325,7 +371,6 @@ buildProjectUnifiedLangFilesOnce = (compileStep) ->
         data: project_i18n_js_file,
         bare: false
 
-      buildUnifiedLangFiles projectTapI18n.build_files_path, projectTapI18n.supported_languages
     else
       log "tap-i18n is not enabled in the project level, don't build unified languages files"
 

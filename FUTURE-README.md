@@ -282,8 +282,10 @@ file to your **project root** (the values below are the defaults):
     {
         languages_files_dir: "i18n" // the path to your languages files
                                     // directory relative to your project root
-        supported_languages: [], // Empty array means all the languages we find
-                                 // translation files for are supported.
+        supported_languages: null, // A list of languages tags you want to make
+                                   // available on your project. If null, all
+                                   // the languages we'll find translation files
+                                   // for will be available.
         build_files_path: "public/i18n", // can be a relative to project root or absolute
         browser_path: "/i18n" // can be a full url, or an absolute path on the project domain
     }
@@ -291,10 +293,10 @@ file to your **project root** (the values below are the defaults):
 Notes: 
 * We use AJAX to load the languages files so if your browser\_path is in
   another domain you'll have to set CORS on it.
-* The supported\_languages array specify the languages the project users can
-  pick from. If you specify a dialect as one of the supported languages its
-  base language will be supported also. Since English is used by tap-i18n as the
-  fallback language it is always supported, even if it isn't listed in the array.
+* If you specify a dialect as one of the supported languages its
+  base language will be supported also. Since English is used by tap-i18n as
+  the fallback language it is always supported, even if it isn't listed in the
+  array.
 
 **Important:** if you set this file it has to be in your package root.
 
