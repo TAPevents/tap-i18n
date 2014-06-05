@@ -3,3 +3,6 @@
 .DS_Store
 project-tap.i18n
 smart.lock
+packages/test-pack-*
+public
+.test-run-log

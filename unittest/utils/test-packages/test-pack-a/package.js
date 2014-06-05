@@ -18,7 +18,6 @@ Package.on_use(function (api) {
     "i18n/en.i18n.json",
     "i18n/bb.i18n.json",
     "i18n/cc.i18n.json",
-    "i18n/cc-CC.i18n.json",
-    "i18n/dd.i18n.json",
+    "i18n/cc-CC.i18n.json"
   ], ['client']);
 });

@@ -507,6 +507,16 @@ You can also test a specific constellation:
     # tap-i18n enabled in the project level - custom build files path is set on project-tap.i18n
     $ ./unittest/unittest-enabled_custom_build_files_path 
 
+    # tap-i18n package has no translation for the fallback language. Since the
+    # build fails for this environment, there are only bash test for it. Break
+    # (ctrl+c) after Meteor build fails to run bash tests.
+    $ ./unittest/unittest-package_with_no_fallback_language 
+
+    # tap-i18n package has a translation to a dialect but not to its base language.
+    # Since the build fails for this environment, there are only bash test for
+    # it. Break (ctrl+c) after Meteor build fails to run bash tests.
+    $ ./unittest/unittest-package_with_no_base_lang_for_dialect 
+
 Credits
 -------
 

@@ -318,7 +318,12 @@ buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_lan
 
   # If a list of supported_languages had been given, create an empty unified
   # lang file for every supported language haven't found translations for
-  _.each _.difference(supported_languages, _.keys(unified_languages_files)), (language) ->
+  _.each _.difference(supported_languages, _.keys(unified_languages_files)), (lang) ->
+    # Skip the fallback language since it is built into the project there is no
+    # need to build a unified file for it
+    if lang == fallback_language
+      return
+
     try
       unified_languages_files[language] = getLangFilePath language
       fs.writeFileSync unified_languages_files[language], "{}"
