@@ -326,8 +326,8 @@ buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_lan
       return
 
     try
-      unified_languages_files[language] = getLangFilePath language
-      fs.writeFileSync unified_languages_files[language], "{}"
+      unified_languages_files[lang] = getLangFilePath lang
+      fs.writeFileSync unified_languages_files[lang], "{}"
     catch error
       rollback()
 
