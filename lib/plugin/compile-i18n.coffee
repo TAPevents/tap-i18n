@@ -177,8 +177,7 @@ loadPackageTapMap = (package_tap_i18n_file_path) ->
   map.lang_files_dir = map.path + path.sep + map.conf.languages_files_dir
 
   if not fs.existsSync map.lang_files_dir
-    throw new Meteor.Error 500, "Can't find the languages files path of the package `#{map.name}' (#{map.lang_files_dir}).",
-      {error: error}
+    throw new Meteor.Error 500, "Can't find the languages files path of the package `#{map.name}' (#{map.lang_files_dir})."
 
   # Generate an object of the form: { lang_tag: lang_file_path, ... }
   map.lang_files_paths =
@@ -240,7 +239,9 @@ buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_lan
   rollback = ->
     log "Build failed, rolling back `#{lang_files_path}'"
     wrench.rmdirSyncRecursive lang_files_path
-    fs.renameSync lang_files_backup_path, lang_files_path
+    try
+      fs.renameSync lang_files_backup_path, lang_files_path
+    catch error
 
   packageTapI18nMaps =
     (wrench.readdirSyncRecursive project_root, (x) -> /package-tap.i18n$/.test(x)).map (x) -> loadPackageTapMap(x)
@@ -287,7 +288,7 @@ buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_lan
         rollback()
 
         throw new Meteor.Error 500, "Failed to build unified languages files. The JSON in language file: `#{file_path}' of package #{package_map.name} is not an object.",
-          {file_path: file_path, error: error}
+          {file_path: file_path}
 
       # if we haven't created a unified file for this file's language, create one
       if not (lang of unified_languages_files)
@@ -331,7 +332,7 @@ buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_lan
       rollback()
 
       throw new Meteor.Error 500, "Failed to build unified languages files. Failed to create a file: #{lang_file_path}",
-        {lang_file_path: unified_languages_files[language], error: error}
+        {lang_file_path: unified_languages_files[lang], error: error}
 
   log "Done building unified languages files"
 
@@ -441,7 +442,7 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
 
   if not _.isObject lang_json
     throw new Meteor.Error 500, "Package #{package_name} fallback language file (#{fallback_language}) should contain a JSON object: `#{lang_files_paths[fallback_language]}'",
-      {file_path: lang_files_paths[fallback_language], error: error}
+      {file_path: lang_files_paths[fallback_language]}
 
   package_i18n_js_file =
     """
