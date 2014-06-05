@@ -1,7 +1,8 @@
 tap-i18n - Meteor Internationalization
 ======================================
 
-A comprehensive internationalization solution for Meteor.
+tap-i18n is a smart package for Meteor that provides a comprehensive
+internationalization solution for project and package developers.
 
 tap-i18n encapsulates the [i18next](http://i18next.com/) JavaScript library to
 make its capabilities available for Meteor developers.
@@ -266,7 +267,7 @@ in your project that use tap-i18n.
 
 Notes:
 * Read TAPi18n.setLanguage() documentation in the API section below.
-* If you won't set a language on startup your project will be served by the
+* If you won't set a language on startup your project will be served in the
   fallback language: English.
 * You probably want to show a loading indicator until the language is ready (as
   shown in the example), otherwise the templates in your projects will be in
@@ -274,8 +275,8 @@ Notes:
 
 ### Configuring tap-i18n build process: 
 
-To configure tap-i18n build process add the **project-tap.i18n** configuration
-file to your **project root** (the values below are the defaults):
+To configure tap-i18n add the **project-tap.i18n** configuration file to your
+**project root** (the values below are the defaults):
 
     project-root/project-tap.i18n
     -----------------------------
@@ -449,7 +450,6 @@ your package. We use this listing for two purposes: (1) to be able to watch
 these files for changes to trigger rebuild, and (2) to have a mark in the
 package loading process in which we know all the templates of the package
 are loaded so we can register them with tap-i18n.
-
 
 ### Package Level tap-i18n Functions:
 
