@@ -4,7 +4,7 @@ Tinytest.add 'Custom Supported Languages - Supported languages array cleaned cor
   test.equal expected_supported_languages.slice().sort(), TAPi18n.conf.supported_languages.slice().sort()
 
 Tinytest.addAsync 'Custom Supported Languages - Supported languages that no package supports are being built and loads', (test, onComplete) ->
-  d = TAPi18n._loadLanguage "xx-XX"
+  TAPi18n._loadLanguage "xx-XX"
     .done ->
       test.ok()
     .fail (m) ->
@@ -12,4 +12,3 @@ Tinytest.addAsync 'Custom Supported Languages - Supported languages that no pack
       test.fail()
     .always ->
       onComplete()
-  console.log d

@@ -1,7 +1,4 @@
-# Put TAPi18n in the global namespace
-TAPi18n = {}
-
-fallback_language = "en"
+fallback_language = globals.fallback_language
 
 sessions_prefix = "TAPi18n::"
 loaded_lang_session_key = "#{sessions_prefix}loaded_lang"
@@ -9,18 +6,8 @@ loaded_lang_session_key = "#{sessions_prefix}loaded_lang"
 Session.set loaded_lang_session_key, null
 
 _.extend TAPi18n,
-  conf: null # This parameter will be set by the js that is being added by the
-             # build plugin of project-tap.i18n (which exist only if tap-i18n
-             # is enabled in the project level)
-             # if it isn't null we assume that it is valid (we clean and
-             # validate it throughly during the build process)
-
-  _enabled: ->
-    # read the comment of @conf
-    @conf?
-
   # en, which is our fallback language is built into the project, so we don't need to load it again
-  _loaded_languages: ["en"]
+  _loaded_languages: [fallback_language]
   _loadLanguage: (languageTag) ->
     # Load languageTag and its dependencies languages to TAPi18next if we
     # haven't loaded them already.
@@ -54,7 +41,7 @@ _.extend TAPi18n,
     if (languageTag in self.conf.supported_languages)
       if not (languageTag in self._loaded_languages)
         loadLanguageTag = ->
-          jqXHR = $.getJSON("#{self.conf.browser_path}/#{languageTag}.tap-i18n.json")
+          jqXHR = $.getJSON("#{self.conf.browser_path}/#{languageTag}.json")
 
           jqXHR.done (data) ->
             for package_name, package_keys of data

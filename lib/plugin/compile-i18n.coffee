@@ -4,9 +4,8 @@ fs = Npm.require 'fs'
 
 project_root = process.cwd()
 
-langauges_tags_regex = "([a-z]{2})(-[A-Z]{2})?"
-
-fallback_language = "en"
+langauges_tags_regex = globals.langauges_tags_regex
+fallback_language = globals.fallback_language
 
 # package-tap.i18n Schemas
 packageTapI18nSchema =
@@ -21,8 +20,9 @@ packageTapI18nSchema =
       label: "Languages Files Dir"
 
 # project-tap.i18n Schemas
-default_build_files_path = path.join project_root, "public", "i18n"
-default_browser_path = "/i18n"
+#default_build_files_path = path.join project_root, "public", "i18n"
+default_build_files_path = path.join project_root, ".meteor", "local", "tap-i18n"
+default_browser_path = "/tap-i18n"
 projectTapI18nSchema =
   new SimpleSchema
     #default_language:
@@ -54,10 +54,13 @@ projectTapI18nSchema =
       type: String
       label: "Build Files Path"
       autoValue: ->
-        # Make sure build_files_path has no trailing slash
-        value = if @isSet then @value else default_build_files_path
-        
-        removeFileTrailingSeparator value
+        value = null
+
+        if @isSet
+          value = removeFileTrailingSeparator @value
+
+        value
+      optional: true
     browser_path:
       type: String
       label: "Browser Path"
@@ -82,10 +85,11 @@ removeFileTrailingSeparator = (file) ->
 
 loadProjectConf = (conf_file=path.join(project_root, 'project-tap.i18n')) ->
   # Returns the project's tap-i18n configuration if tap-i18n is installed
-  # (enabled) on that project, or null if tap-i18n is not installed (disabled).
+  # (enabled) for that project, or null if tap-i18n is not installed (disabled).
   #
-  # If tap-i18n is enabled and conf_file exists we try to load the
-  # configurations from it, otherwise we return the default configurations.
+  # If tap-i18n is enabled and conf_file exists we try override the default
+  # project configurations with the those configured by it. Otherwise we return
+  # the default configurations.
   # 
   # If conf_file is not a valid JSON or doesn't pass our verifications we throw
   # a Meteor error.
@@ -103,7 +107,8 @@ loadProjectConf = (conf_file=path.join(project_root, 'project-tap.i18n')) ->
   # XXX I allow the use of the environmental variable TAP_I18N to indicate that
   # tap-i18n is enabled since the packages in use when testing
   # (package.on_test) aren't listed in .meteor/packages and I don't know of a
-  # more straightforward way to indicate enabled tap-i18n environment for testing
+  # more straightforward way to indicate whether tap-i18n is enabled or not in
+  # that case
   if (not _.contains project_packages, "tap-i18n") and (process.env.TAP_I18N != "enabled")
     return null
 
@@ -212,7 +217,7 @@ buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_lan
   lang_files_backup_path = "#{lang_files_path}~"
 
   getLangFilePath = (lang) ->
-    lang_files_path + path.sep + lang + ".tap-i18n.json"
+    lang_files_path + path.sep + lang + ".json"
 
   # Remove old backup
   try
@@ -338,22 +343,32 @@ buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_lan
 
   return _.keys unified_languages_files
 
-build_project_unified_lang_files_once_log = {}
-buildProjectUnifiedLangFilesOnce = (compileStep) ->
-  # Build the unified languages files once per build cycle
+build_files_once_log = {}
+build_files_once_arch_log = {}
+projectTapI18n = null
+buildFilesOnce = (compileStep) ->
+  # Builds the unified languages files and the project configuration (for each
+  # arch) once per build cycle
 
   # To tell whether or not we are in a new build cycle we assume that if the
-  # same file triggered a call to that function we are in a new cycle.
+  # same file triggered a call to that function for the same architecture we
+  # are in a new cycle
+  current_step_file = "#{compileStep._fullInputPath}::#{compileStep.arch}"
 
-  current_step_file = compileStep._fullInputPath
+  # Do the following once per build cycle regardless of arch
+  #
+  # If the build_files_once_log is empty or if the current_step_file is already
+  # in the log - we are in a new build cycle
+  if _.isEmpty(build_files_once_log) or (current_step_file of build_files_once_log)
+    # Init logs
+    build_files_once_log = {}
+    build_files_once_arch_log = {}
 
-  # If the log is empty or if the current_step_file is already in the log - we
-  # are in a new build cycle
-  if _.isEmpty(build_project_unified_lang_files_once_log) or (current_step_file of build_project_unified_lang_files_once_log)
-    build_project_unified_lang_files_once_log = {}
+    # Reload the project configuration
     projectTapI18n = loadProjectConf()
 
-    # Build only if tap-i18n is enabled in the project level
+    # Build the unified languages files only if tap-i18n is enabled in the
+    # project level
     if projectTapI18n?
       langs_with_unified_lang_files =
         buildUnifiedLangFiles projectTapI18n.build_files_path, projectTapI18n.supported_languages
@@ -363,8 +378,15 @@ buildProjectUnifiedLangFilesOnce = (compileStep) ->
       # language) are supported 
       projectTapI18n.supported_languages ?= _.union([fallback_language], langs_with_unified_lang_files)
 
-      # Add the project configurations to the TAPi18n object (it is null for
-      # tap-i18n disabled projects)
+    else
+      log "tap-i18n is not enabled in the project level, don't build unified languages files"
+
+  # Once per ARCH per build cycle
+  if not (compileStep.arch of build_files_once_arch_log)
+    if projectTapI18n?
+      # If tap-i18n is enabled, add the project configurations to the TAPi18n
+      # object if we haven't done that for the current arch already. (remember:
+      # for tap-i18n disabled projects TAPi18n.conf is null) 
       project_i18n_js_file =
         """
         TAPi18n.conf = #{JSON.stringify projectTapI18n};
@@ -377,16 +399,15 @@ buildProjectUnifiedLangFilesOnce = (compileStep) ->
         data: project_i18n_js_file,
         bare: false
 
-    else
-      log "tap-i18n is not enabled in the project level, don't build unified languages files"
+    build_files_once_arch_log[compileStep.arch] = true
 
   # Same build cycle - log file
-  build_project_unified_lang_files_once_log[current_step_file] = true
+  build_files_once_log[current_step_file] = true
 
 # Plugins
 Plugin.registerSourceHandler "i18n", (compileStep) ->
-  # Do nothing, Meteor require us to have a plugin for .i18n to register
-  # project-tap.i18n and tap.i18n
+  # Do nothing, Meteor requires us to have a plugin for .i18n in order to
+  # register plugins for .project-tap.i18n and .tap.i18n
 
 # templatesRegistrationsNeeded and the process of tap-i18n package-specific
 # templates registration:
@@ -407,17 +428,13 @@ current_package_name = null
 Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   log "package-tap.i18n file found #{compileStep._fullInputPath}: building"
 
-  if not compileStep.archMatches 'browser'
-    throw new Meteor.Error 500, "package-tap.i18n should only be added to the browser environment"
-
-  # We put the call to buildProjectUnifiedLangFilesOnce here and not under the
-  # i18n.json plugin since whenever one of the package's i18n.json files will
-  # change we want to rebuild the unified files. But we want to do so only if
-  # tap-i18n is enabled in the package level, i.e. if package-tap.i18n exists
-  # (and since we are here it for sure does).
   # Remember that whenever any of the package's i18n.json files will change
-  # Meteor will build the entire package so this plugin will be called.
-  buildProjectUnifiedLangFilesOnce compileStep
+  # Meteor will build the entire package so this handler will be called
+  buildFilesOnce compileStep
+
+  # From here on, keep building only the browser arch
+  if not compileStep.archMatches 'browser'
+    return
 
   # We make English an integral part of the package build.
   # We do this regardless of whether or not the containing project enables
@@ -476,18 +493,16 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   current_package_name = package_name
 
 Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
-  # Since project-tap.i18n should be in the project root, Meteor will try to
-  # build it both for the browser and the server arch - for non-browser we want
-  # to do nothing
+  log "project-tap.i18n file found #{compileStep._fullInputPath}: building"
+
+  # Build the project files
+  buildFilesOnce compileStep
+
+Plugin.registerSourceHandler "i18n.json", (compileStep) ->
+  # Build only for the browser arch
   if not compileStep.archMatches 'browser'
     return
 
-  log "project-tap.i18n file found #{compileStep._fullInputPath}: building"
-
-  # Build the unified languages files
-  buildProjectUnifiedLangFilesOnce compileStep
-
-Plugin.registerSourceHandler "i18n.json", (compileStep) ->
   # See the above note titled: templatesRegistrationsNeeded and the process of
   # tap-i18n package-specific templates registration
   if templatesRegistrationsNeeded
@@ -510,4 +525,3 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
       bare: false
 
     templatesRegistrationsNeeded = false
-

@@ -20,7 +20,7 @@ cd "$DIR/.."
 script_name=$(basename $0)
 test_name=${script_name##unittest-}
 
-default_unified_langs_dir="public/i18n"
+default_unified_langs_dir=".meteor/local/tap-i18n"
 fallback_lang="en"
 
 # meteor_unittests_start(test_name, description)
@@ -114,7 +114,7 @@ Package.on_test(function (api) {
   api.use('coffeescript', ['client', 'server']);
   api.use(['tinytest', 'test-helpers'], ['client', 'server']);
 
-  api.use(['test-pack-a', 'test-pack-b'], ['client']);
+  api.use(['test-pack-a', 'test-pack-b'], ['client', 'server']);
 
   $test_specific
 
@@ -122,7 +122,12 @@ Package.on_test(function (api) {
 EOF
 
     for test_name in "$@"; do
-        echo "api.add_files('unittest/tests/$test_name.coffee', ['client']);" >> package.js
+        if [[ "${test_name}" == "${test_name%%-server}" ]]; then
+            # Client test
+            echo "api.add_files('unittest/tests/$test_name.coffee', ['client']);" >> package.js
+        else
+            echo "api.add_files('unittest/tests/$test_name.coffee', ['server']);" >> package.js
+        fi
     done
 
     echo "});" >> package.js
@@ -131,7 +136,7 @@ EOF
 test_run_log_file_path=".test-run-log"
 run_meteor_test () {
     local port=$1
-
+    export TAP_I18N_DIR="$(pwd)/.meteor/local/tap-i18n" 
     meteor --port=$1 test-packages ./ | tee "$test_run_log_file_path"
 }
 
@@ -159,7 +164,7 @@ test_enabled () {
     install_test_packages "${test_packages[@]}"
 
     package_js_on_test="$(cat <<EOF
-    api.use('tap-i18n', ['client']);
+    api.use('tap-i18n', ['client', 'server']);
 EOF
     )"
 
@@ -185,9 +190,9 @@ test_enabled_custom_supported_languages () {
     echo '{"supported_languages": ["bb", "cc-CC", "xx-XX"]}' > project-tap.i18n
 
     package_js_on_test="$(cat <<EOF
-    api.use('tap-i18n', ['client']);
+    api.use('tap-i18n', ['client', 'server']);
 
-    api.add_files('project-tap.i18n', ['client']);
+    api.add_files('project-tap.i18n', ['client', 'server']);
 EOF
     )"
 
@@ -205,7 +210,7 @@ EOF
 
     supported_languages=("bb" "cc" "xx" "cc-CC" "xx-XX")
     for lang in ${supported_languages[@]}; do
-        [ -f "${default_unified_langs_dir}/${lang}.tap-i18n.json" ]
+        [ -f "${default_unified_langs_dir}/${lang}.json" ]
         record_test_result $? "Unified language file for supported language ${lang} created"
     done
 
@@ -225,13 +230,15 @@ test_enabled_custom_build_files_path () {
     echo '{"build_files_path": "public/x", "browser_path": "/x"}' > project-tap.i18n
 
     package_js_on_test="$(cat <<EOF
-    api.use('tap-i18n', ['client']);
+    api.use('tap-i18n', ['client', 'server']);
 
-    api.add_files('project-tap.i18n', ['client']);
+    api.use('http-methods', ['client', 'server']);
+
+    api.add_files('project-tap.i18n', ['client', 'server']);
 EOF
     )"
 
-    add_package_js_test_section "$package_js_on_test" "enabled"
+    add_package_js_test_section "$package_js_on_test" "enabled" "$test_name-server" "$test_name"
 
     TAP_I18N="enabled" run_meteor_test $port
 
