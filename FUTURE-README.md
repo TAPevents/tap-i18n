@@ -4,30 +4,34 @@ tap-i18n - Meteor Internationalization
 tap-i18n is a smart package for Meteor that provides a comprehensive
 internationalization solution for project and package developers.
 
-tap-i18n encapsulates the [i18next](http://i18next.com/) JavaScript library to
-make its capabilities available for Meteor developers.
+**Main Features:**
+
+**Advanced i18n features:** Uses [i18next](http://i18next.com/) as its i18n
+engine and exposes all its capabilities to the Meteor's templates - variables,
+dialects, count/context aware keys, and more.
+
+**Zero Redundancies:** The translations files of the project and all the
+packages used by it are unified to a single file per language - the unified
+languages file are getting load to the client only when they are needed. (1)
+
+**Ready to scale:** Want the translations on a CDN, no problem, just specify
+the endpoint!
+
+**Transparent namespacing:** you don't have to care about other packages when
+you translate your project or package we make the namespacing of the
+translation keys transparent to you.
+
+**Simple API:** Straightforward, simple API.
+
+**tap-i18n Two Work Modes:**
 
 tap-i18n can be used to internationalize projects and packages, but its
-behavior is determined only by wheather it's **enabled** or **disabled**
-meaning: whether or not it's installed on the project level.
+behavior is determined by whether or not it's installed on the project level.
+We call these two work modes: *enabled* and *disabled*.
 
-First, only when tap-i18n is enabled setting the client language is possible.
-The packages the project uses that use tap-i18n will be served in English if
-tap-i18n is disabled.
-
-Second, when tap-i18n is enabled we deliver the needed translations for each
-language in one unified file (that includes both the project and packages
-translations). These files are being built automatically during the project's
-build process and get updated automatically if the translations change.
-
-When tap-i18n is enabled translations files are delivered as seperate resources
-only when they are needed. tap-i18n gives the project developer the flexibility
-to choose how these files will be delivered to the clients (Meteor internal
-files server, nginx, cdn, etc.).
-
-If tap-i18n is disabled, the packages the project uses that use tap-i18n will
-be served in English. The language data will be delivered as part of the
-packages' files and not as a seperate unified resource.
+When tap-i18n is disabled we don't unify the languages files that the packages
+being used by the project uses, and serve all the packages in the fallback
+language (English)
 
 The tap-i18n Handlebars helper:
 -------------------------------
@@ -38,11 +42,11 @@ that uses tap-i18n:
 
     {{_ "key" "sprintf_arg1" "sprintf_arg2" ... op1="option-value" op2="option-value" ... }}
 
-The translation files that will be used to translate key depeneds on the
+The translation files that will be used to translate key depends on the
 template from which it is being used:
 * If the helper is being used in a template that belongs to a package that uses
   tap-i18n we'll always look for the translation in that package's translation
-  files (defined by the languages\_files\_dir option).
+  files.
 * If the helper is being used in one of the project's templates we'll look for
   the translation in the project's translation files (tap-i18n has to be enabled
   of course).
@@ -178,8 +182,8 @@ pick one of its dialects.
 Example: A developer can either refer to English in general using: "en" or to
 use the Great Britain dialect with "en-GB".
 
-**If tap-i18n is enabled** (i.e. installed in the project level) we'll attempt
-to look for a translation of a certain string in the following order:
+**If tap-i18n is enabled** we'll attempt to look for a translation of a certain
+string in the following order:
 * Language dialect, if specified ("pt-BR")
 * Base language ("pt")
 * Base English ("en")
@@ -188,7 +192,8 @@ Notes:
 * We currently support only one dialect level. e.g. nan-Hant-TW is not
   supported.
 * "en-US" is the dialect we use for the base English translations "en".
-* If tap-i18n is disabled packages the project uses will be served in English.
+* If tap-i18n is disabled packages the project uses will be served in English,
+  the fallback language.
 
 ### Structure of Languages Files
 
@@ -222,13 +227,13 @@ Example for languages files:
 Notes:
 
 * To avoid translation bugs all the keys in your package must be translated to
-  English ("en") which is the default language and the fallback language when
-  we can't find a translation for a key.
-* Remember that thanks to the Languages Tags and Translations Prioritization
-  (see above) if a translation for a certain key is the same for a language and
-  its dialect you don't need to translate it again in the dialect file. Thus,
-  in the above example there is no need to translate "sky" in en-GB which is the
-  same in en.
+  English ("en") which is the default language, and the fallback language when
+  tap-i18n is disabled or when we can't find a translation for a certain key.
+* In the above example there is no need to translate "sky" in en-GB which is the
+  same in en. Remember that thanks to the Languages Tags and Translations
+  Prioritization (see above) if a translation for a certain key is the same for a
+  language and one of its dialects you don't need to translate it again in the
+  dialect file.
 * The French file above have no translation for the color key above, it will
   fallback to English.
 * Check [i18next features documentation](http://i18next.com/pages/doc_features.html) for
@@ -248,7 +253,7 @@ in your project that use tap-i18n.
 
     $ mrt add tap-i18n
 
-**Step 2:** Set a language on the client startup:
+**Step 2 (optional):** Set a language on the client startup:
 
     if (Meteor.isClient) {
       Meteor.startup(function () {
@@ -268,10 +273,10 @@ in your project that use tap-i18n.
 Notes:
 * Read TAPi18n.setLanguage() documentation in the API section below.
 * If you won't set a language on startup your project will be served in the
-  fallback language: English.
+  default language: English.
 * You probably want to show a loading indicator until the language is ready (as
   shown in the example), otherwise the templates in your projects will be in
-  the fallback language English until the language will be ready.
+  English until the language will be ready.
 
 ### Configuring tap-i18n build process: 
 
@@ -281,15 +286,26 @@ To configure tap-i18n add the **project-tap.i18n** configuration file to your
     project-root/project-tap.i18n
     -----------------------------
     {
-        languages_files_dir: "i18n" // the path to your languages files
-                                    // directory relative to your project root
-        supported_languages: null, // A list of languages tags you want to make
-                                   // available on your project. If null, all
-                                   // the languages we'll find translation files
-                                   // for will be available.
-        build_files_path: "public/i18n", // can be a relative to project root or absolute
-        browser_path: "/i18n" // can be a full url, or an absolute path on the project domain
+        languages_files_dir: "i18n",
+        supported_languages: null,
+        build_files_path: ".meteor/local/tap-i18n",
+        browser_path: "/i18n"
     }
+
+Options:
+
+**languages\_files\_dir:** the path to your languages files directory relative
+to your project root
+
+**supported\_languages:** A list of languages tags you want to make available
+on your project. If null, all the languages we'll find translation files for
+will be available.
+
+**build\_files\_path:** can be an absolute path or relative to the project's
+root.
+
+**browser\_path:** Can be a full url, or an absolute path. You must set
+browser\_path if you change the default value of build\_files\_path.
 
 Notes: 
 * We use AJAX to load the languages files so if your browser\_path is in
@@ -377,7 +393,7 @@ Therefore if you'll wish to use tap-i18n to internationalize your Meteor
 package your docs will have to refer projects developers that will use it to
 the "Usage - Project Developers" section above to enable internationalization.
 If the project developer won't enable tap-i18n your package will be served in
-English.
+the fallback language English.
 
 ### Setup tap-i18n
 
@@ -419,7 +435,7 @@ Example for the default languages\_files\_dir path and its structure:
 Your package's package.js should be structured as follow:
 
     Package.on_use(function (api) {
-      api.use(['tap-i18n'], ['client']);
+      api.use(['tap-i18n'], ['client', 'server']);
     
       .
       .
@@ -427,15 +443,15 @@ Your package's package.js should be structured as follow:
     
       // You must load your package's package-tap.i18n before you load any
       // template
-      api.add_files("package-tap.i18n", ['client']);
+      api.add_files("package-tap.i18n", ['client', 'server']);
     
       // Templates loads (if any)
     
       // List your languages files so Meteor will watch them and rebuild your
-      // package as they change
-      // You must load the languages files after you loaded your templates -
-      // otherwise the templates won't have the i18n capabilities (unless you'll
-      // register them with tap-i18n yourself, see below)
+      // package as they change.
+      // You must load the languages files after you load your templates -
+      // otherwise the templates won't have the i18n capabilities (unless
+      // you'll register them with tap-i18n yourself, see below).
       api.add_files([
         "i18n/en.i18n.json",
         "i18n/fr.i18n.json",
@@ -525,3 +541,7 @@ Credits
 * [i18next](http://i18next.com/)
 * [wrench-js](https://github.com/ryanmcgrath/wrench-js)
 
+**Meteor Packages:**
+
+* [simple-schema](https://github.com/aldeed/meteor-simple-schema)
+* [http-methods](https://github.com/CollectionFS/Meteor-http-methods)
