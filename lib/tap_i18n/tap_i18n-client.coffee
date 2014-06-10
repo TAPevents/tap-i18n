@@ -82,12 +82,17 @@ _.extend TAPi18n,
   _registerTemplateHelper: (package_name, template) ->
     tapI18nextProxy = @_getPackageI18nextProxy(package_name)
 
-    Template[template]._ = (key, args...) ->
+    helper = (key, args...) ->
       options = (args.pop()).hash
       if not _.isEmpty(args)
         options.sprintf = args
 
       tapI18nextProxy(key, options)
+
+    if package_name != globals.project_translations_domain
+      Template[template]._ = helper
+    else
+      UI.registerHelper "_", helper
 
   _getPackageRegisterTemplateHelperProxy: (package_name) ->
     # A proxy to _registerTemplateHelper where the package_name is fixed to package_name
@@ -111,3 +116,11 @@ _.extend TAPi18n,
 
   getLanguage: ->
     Session.get loaded_lang_session_key
+
+TAPi18n.__ = TAPi18n._getPackageI18nextProxy(globals.project_translations_domain)
+
+Meteor.startup ->
+  # If tap-i18n is enabled for that project register the project domain
+  # template helper
+  if TAPi18n.conf?
+    TAPi18n._registerTemplateHelper globals.project_translations_domain

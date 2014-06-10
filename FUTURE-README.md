@@ -456,7 +456,7 @@ Your package's package.js should be structured as follow:
         "i18n/en.i18n.json",
         "i18n/fr.i18n.json",
         "i18n/pt.i18n.json",
-        "i18n/pt-br.i18n.json",
+        "i18n/pt-br.i18n.json"
       ], ['client']);
     });
 
@@ -522,6 +522,12 @@ You can also test a specific constellation:
 
     # tap-i18n enabled in the project level - custom build files path is set on project-tap.i18n
     $ ./unittest/unittest-enabled_custom_build_files_path 
+
+    # tap-i18n enabled in the project level - project level translations
+    $ ./unittest/unittest-test_enabled_project_level_translations
+
+    # tap-i18n enabled in the project level - project level translations in a custom translation dir
+    $ ./unittest/unittest-test_enabled_project_level_translations_custom_translations_dir
 
     # tap-i18n package has no translation for the fallback language. Since the
     # build fails for this environment, there are only bash test for it. Break

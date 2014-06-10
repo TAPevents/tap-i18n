@@ -6,3 +6,5 @@ smart.lock
 packages/test-pack-*
 public
 .test-run-log
+i18n
+custom-i18n

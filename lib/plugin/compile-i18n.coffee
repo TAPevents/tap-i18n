@@ -25,6 +25,10 @@ default_build_files_path = path.join project_root, ".meteor", "local", "tap-i18n
 default_browser_path = "/tap-i18n"
 projectTapI18nSchema =
   new SimpleSchema
+    languages_files_dir:
+      type: String
+      defaultValue: "i18n"
+      label: "Languages Files Dir"
     #default_language:
     #  type: String
     #  defaultValue: "en"
@@ -174,6 +178,17 @@ loadPackageTapI18n = (file_path) ->
 
   return package_tap_i18n_json
 
+mapLangFilesDir = (lang_files_dir) ->
+  # Generate an object of the form: { lang_tag: lang_file_path, ... }
+  _.object(
+    (
+      (wrench.readdirSyncRecursive lang_files_dir, (x) -> RegExp("^#{langauges_tags_regex}.i18n.json$").test(x))
+        .map (file) ->
+          file.replace(".i18n.json", "")
+    ).map (language_name) ->
+      [language_name, lang_files_dir + path.sep + language_name + ".i18n.json"]
+  )
+
 loadPackageTapMap = (package_tap_i18n_file_path) ->
   map = {}
   map.conf = loadPackageTapI18n package_tap_i18n_file_path
@@ -184,20 +199,11 @@ loadPackageTapMap = (package_tap_i18n_file_path) ->
   if not fs.existsSync map.lang_files_dir
     throw new Meteor.Error 500, "Can't find the languages files path of the package `#{map.name}' (#{map.lang_files_dir})."
 
-  # Generate an object of the form: { lang_tag: lang_file_path, ... }
-  map.lang_files_paths =
-    _.object(
-      (
-        (wrench.readdirSyncRecursive map.lang_files_dir, (x) -> RegExp("^#{langauges_tags_regex}.i18n.json$").test(x))
-          .map (file) ->
-            file.replace(".i18n.json", "")
-      ).map (language_name) ->
-        [language_name, map.lang_files_dir + path.sep + language_name + ".i18n.json"]
-    )
+  map.lang_files_paths = mapLangFilesDir map.lang_files_dir
 
   return map
 
-buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_languages=null) ->
+buildUnifiedLangFiles = (compileStep=null, lang_files_path=default_build_files_path, supported_languages=null, project_translations_dir=null) ->
   # Build the unified languages files on lang_files_path
   #
   # Returns a list of all the languages to which a unified file was built
@@ -250,6 +256,44 @@ buildUnifiedLangFiles = (lang_files_path=default_build_files_path, supported_lan
 
   packageTapI18nMaps =
     (wrench.readdirSyncRecursive project_root, (x) -> /package-tap.i18n$/.test(x)).map (x) -> loadPackageTapMap(x)
+
+  if project_translations_dir?
+    if fs.existsSync project_translations_dir
+      project_lang_files_dir_map = mapLangFilesDir project_translations_dir
+      packageTapI18nMaps.push {
+          name: globals.project_translations_domain
+          lang_files_paths: project_lang_files_dir_map
+      }
+
+      # If compileStep is defined and we have "en
+      if compileStep? and fallback_language of project_lang_files_dir_map
+        fallback_language_file = project_lang_files_dir_map[fallback_language]
+
+        try
+          lang_json = JSON.parse(fs.readFileSync(fallback_language_file))
+        catch error
+          throw new Meteor.Error 500, "Project fallback language file (#{fallback_language}) has an invalid JSON: `#{fallback_language_file}'",
+            {file_path: fallback_language_file, error: error}
+
+        if not _.isObject lang_json
+          throw new Meteor.Error 500, "Project fallback language file (#{fallback_language}) should contain a JSON object: `#{fallback_language_file}'",
+            {file_path: fallback_language_file}
+
+        project_fallback_lang_translation_js_file =
+          """
+          // add the package translations for the fallback language
+          TAPi18next.addResourceBundle('#{fallback_language}', '#{globals.project_translations_domain}', #{JSON.stringify lang_json});
+
+          """
+
+        compileStep.addJavaScript
+          path: "project-fallback-lang-translations.js",
+          sourcePath: compileStep.inputPath,
+          data: project_fallback_lang_translation_js_file,
+          bare: false
+
+    else
+      log "Couldn't find project translations directory - no project level translations"
 
   unified_languages_files = {}
   _.each packageTapI18nMaps, (package_map) ->
@@ -371,7 +415,7 @@ buildFilesOnce = (compileStep) ->
     # project level
     if projectTapI18n?
       langs_with_unified_lang_files =
-        buildUnifiedLangFiles projectTapI18n.build_files_path, projectTapI18n.supported_languages
+        buildUnifiedLangFiles compileStep, projectTapI18n.build_files_path, projectTapI18n.supported_languages, projectTapI18n.languages_files_dir
 
       # If the supported languages for that project haven't been specified - all
       # the languages we have a unified language file for (and the fallback
@@ -451,15 +495,17 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   if not (fallback_language of lang_files_paths)
     throw new Meteor.Error 500, "Package #{package_name} has no language file for the fallback language (#{fallback_language})"
 
+  fallback_language_file = lang_files_paths[fallback_language]
+
   try
-    lang_json = JSON.parse(fs.readFileSync(lang_files_paths[fallback_language]))
+    lang_json = JSON.parse(fs.readFileSync(fallback_language_file))
   catch error
-    throw new Meteor.Error 500, "Package #{package_name} fallback language file (#{fallback_language}) has an invalid JSON: `#{lang_files_paths[fallback_language]}'",
-      {file_path: lang_files_paths[fallback_language], error: error}
+    throw new Meteor.Error 500, "Package #{package_name} fallback language file (#{fallback_language}) has an invalid JSON: `#{fallback_language_file}'",
+      {file_path: fallback_language_file, error: error}
 
   if not _.isObject lang_json
-    throw new Meteor.Error 500, "Package #{package_name} fallback language file (#{fallback_language}) should contain a JSON object: `#{lang_files_paths[fallback_language]}'",
-      {file_path: lang_files_paths[fallback_language]}
+    throw new Meteor.Error 500, "Package #{package_name} fallback language file (#{fallback_language}) should contain a JSON object: `#{fallback_language_file}'",
+      {file_path: fallback_language_file}
 
   package_i18n_js_file =
     """

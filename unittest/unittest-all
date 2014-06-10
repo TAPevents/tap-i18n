@@ -89,7 +89,7 @@ record_test_result () {
 clean () {
     rm -rf packages/test-pack-*
     rm -f project-tap.i18n
-    rm -rf public
+    rm -rf public i18n custom-i18n
     remove_package_js_test_section
     rm -f "$test_run_log_file_path"
 
@@ -112,7 +112,7 @@ Package.on_test(function (api) {
   // DO NOT ADD THIS Package.on_test TO GIT!!!
   //
   api.use('coffeescript', ['client', 'server']);
-  api.use(['tinytest', 'test-helpers'], ['client', 'server']);
+  api.use(['tinytest', 'test-helpers', 'templating'], ['client', 'server']);
 
   api.use(['test-pack-a', 'test-pack-b'], ['client', 'server']);
 
@@ -245,6 +245,70 @@ EOF
     meteor_unittests_end
 }
 
+test_enabled_project_level_translations () {
+    local test_name="enabled_project_level_translations" test_packages=("a" "b") port=3000
+
+    meteor_unittests_start "$test_name" "tap-i18n is enabled in the project level - project level translations"
+
+    mkdir i18n
+    cp -r unittest/utils/test-lang-files/{en,cc,cc-CC}.i18n.json i18n
+
+    install_test_packages "${test_packages[@]}"
+
+    package_js_on_test="$(cat <<EOF
+    api.use('tap-i18n', ['client', 'server']);
+
+    api.add_files('unittest/utils/project-templates/basic.html', ['client']);
+
+    api.add_files([
+      'i18n/en.i18n.json',
+      'i18n/cc.i18n.json',
+      'i18n/cc-CC.i18n.json'
+    ], ['client']);
+EOF
+    )"
+
+    add_package_js_test_section "$package_js_on_test" "enabled" "$test_name"
+
+    TAP_I18N="enabled" run_meteor_test $port
+
+    meteor_unittests_end
+}
+
+test_enabled_project_level_translations_custom_translations_dir () {
+    local test_name="enabled_project_level_translations_custom_translations_dir" test_packages=("a" "b") port=3000
+
+    meteor_unittests_start "$test_name" "tap-i18n is enabled in the project level - project level translations in a custom translation dir"
+
+    mkdir custom-i18n
+    cp -r unittest/utils/test-lang-files/{en,cc,cc-CC}.i18n.json custom-i18n
+
+    install_test_packages "${test_packages[@]}"
+
+    echo '{"languages_files_dir": "custom-i18n"}' > project-tap.i18n
+
+    package_js_on_test="$(cat <<EOF
+    api.use('tap-i18n', ['client', 'server']);
+
+    api.add_files('unittest/utils/project-templates/basic.html', ['client']);
+
+    api.add_files('project-tap.i18n', ['client', 'server']);
+
+    api.add_files([
+      'custom-i18n/en.i18n.json',
+      'custom-i18n/cc.i18n.json',
+      'custom-i18n/cc-CC.i18n.json'
+    ], ['client']);
+EOF
+    )"
+
+    add_package_js_test_section "$package_js_on_test" "enabled" "enabled_project_level_translations" "$test_name"
+
+    TAP_I18N="enabled" run_meteor_test $port
+
+    meteor_unittests_end
+}
+
 test_package_with_no_fallback_language () {
     local test_name="package_with_no_fallback_language" test_packages=("a" "b" "no_fallback_lang") port=3000
 
@@ -294,6 +358,8 @@ if [[ $test_name == "all" ]]; then
     test_enabled
     test_enabled_custom_supported_languages
     test_enabled_custom_build_files_path
+    test_enabled_project_level_translations
+    test_enabled_project_level_translations_custom_translations_dir
     test_package_with_no_fallback_language
     test_package_with_no_base_lang_for_dialect
 else
