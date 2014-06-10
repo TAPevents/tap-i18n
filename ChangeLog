@@ -1,3 +1,17 @@
-2014.05.22, Version 0.1.0
+2014.06.10, Version 0.2.0
+
+* Implement project-level translations
+* For enabled tap-i18n projects use the http-methods package as the default
+  mean for serving unified languages files instead of /public
+* API change: Consider projects with no project-tap.i18n as tap-i18n enabled
+* API change: By default, regard all the languages we find translations for as
+  supported_languages
+* API change: No package-level default language - en is our fallback_language
+  everywhere
+* Improve the unittesting framework
+* Naming: Use TAPi18n and TAPi18next instead of TapI18n and TapI18next
+* Bugfix: don't add an error object when throwing exception if error 
+
+2014.05.22, Version 0.1.0, 676f50f0bea154596cacf44c34c352b09aa1d215
 
 * tap-i18n first release
