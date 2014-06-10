@@ -22,6 +22,7 @@ Tinytest.addAsync 'Enabled tap-i18n - All languages loads successfully', (test, 
 
       dfd.done ->
         test.equal Template.pack_a_test_template_a.render()(), "#{_.last lang}01"
+        test.equal Template.pack_a_test_template_post_load_template.render()(), "#{_.last lang}01"
 
       dfd.fail ->
         test.fail "Failed to load language #{lang}"

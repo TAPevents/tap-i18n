@@ -20,4 +20,8 @@ Package.on_use(function (api) {
     "i18n/cc.i18n.json",
     "i18n/cc-CC.i18n.json"
   ], ['client']);
+
+  api.add_files("post-load-template.html", ['client']);
+
+  api.add_files("lib/post-i18n-load.coffee", ['client']);
 });
