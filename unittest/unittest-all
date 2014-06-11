@@ -137,6 +137,7 @@ test_run_log_file_path=".test-run-log"
 run_meteor_test () {
     local port=$1
     export TAP_I18N_DIR="$(pwd)/.meteor/local/tap-i18n" 
+    export TAP_I18N_DEBUG="true" 
     meteor --port=$1 test-packages ./ | tee "$test_run_log_file_path"
 }
 

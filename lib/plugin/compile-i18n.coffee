@@ -76,10 +76,11 @@ projectTapI18nSchema =
 
 # Helpers
 log = ->
-  console.log.apply @,
-    [
-      "[INFO] tap-i18n compiler", new Date().toISOString().replace(/.*T/, "").replace(/\..*/, "") + ":"
-    ].concat Array.prototype.slice.apply(arguments)
+  if globals.debug or process.env.TAP_I18N_DEBUG == "true"
+    console.log.apply @,
+      [
+        "[INFO] tap-i18n compiler", new Date().toISOString().replace(/.*T/, "").replace(/\..*/, "") + ":"
+      ].concat Array.prototype.slice.apply(arguments)
 
 escapeRegExp = (str) ->
   str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
