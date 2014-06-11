@@ -1,11 +1,17 @@
 _ = Npm.require 'underscore'
 path = Npm.require 'path'
 fs = Npm.require 'fs'
+crypto = Npm.require 'crypto'
 
 project_root = process.cwd()
 
 langauges_tags_regex = globals.langauges_tags_regex
 fallback_language = globals.fallback_language
+
+sha1 = (contents) ->
+  hash = crypto.createHash('sha1')
+  hash.update(contents)
+  hash.digest('hex')
 
 # package-tap.i18n Schemas
 packageTapI18nSchema =
@@ -552,6 +558,18 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
 
   # Build the project files
   buildFilesOnce compileStep
+
+  # Add the sha1 of the .i18n.json files as a comment to the build js, so
+  # Meteor will know when it was changed and will refresh the clients.
+  # This is needed because (except for the fallback language) the content of
+  # the .i18n.json files isn't added to the built js and therefore Meteor can't
+  # tell when they are changed, and won't refresh the client unless we'll
+  # indicate that.
+  compileStep.addJavaScript
+    path: compileStep.inputPath,
+    sourcePath: compileStep.inputPath,
+    data: "// #{compileStep.inputPath}: #{sha1(fs.readFileSync compileStep._fullInputPath)}",
+    bare: true
 
   # See the above note titled: templatesRegistrationsNeeded and the process of
   # tap-i18n package-specific templates registration
