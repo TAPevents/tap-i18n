@@ -1,4 +1,14 @@
-2014.06.10, Version 0.2.0
+2014.06.11, Version 0.3.0
+
+* Refresh the clients when .i18n.json files change
+* bugfix: build files if i18n.json files change for case we don't have
+  project-tap.i18n to trigger build
+* Show debug meesages only if globals.debug is true or env variable
+  TAP_I18N_DEBUG is "true"
+* project-tap.i18n ignore default_browser_path if build_files_path is null
+* Fixes to README
+
+2014.06.10, Version 0.2.0, 50bb1e9643e8233438ff7614bb79ca3dd575a3a8
 
 * Implement project-level translations
 * For enabled tap-i18n projects use the http-methods package as the default
