@@ -1,12 +1,9 @@
-# TAPi81n - Internationalization for Meteor
-
----
+# TAPi81n
+### Internationalization for Meteor
 
 XXX NOTE: use 'TAPi18n' throughout, including mrt & github (i think)
 
 **TAPi18n** is a smart package for Meteor that provides a comprehensive internationalization solution for project and package developers.
-
-XXX ANOTHER SENTENCE HERE
 
 ## Main Features
 
@@ -37,7 +34,6 @@ XXX ANOTHER SENTENCE HERE
 * Easily Cached JSON responses
 * Selective &  efficient data serving
 
----
 
 ## Quickstart for Project Developers
 
@@ -115,10 +111,8 @@ TAPi81n supports the XXX country code format
 * `bt-BR` Language Dialogue (if specified)
 
 
----
 
-
-# Further Documentation & Examples
+# Documentation & Examples
 
 
 tap-i18n can be used to internationalize projects and packages, but its
@@ -614,13 +608,15 @@ MIT
 
 xxx
 
+### Contributors
+
+Chris Hitchcott
+
 ### Credits
-
-[**TAP**events](tapevents.com) - Development Sponsor
-
-
 
 * [i18next](http://i18next.com/)
 * [wrench-js](https://github.com/ryanmcgrath/wrench-js)
 * [simple-schema](https://github.com/aldeed/meteor-simple-schema)
 * [http-methods](https://github.com/CollectionFS/Meteor-http-methods)
+
+Sponsored by [TAPevents](tapevents.com)
