@@ -550,6 +550,9 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
   if not compileStep.archMatches 'browser'
     return
 
+  # Build the project files
+  buildFilesOnce compileStep
+
   # See the above note titled: templatesRegistrationsNeeded and the process of
   # tap-i18n package-specific templates registration
   if templatesRegistrationsNeeded
