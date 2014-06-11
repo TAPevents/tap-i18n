@@ -1,22 +1,26 @@
 path = Npm.require 'path'
 fs = Npm.require 'fs'
 
-
 # server_dir = if process.env.TAP_I18N_DIR then else process.env.SERVER_DIR
 tap_i18n_default_build_files_path = if process.env.TAP_I18N_DIR? then process.env.TAP_I18N_DIR else path.join __meteor_bootstrap__.serverDir, '../../../tap-i18n/'
 
 _.extend TAPi18n,
   registerHTTPMethod: ->
-    HTTP.methods
-      '/tap-i18n/:lang':
-        get: () ->
-          if RegExp("^#{globals.langauges_tags_regex}.json$").test(@params.lang)
-            try
-              fs.readFileSync(path.join(tap_i18n_default_build_files_path, @params.lang), 'utf8')
-            catch
-              @setStatusCode(404) # Not found
-          else
-            @setStatusCode(401) # Unauthorized
+    methods = {}
+
+    methods["#{globals.default_browser_path}/:lang"] =
+      get: () ->
+        if RegExp("^#{globals.langauges_tags_regex}.json$").test(@params.lang)
+          try
+            fs.readFileSync(path.join(tap_i18n_default_build_files_path, @params.lang), 'utf8')
+          catch
+            @setStatusCode(404) # Not found
+        else
+          @setStatusCode(401) # Unauthorized
+
+    HTTP.methods methods
+
+    TAPi18n.conf.browser_path = globals.default_browser_path
 
 Meteor.startup ->
   # If tap-i18n is enabled for that project

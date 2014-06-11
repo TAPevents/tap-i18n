@@ -288,8 +288,8 @@ To configure tap-i18n add the **project-tap.i18n** configuration file to your
     {
         "languages_files_dir": "i18n",
         "supported_languages": null,
-        "build_files_path": ".meteor/local/tap-i18n",
-        "browser_path": "/i18n"
+        "build_files_path": null,
+        "browser_path": null
     }
 
 Options:
@@ -301,11 +301,17 @@ to your project root
 on your project. If null, all the languages we'll find translation files for
 will be available.
 
-**build\_files\_path:** can be an absolute path or relative to the project's
-root.
+**build\_files\_path:** Can be an absolute path or relative to the project's
+root. If you change this value we assume you want to serve the files yourself
+(via cdn, or by other means) so we won't initiate the tap-i18n's built-in files
+server. Therefore if you set build\_files\_path you **must** set the
+browser\_path.
 
-**browser\_path:** Can be a full url, or an absolute path. You must set
-browser\_path if you change the default value of build\_files\_path.
+**browser\_path:** Can be a full url, or an absolute path. Examples:
+"http://cdn.domain.com/i18n/", "/custom-i18n/"
+
+**Important**: **You must** set browser\_path if you set build\_files\_path.
+If build\_files\_path is null we ignore browser\_path.
 
 Notes: 
 * We use AJAX to load the languages files so if your browser\_path is in

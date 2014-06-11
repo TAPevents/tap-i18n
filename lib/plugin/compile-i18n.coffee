@@ -22,7 +22,7 @@ packageTapI18nSchema =
 # project-tap.i18n Schemas
 #default_build_files_path = path.join project_root, "public", "i18n"
 default_build_files_path = path.join project_root, ".meteor", "local", "tap-i18n"
-default_browser_path = "/tap-i18n"
+default_browser_path = globals.default_browser_path
 projectTapI18nSchema =
   new SimpleSchema
     languages_files_dir:
