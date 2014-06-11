@@ -286,10 +286,10 @@ To configure tap-i18n add the **project-tap.i18n** configuration file to your
     project-root/project-tap.i18n
     -----------------------------
     {
-        languages_files_dir: "i18n",
-        supported_languages: null,
-        build_files_path: ".meteor/local/tap-i18n",
-        browser_path: "/i18n"
+        "languages_files_dir": "i18n",
+        "supported_languages": null,
+        "build_files_path": ".meteor/local/tap-i18n",
+        "browser_path": "/i18n"
     }
 
 Options:
