@@ -12,7 +12,7 @@ dialects, count/context aware keys, and more.
 
 **Zero Redundancies:** The translations files of the project and all the
 packages used by it are unified to a single file per language - the unified
-languages file are getting load to the client only when they are needed. (1)
+languages file are getting load to the client only when they are needed.
 
 **Ready to scale:** Want the translations on a CDN, no problem, just specify
 the endpoint!
@@ -407,8 +407,8 @@ need to change them.
     package_dir/package-tap.i18n
     ----------------------------
     {
-        languages_files_dir: "i18n" // the path to your languages files
-                                    // directory relative to your package root
+        "languages_files_dir": "i18n" // the path to your languages files
+                                      // directory relative to your package root
     }
 
 **Important:** You must set this file in your package root.
