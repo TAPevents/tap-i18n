@@ -309,21 +309,22 @@ Example for languages files:
   variables, plural form, etc.).
 
 ### Enabling tap-i18n
+```javascript
+if (Meteor.isClient) {
+  Meteor.startup(function () {
+    Session.set("showLoadingIndicator", true);
 
-    if (Meteor.isClient) {
-      Meteor.startup(function () {
-        Session.set("showLoadingIndicator", true);
-    
-        TAPi18n.setLanguage(getUserLanguage())
-          .done(function () {
-            Session.set("showLoadingIndicator", false);
-          })
-          .fail(function (error_message) {
-            // Handle the situation
-            console.log(error_message);
-          });
+    TAPi18n.setLanguage(getUserLanguage())
+      .done(function () {
+        Session.set("showLoadingIndicator", false);
+      })
+      .fail(function (error_message) {
+        // Handle the situation
+        console.log(error_message);
       });
-    }
+  });
+}
+```
 
 * Read TAPi18n.setLanguage() documentation in the API section above.
 * If you won't set a language on startup your project will be served in the default language: English.
