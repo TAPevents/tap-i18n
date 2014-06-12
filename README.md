@@ -18,7 +18,7 @@ tap-i18n uses [i18next](http://i18next.com/) as its internationalization engine 
 **client/messages.html**
 
 ```handlebars
-<template "messages_today">
+<template name="messages_today">
   <p>{{_ "inbox_status" "Daniel" count=18}}</p>
 </template>
 ```
