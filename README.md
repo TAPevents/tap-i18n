@@ -39,7 +39,7 @@ Understanding the different perspectives of project and package developers, tap-
 
 ### Transparent Namespacing 
 
-You don't need to worry about other packages when you translate your project or package. Behind the scenese we automatically generate scoped namesapaces for you.
+You don't need to worry about domain prefixing or package conflicts when you translate your project or package. Behind the scenes we automatically generate scoped namesapaces for you.
 
 ### Ready to Scale
 
