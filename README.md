@@ -1,88 +1,70 @@
-# TAPi81n
-### Internationalization for Meteor
+# tap-i18n - Internationalization for Meteor
 
-XXX NOTE: use 'TAPi18n' throughout, including mrt & github (i think)
-
-**TAPi18n** is a smart package for Meteor that provides a comprehensive internationalization solution for project and package developers.
-
-## Main Features
+**tap-i18n** is a smart package for Meteor that provides a comprehensive internationalization solution for project and package developers.
 
 ### Readable Syntax
     
     <div class='btn'>{{_ "sign_up"}}</div>
 
-### Extensive translation tools using [i18next](http://i18next.com/)
+### Advanced i18n features
+
+Uses [i18next](http://i18next.com/) as its i18n engine and exposes all its capabilities to the Meteor's templates - variables, dialects, count/context aware keys, and more.
 
 **client/messages.html**
 
     <template "messages_today">
-      <p>{{_ "inbox_status" 18}}</p>
+      <p>{{_ "inbox_status" "Daniel" count=18}}</p>
     </template>
 
 **i18n/en.i18n.json**
 
     { 
-    	"inbox_status": "You have received %s new message today.",
-        "inbox_status_plural": "You have received %s new messages today," 
+    	"inbox_status": "Hey, %s! You have received %s new message today.",
+        "inbox_status_plural": "Hey, %s! You have received %s new messages today," 
 	}
-    
+	
+See more examples below.
 
-### Optimised Transport, Ready to Scale
+### Ready to Scale
 
-
+* The project's translations files are unified to a single file per language
+* On-demand: translations loaded only when they are needed
 * 3rd Party CDN Support
-* Easily Cached JSON responses
-* Selective &  efficient data serving
+* JSON delivered responses
 
+### Transparent namespacing
+
+You don't need to worry about other packages when you translate your project or package. Behind the scenese we automatically generate scoped namesapaces for you.
 
 ## Quickstart for Project Developers
 
-You need to enable TAPi18n if you wish to internationalize your project or to be able to configure other packages that use TAPi18n.
+You need to enable tap-i18n if you wish to internationalize your project or to be able to configure other packages that use tap-i18n.
 
-Install TAPi18n using meteorite in your project's root directory
+**Step 1:** Install tap-i18n using meteorite in your project's root directory:
 
-	$ mrt add TAPi18n
+	$ mrt add tap-i18n
 	
-Add translation helpers to your markup
+**Step 2:** Add translation helpers to your markup:
 
 **\*.html**
 
 	<div>{{_ 'hello'}}</div>
 
-Define translations in JSON format
+**Step 3:** Define translations in JSON format under the /i18n folder in your project's root:
 	
-**i18n/xx.i18n.json** *(xx is a country code)*
+**i18n/en.i18n.json**
 
 	{ 'hello': 'Hey there' }
 
-Switch language with the selector template
+**i18n/fr.i18n.json**
 
-**\*.html**
+	{ 'hello': 'Bonjour' }
 
-    {{> i18n_selector}}
+# Documentation & Examples
 
-Set default language on the client
+## JS API Overview
 
-	Meteor.startup ->
-		TAPi18n.setLanguage 'en'
-
-
-If you want to restrict your project to specific languages, add the following JSON to project-tap.i18n in your project's root:
-
-**project-tap.i18n**
-
-	{ "supported_languages": ['en','cn','es'] }
-
-## API
-
-### Template Helper
-
-Within your HTML templates, use the `_` (underscore) helper
-
-	{{_ 'text_to_translate', 'data'}}
-
-
-### App Helpers
+For more information, read the complete documentation below.
 
 #### Set the language
 
@@ -94,7 +76,7 @@ Reactively updates the client's current language. Returns a jQuery deferred obje
 	
 	TAPi18n.getLanugage()
 
-Returns the language tag of the client's translation language or null if TAPi18n is not enabled in the project level.
+Returns the tag of the client's current language.
 
 #### Get a translation
 
@@ -102,28 +84,7 @@ Returns the language tag of the client's translation language or null if TAPi18n
 
 Translates key to the current client's language.
 
-### Country Code Forrmat
-
-TAPi81n supports the XXX country code format
-
-* `en` Base English
-* `pt` Base Language
-* `bt-BR` Language Dialogue (if specified)
-
-
-
-# Documentation & Examples
-
-
-tap-i18n can be used to internationalize projects and packages, but its
-behavior is determined by whether or not it's installed on the project level.
-We call these two work modes: *enabled* and *disabled*.
-
-When tap-i18n is disabled we don't unify the languages files that the packages
-being used by the project uses, and serve all the packages in the fallback
-language (English)
-
-## The TAPi18n Handlebars helper
+## The tap-i18n Handlebars helper
 
 To use tap-i18n to internationalize your templates you can use the \_ helper
 that we set on the project's templates and on packages' templates for packages
@@ -278,8 +239,7 @@ Notes:
 * We currently support only one dialect level. e.g. nan-Hant-TW is not
   supported.
 * "en-US" is the dialect we use for the base English translations "en".
-* If tap-i18n is disabled packages the project uses will be served in English,
-  the fallback language.
+* If tap-i18n is not installed, packages will be served in English, the fallback language.
 
 ### Structure of Languages Files
 
@@ -312,7 +272,7 @@ Example for languages files:
 
 * To avoid translation bugs all the keys in your package must be translated to
   English ("en") which is the default language, and the fallback language when
-  tap-i18n is disabled or when we can't find a translation for a certain key.
+  tap-i18n is not installed or when it can't find a translation for a certain key.
 * In the above example there is no need to translate "sky" in en-GB which is the
   same in en. Remember that thanks to the Languages Tags and Translations
   Prioritization (see above) if a translation for a certain key is the same for a
@@ -324,7 +284,7 @@ Example for languages files:
   more advanced translations structures you can use in your JSONs files (Such as
   variables, plural form, etc.).
 
-### Enabling TAPi18n
+### Enabling tap-i18n
 
     if (Meteor.isClient) {
       Meteor.startup(function () {
@@ -345,9 +305,9 @@ Example for languages files:
 * If you won't set a language on startup your project will be served in the default language: English.
 * You probably want to show a loading indicator until the language is ready (as shown in the example), otherwise the templates in your projects will be in English until the language will be ready.
 
-### Configuring TAPi18n build process: 
+### Configuring tap-i18n build process
 
-To configure TAPi18n add the **project-tap.i18n** configuration file to your **project root** (the values below are the defaults):
+To configure tap-i18n add the **project-tap.i18n** configuration file to your **project root** (the values below are the defaults):
 
     project-root/project-tap.i18n
     -----------------------------
@@ -406,15 +366,15 @@ files to it, as follow:
 * Refer to the "Structure of Languages Files" section above to learn how to
   build your languages files.
 
-### Disabling tap-i18n:
+### Disabling tap-i18n
 
-**Step 1:** Remove TAPi18n method calls from your project.
+**Step 1:** Remove tap-i18n method calls from your project.
 
-**Step 2:** Remove TAPi18n package
+**Step 2:** Remove tap-i18n package
 
 	$ mrt remove tap-i18n
 
-### TAPi18n API:
+### tap-i18n API
 
 **TAPi18n.setLanguage(language\_tag) (Client)**
 
@@ -424,12 +384,12 @@ Returns a jQuery deferred object that resolves if the language load
 succeed and fails otherwise.
 
 Notes:
-  * language\_tag has to be a supported language.
+  * language\_tag has to be a supported Language.
   * jQuery deferred docs: [jQuery Deferred](http://api.jquery.com/jQuery.Deferred/)
 
 **TAPi18n.getLanguage() (Client)**
 
-Returns the language tag of the client's translation language or null if
+Returns the tag of the client's current language or null if
 tap-i18n is not enabled in the project level.
 
 If inside a reactive computation, invalidate the computation the next time the
@@ -452,11 +412,21 @@ decision made by the **package** developer, the control over the
 internationalization configurations are done by the **project** developer and
 are global to all the packages within the project.
 
-Therefore if you'll wish to use tap-i18n to internationalize your Meteor
+Therefore if you wish to use tap-i18n to internationalize your Meteor
 package your docs will have to refer projects developers that will use it to
 the "Usage - Project Developers" section above to enable internationalization.
 If the project developer won't enable tap-i18n your package will be served in
 the fallback language English.
+
+### tap-i18n Two Work Modes
+
+tap-i18n can be used to internationalize projects and packages, but its
+behavior is determined by whether or not it's installed on the project level.
+We call these two work modes: *enabled* and *disabled*.
+
+When tap-i18n is disabled we don't unify the languages files that the packages
+being used by the project uses, and serve all the packages in the fallback
+language (English)
 
 ### Setup tap-i18n
 
@@ -530,7 +500,7 @@ these files for changes to trigger rebuild, and (2) to have a mark in the
 package loading process in which we know all the templates of the package
 are loaded so we can register them with tap-i18n.
 
-### Package Level tap-i18n Functions:
+### Package Level tap-i18n Functions
 
 The following functions are added to your package namespace by tap-i18n:
 
@@ -554,7 +524,7 @@ startup automatically. You have to register only templates that you define
 dynamically after Meteor loads (otherwise the \_ helper will be linked to the
 project level keys).
 
-### Using tap-i18n in your package templates:
+### Using tap-i18n in your package templates
 
 See "The tap-i18n Handlebars helper" section above.
 
@@ -606,7 +576,7 @@ MIT
 
 ### Author
 
-xxx
+[Daniel Chcouri](http://theosp.github.io/)
 
 ### Contributors
 
