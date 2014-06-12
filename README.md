@@ -1,14 +1,17 @@
-# tap-i18n - Internationalization for Meteor
+# tap-i18n 
+### Internationalization for Meteor
 
-**tap-i18n** is a smart package for Meteor that provides a comprehensive internationalization solution for project and package developers.
+**tap-i18n** is a smart package for [Meteor](http://www.meteor.com) that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for project and package developers.
+
+## Key Features
 
 ### Readable Syntax
     
-    <div class='btn'>{{_ "sign_up"}}</div>
+    <div class="btn">{{_ "sign_up"}}</div>
 
-### Advanced i18n features
+### Advanced i18n
 
-Uses [i18next](http://i18next.com/) as its i18n engine and exposes all its capabilities to the Meteor's templates - variables, dialects, count/context aware keys, and more.
+tap-i18n uses [i18next](http://i18next.com/) as its internationalization engine and exposes all its capabilities to the Meteor's templates - variables, dialects, count/context aware keys, and more.
 
 **client/messages.html**
 
@@ -19,10 +22,10 @@ Uses [i18next](http://i18next.com/) as its i18n engine and exposes all its capab
 **i18n/en.i18n.json**
 
     { 
-    	"inbox_status": "Hey, %s! You have received %s new message today.",
-        "inbox_status_plural": "Hey, %s! You have received %s new messages today," 
-	}
-	
+      "inbox_status": "Hey, %s! You have received one new message today.",
+      "inbox_status_plural": "Hey, %s! You have received %s new messages today." 
+    }
+  
 See more examples below.
 
 ### Ready to Scale
@@ -36,29 +39,28 @@ See more examples below.
 
 You don't need to worry about other packages when you translate your project or package. Behind the scenese we automatically generate scoped namesapaces for you.
 
-## Quickstart for Project Developers
 
-You need to enable tap-i18n if you wish to internationalize your project or to be able to configure other packages that use tap-i18n.
+## Quickstart for Project Developers
 
 **Step 1:** Install tap-i18n using meteorite in your project's root directory:
 
-	$ mrt add tap-i18n
-	
+    $ mrt add tap-i18n
+  
 **Step 2:** Add translation helpers to your markup:
 
 **\*.html**
 
-	<div>{{_ 'hello'}}</div>
+    <div>{{_ "hello"}}</div>
 
 **Step 3:** Define translations in JSON format under the /i18n folder in your project's root:
-	
+  
 **i18n/en.i18n.json**
 
-	{ 'hello': 'Hey there' }
+    { "hello": "Hey there" }
 
 **i18n/fr.i18n.json**
 
-	{ 'hello': 'Bonjour' }
+    { "hello": "Bonjour" }
 
 # Documentation & Examples
 
@@ -68,20 +70,20 @@ For more information, read the complete documentation below.
 
 #### Set the language
 
-	TAPi18n.setLanguage('xx') 
-	
+    TAPi18n.setLanguage("xx") 
+  
 Reactively updates the client's current language. Returns a jQuery deferred object that resolves if the language load succeed and fails otherwise.
 
 #### Get the language
-	
-	TAPi18n.getLanugage()
+  
+    TAPi18n.getLanugage()
 
 Returns the tag of the client's current language.
 
-#### Get a translation
+#### Translate
 
-	TAPi18n.__('key', 'options')
-
+    TAPi18n.__("key", "options")
+  
 Translates key to the current client's language.
 
 ## The tap-i18n Handlebars Helper
@@ -372,7 +374,7 @@ files to it, as follow:
 
 **Step 2:** Remove tap-i18n package
 
-	$ mrt remove tap-i18n
+    $ mrt remove tap-i18n
 
 ### TAPi18n API
 
@@ -468,7 +470,7 @@ Example for the default languages\_files\_dir path and its structure:
 Your package's package.js should be structured as follow:
 
     Package.on_use(function (api) {
-      api.use(['tap-i18n'], ['client', 'server']);
+      api.use(["tap-i18n"], ["client", "server"]);
     
       .
       .
@@ -476,7 +478,7 @@ Your package's package.js should be structured as follow:
     
       // You must load your package's package-tap.i18n before you load any
       // template
-      api.add_files("package-tap.i18n", ['client', 'server']);
+      api.add_files("package-tap.i18n", ["client", "server"]);
     
       // Templates loads (if any)
     
@@ -490,7 +492,7 @@ Your package's package.js should be structured as follow:
         "i18n/fr.i18n.json",
         "i18n/pt.i18n.json",
         "i18n/pt-br.i18n.json"
-      ], ['client']);
+      ], ["client"]);
     });
 
 Note: The fact that all the languages files are added in the package.js doesn't
