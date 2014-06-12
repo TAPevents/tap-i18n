@@ -84,7 +84,7 @@ Returns the tag of the client's current language.
 
 Translates key to the current client's language.
 
-## The tap-i18n Handlebars helper
+## The tap-i18n Handlebars Helper
 
 To use tap-i18n to internationalize your templates you can use the \_ helper
 that we set on the project's templates and on packages' templates for packages
@@ -305,7 +305,7 @@ Example for languages files:
 * If you won't set a language on startup your project will be served in the default language: English.
 * You probably want to show a loading indicator until the language is ready (as shown in the example), otherwise the templates in your projects will be in English until the language will be ready.
 
-### Configuring tap-i18n build process
+### Configuring tap-i18n Build Process
 
 To configure tap-i18n add the **project-tap.i18n** configuration file to your **project root** (the values below are the defaults):
 
@@ -342,7 +342,7 @@ Notes:
 
 **Important:** if you set this file it has to be in your package root.
 
-### Adding your project translation files
+### Adding your Project Translation Files
 
 To translate keys that you use in your project create the languages\_files\_dir
 directory (default: "i18n") in your project's root, and add your translation
@@ -374,7 +374,7 @@ files to it, as follow:
 
 	$ mrt remove tap-i18n
 
-### tap-i18n API
+### TAPi18n API
 
 **TAPi18n.setLanguage(language\_tag) (Client)**
 
