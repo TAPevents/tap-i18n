@@ -605,7 +605,7 @@ MIT
 
 ### Contributors
 
-[Daniel Chcouri](http://hitchcott.github.io/)
+[Chris Hitchcott](http://hitchcott.github.io/)
 
 ### Credits
 
