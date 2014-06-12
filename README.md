@@ -139,7 +139,7 @@ Assuming the client language is en.
 
     page.html:
     ----------
-    <template "x">
+    <template name="x">
         {{_ "click"}}
     </template>
 
@@ -157,7 +157,7 @@ Assuming the client language is en.
 
     page.html:
     ----------
-    <template "x">
+    <template name="x">
         {{_ "hello" "Daniel" "2014-05-22"}}
     </template>
 
@@ -175,7 +175,7 @@ Assuming the client language is en.
 
     page.html:
     ----------
-    <template "x">
+    <template name="x">
         {{_ "hello" "2014-05-22" user_name="Daniel"}}
     </template>
 
@@ -196,7 +196,7 @@ Assuming the client language is en.
 
     page.html:
     ----------
-    <template "x">
+    <template name="x">
         {{_ "inbox_status" "2014-05-22" username="Daniel" count=1}}
         {{_ "inbox_status" "2014-05-22" username="Chris" count=4}}
     </template>
@@ -221,7 +221,7 @@ Assuming the client language is en.
 
     page.html:
     ----------
-    <template "x">
+    <template name="x">
         {{_ "actors_count" count=1 }}
         {{_ "actors_count" count=1 context="male" }}
         {{_ "actors_count" count=1 context="female" }}
