@@ -6,8 +6,10 @@
 ## Key Features
 
 ### Readable Syntax
-    
-    <div class="btn">{{_ "sign_up"}}</div>
+
+```handlebars
+<div class="btn">{{_ "sign_up"}}</div>
+```
 
 ### Advanced i18n
 
@@ -15,17 +17,20 @@ tap-i18n uses [i18next](http://i18next.com/) as its internationalization engine 
 
 **client/messages.html**
 
-    <template "messages_today">
-      <p>{{_ "inbox_status" "Daniel" count=18}}</p>
-    </template>
+```handlebars
+<template "messages_today">
+  <p>{{_ "inbox_status" "Daniel" count=18}}</p>
+</template>
+```
 
 **i18n/en.i18n.json**
 
-    { 
-      "inbox_status": "Hey, %s! You have received one new message today.",
-      "inbox_status_plural": "Hey, %s! You have received %s new messages today." 
-    }
-  
+```json
+{ 
+  "inbox_status": "Hey, %s! You have received one new message today.",
+  "inbox_status_plural": "Hey, %s! You have received %s new messages today." 
+}
+```
 See more examples below.
 
 ### All Encompassing
@@ -48,7 +53,7 @@ You don't need to worry about other packages when you translate your project or 
 **Step 1:** Install tap-i18n using meteorite in your project's root directory:
 
     $ mrt add tap-i18n
-  
+
 **Step 2:** Add translation helpers to your markup:
 
 **\*.html**
