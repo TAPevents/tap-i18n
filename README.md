@@ -28,16 +28,19 @@ tap-i18n uses [i18next](http://i18next.com/) as its internationalization engine 
   
 See more examples below.
 
-### Ready to Scale
+### All Encompassing
 
-* The project's translations files are unified to a single file per language
-* On-demand: translations loaded only when they are needed
-* 3rd Party CDN Support
-* JSON delivered responses
+Understanding the different perspectives of project and package developers, tap-i18n provides specific tools for project and package developers, allowing for total coverage and seamless integration into the Meteor package ecosystem.
 
-### Transparent namespacing
+### Transparent Namespacing 
 
 You don't need to worry about other packages when you translate your project or package. Behind the scenese we automatically generate scoped namesapaces for you.
+
+### Ready to Scale
+
+* Translations are unified into a single JSON file per language that includes both package and project-level translations
+* On-demand: translations are loaded only when they are needed
+* 3rd Party CDN Support
 
 
 ## Quickstart for Project Developers
