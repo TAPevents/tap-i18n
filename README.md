@@ -605,7 +605,7 @@ MIT
 
 ### Contributors
 
-[Chris Hitchcott](http://hitchcott.github.io/)
+[Chris Hitchcott](https://github.com/hitchcott/)
 
 ### Credits
 
