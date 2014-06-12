@@ -117,6 +117,8 @@ _.extend TAPi18n,
   getLanguage: ->
     Session.get loaded_lang_session_key
 
+  getLanguages: -> TAPi18n.conf.language_names
+
 TAPi18n.__ = TAPi18n._getPackageI18nextProxy(globals.project_translations_domain)
 
 Meteor.startup ->

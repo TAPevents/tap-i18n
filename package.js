@@ -33,6 +33,7 @@ Package._transitional_registerBuildPlugin({
   sources: [
     'lib/globals.js',
     'lib/plugin/wrench.js',
+    'lib/plugin/language_names.js',
     'lib/plugin/compile-i18n.coffee'
   ]
 });
