@@ -52,23 +52,31 @@ You don't need to worry about other packages when you translate your project or 
 
 **Step 1:** Install tap-i18n using meteorite in your project's root directory:
 
-    $ mrt add tap-i18n
+```bash
+$ mrt add tap-i18n
+```
 
 **Step 2:** Add translation helpers to your markup:
 
 **\*.html**
 
-    <div>{{_ "hello"}}</div>
+```handlebars
+<div>{{_ "hello"}}</div>
+```
 
 **Step 3:** Define translations in JSON format under the /i18n folder in your project's root:
   
 **i18n/en.i18n.json**
 
-    { "hello": "Hey there" }
+```json
+{ "hello": "Hey there" }
+```
 
 **i18n/fr.i18n.json**
 
-    { "hello": "Bonjour" }
+```json
+{ "hello": "Bonjour" }
+```
 
 # Documentation & Examples
 
@@ -78,20 +86,26 @@ For more information, read the complete documentation below.
 
 #### Set the language
 
-    TAPi18n.setLanguage("xx") 
+```javascript
+TAPi18n.setLanguage("xx") 
+```
   
 Reactively updates the client's current language. Returns a jQuery deferred object that resolves if the language load succeed and fails otherwise.
 
 #### Get the language
-  
-    TAPi18n.getLanugage()
+
+```javascript
+TAPi18n.getLanugage()
+```
 
 Returns the tag of the client's current language.
 
 #### Translate
 
-    TAPi18n.__("key", "options")
-  
+```javascript
+TAPi18n.__("key", "options")
+```  
+
 Translates key to the current client's language.
 
 ## The tap-i18n Handlebars Helper
