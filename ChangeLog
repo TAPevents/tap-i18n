@@ -1,4 +1,9 @@
-2014.06.11, Version 0.3.0
+2014.06.12, Version 0.4.0
+
+* README restructured
+* Set lisence to: MIT
+
+2014.06.11, Version 0.3.0, ba328abf4e057b60c82cfb455d183fe1ff4605cd
 
 * Refresh the clients when .i18n.json files change
 * bugfix: build files if i18n.json files change for case we don't have
