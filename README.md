@@ -605,7 +605,7 @@ MIT
 
 ### Contributors
 
-Chris Hitchcott
+[Daniel Chcouri](http://hitchcott.github.io/)
 
 ### Credits
 
@@ -614,4 +614,4 @@ Chris Hitchcott
 * [simple-schema](https://github.com/aldeed/meteor-simple-schema)
 * [http-methods](https://github.com/CollectionFS/Meteor-http-methods)
 
-Sponsored by [TAPevents](tapevents.com)
+Sponsored by [TAPevents](http://tapevents.com)
