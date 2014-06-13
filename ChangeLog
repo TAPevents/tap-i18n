@@ -1,4 +1,9 @@
-2014.06.12, Version 0.4.0
+2014.06.13, Version 0.5.0
+
+* Unittests now work on mac
+* Introduce TAPi18n.getLanguages()
+
+2014.06.12, Version 0.4.0, f583aa179b559d447519c61dcdb019f05a0b10a3
 
 * README restructured
 * Set lisence to: MIT
