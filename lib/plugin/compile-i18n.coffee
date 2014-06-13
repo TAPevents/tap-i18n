@@ -430,18 +430,19 @@ buildFilesOnce = (compileStep) ->
       projectTapI18n.supported_languages ?= _.union([fallback_language], langs_with_unified_lang_files)
 
       # Map supported language tags with respective titles in english and native
-      projectTapI18n.language_names = _.map projectTapI18n.supported_languages, (code) ->
+      projectTapI18n.language_names = {}
+      _.each projectTapI18n.supported_languages, (tag_name) ->
         lang_obj =
-          tag: code
-          name: code
-          en: code
+          name: tag_name
+          en: tag_name
 
         # if the tag exists in our known language names
-        if language_names[code]?
-          lang_obj.en = language_names[code][0]
-          lang_obj.name = language_names[code][1]
+        # the language_names object is loaded from the file lib/plugin/language_names.js
+        if language_names[tag_name]?
+          lang_obj.en = language_names[tag_name][0]
+          lang_obj.name = language_names[tag_name][1]
 
-        lang_obj
+        projectTapI18n.language_names[tag_name] = lang_obj
 
     else
       log "tap-i18n is not enabled in the project level, don't build unified languages files"

@@ -82,23 +82,49 @@ $ mrt add tap-i18n
 
 ## JS API Overview
 
-For more information, read the complete documentation below.
+**Important:** The full JS API documentation is available below.
 
-#### Set the language
+#### Set the Language
 
 ```javascript
 TAPi18n.setLanguage("xx") 
 ```
   
-Reactively updates the client's current language. Returns a jQuery deferred object that resolves if the language load succeed and fails otherwise.
+Reactively updates the client's current language. Returns a jQuery deferred
+object that resolves if the language load succeed and fails otherwise.
 
-#### Get the language
+#### Get the Language
 
 ```javascript
 TAPi18n.getLanugage()
 ```
 
 Returns the tag of the client's current language.
+
+#### Get Available Languages
+
+```javascript
+TAPi18n.getLanugages()
+```
+
+Returns an object with all the languages your project is translated to in the
+following format:
+
+```javascript
+{
+  'en': {
+    'name':'English', // Local name
+    'en':'English'    // English name
+  },
+  'zh': {
+    'name':'中文'     // Local name
+    'en':'Chinese'    // English name
+  }
+  .
+  .
+  .
+}
+```
 
 #### Translate
 
@@ -419,6 +445,28 @@ tap-i18n is not enabled in the project level.
 
 If inside a reactive computation, invalidate the computation the next time the
 client language get changed (by TAPi18n.setLanguage)
+
+**TAPi18n.getLanguages() (Client)**
+
+Returns an object with all the languages the project or one of the packages it uses are translated to.
+
+The returned object is in the following format:
+
+```javascript
+{
+  'en': {
+    'name':'English', // Local name
+    'en':'English'    // English name
+  },
+  'zh': {
+    'name':'中文'     // Local name
+    'en':'Chinese'    // English name
+  }
+  .
+  .
+  .
+}
+```
 
 **TAPi18n.__(key, options) (Client)**
 
