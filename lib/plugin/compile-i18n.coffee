@@ -429,17 +429,19 @@ buildFilesOnce = (compileStep) ->
       # language) are supported 
       projectTapI18n.supported_languages ?= _.union([fallback_language], langs_with_unified_lang_files)
 
-      # Map map supported language tags with respective titles in english and native
+      # Map supported language tags with respective titles in english and native
       projectTapI18n.language_names = _.map projectTapI18n.supported_languages, (code) ->
-        # if the tag exists in our known language names
-        if language_names[code]?
-          tag: code
-          name: language_names[code][1]
-          en: language_names[code][0]
-        else
+        lang_obj =
           tag: code
           name: code
           en: code
+
+        # if the tag exists in our known language names
+        if language_names[code]?
+          lang_obj.en = language_names[code][0]
+          lang_obj.name = language_names[code][1]
+
+        lang_obj
 
     else
       log "tap-i18n is not enabled in the project level, don't build unified languages files"

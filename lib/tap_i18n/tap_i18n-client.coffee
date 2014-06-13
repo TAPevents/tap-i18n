@@ -114,8 +114,7 @@ _.extend TAPi18n,
 
       Session.set loaded_lang_session_key, lang_tag
 
-  getLanguage: ->
-    Session.get loaded_lang_session_key
+  getLanguage: -> Session.get loaded_lang_session_key
 
   getLanguages: -> TAPi18n.conf.language_names
 
