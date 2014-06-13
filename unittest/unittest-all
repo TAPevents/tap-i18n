@@ -2,6 +2,14 @@
 
 set -m
 
+# OS Check. Put here because here is where we download the precompiled
+# bundles that are arch specific.
+UNAME=$(uname)
+if [ "$UNAME" != "Linux" -a "$UNAME" != "Darwin" ] ; then
+    echo "Sorry, this OS is not supported."
+    exit 1
+fi
+
 # START get true PWD
 # (http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/179231)
 SOURCE="${BASH_SOURCE[0]}"
@@ -60,13 +68,17 @@ install_test_packages () {
     local test_name
 
     for test_name in "$@"; do
-        cp -r "unittest/utils/test-packages/test-pack-${test_name}" packages
+        cp -LR "unittest/utils/test-packages/test-pack-${test_name}" packages
         mv "packages/test-pack-${test_name}/package-tap.i18n." "packages/test-pack-${test_name}/package-tap.i18n"
     done
 }
 
 remove_package_js_test_section () {
-    sed -i '/Package.on_test/,/});/d' package.js
+    if [[ "$UNAME" == "Darwin" ]]; then
+        sed -i '' '/Package.on_test/,/});/d' package.js
+    elif [[ "$UNAME" == "Linux" ]]; then
+        sed -i '/Package.on_test/,/});/d' package.js
+    fi
 }
 
 total_tests=0
