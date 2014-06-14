@@ -567,12 +567,15 @@ Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
   buildFilesOnce compileStep
 
 Plugin.registerSourceHandler "i18n.json", (compileStep) ->
+  # Build the project files
+  # we build it for both the browser and server arch so the .18n.json files
+  # will trigger the buildFilesOnce for server in case there is no
+  # project-tap.i18n
+  buildFilesOnce compileStep
+
   # Build only for the browser arch
   if not compileStep.archMatches 'browser'
     return
-
-  # Build the project files
-  buildFilesOnce compileStep
 
   # Add the sha1 of the .i18n.json files as a comment to the build js, so
   # Meteor will know when it was changed and will refresh the clients.
