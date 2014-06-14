@@ -1,3 +1,8 @@
+2014.06.14, Version 0.5.1
+
+* Bugfix: Trigger buildFilesOnce for .i18n.json files for the os arch so
+  TAPi18n.conf will get set if there is no project-tap.i18n
+
 2014.06.13, Version 0.5.0
 
 * Unittests now work on mac
