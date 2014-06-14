@@ -1,4 +1,5 @@
 # tap-i18n 
+
 ### Internationalization for Meteor
 
 **tap-i18n** is a smart package for [Meteor](http://www.meteor.com) that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for project and package developers.
@@ -78,37 +79,70 @@ $ mrt add tap-i18n
 { "hello": "Bonjour" }
 ```
 
-# Documentation & Examples
+**Step 4:** Initiate the client language on startup
 
-## JS API Overview
+If you want the client to be served by a specific language on startup 
 
-**Important:** The full JS API documentation is available below.
-
-#### Set the Language
-
-```javascript
-TAPi18n.setLanguage("xx") 
-```
-  
-Reactively updates the client's current language. Returns a jQuery deferred
-object that resolves if the language load succeed and fails otherwise.
-
-#### Get the Language
+Assuming that you have a function getUserLanguage() that returns the language
+for tag for the current user.
 
 ```javascript
-TAPi18n.getLanugage()
+getUserLanguage = function () {
+  // Put here the logic for determining the user language
+
+  return "fr";
+};
+
+if (Meteor.isClient) {
+  Meteor.startup(function () {
+    Session.set("showLoadingIndicator", true);
+
+    TAPi18n.setLanguage(getUserLanguage())
+      .done(function () {
+        Session.set("showLoadingIndicator", false);
+      })
+      .fail(function (error_message) {
+        // Handle the situation
+        console.log(error_message);
+      });
+  });
+}
 ```
 
-Returns the tag of the client's current language.
+* If you won't set a language on startup your project will be served in the
+  default language: English
+* You probably want to show a loading indicator until the language is ready (as
+  shown in the example), otherwise the templates in your projects will be in
+  English until the language will be ready
 
-#### Get Available Languages
+## Documentation & Examples
 
-```javascript
-TAPi18n.getLanugages()
-```
+### TAPi18n API
 
-Returns an object with all the languages your project is translated to in the
-following format:
+**TAPi18n.setLanguage(language\_tag) (Client)**
+
+Sets the client's translation language.
+
+Returns a jQuery deferred object that resolves if the language load
+succeed and fails otherwise.
+
+Notes:
+  * language\_tag has to be a supported Language.
+  * jQuery deferred docs: [jQuery Deferred](http://api.jquery.com/jQuery.Deferred/)
+
+**TAPi18n.getLanguage() (Client)**
+
+Returns the tag of the client's current language or null if
+tap-i18n is not installed.
+
+If inside a reactive computation, invalidate the computation the next time the
+client language get changed (by TAPi18n.setLanguage)
+
+**TAPi18n.getLanguages() (Client)**
+
+Returns an object with all the languages the project or one of the packages it uses are translated to.
+
+The returned object is in the following format:
 
 ```javascript
 {
@@ -126,15 +160,17 @@ following format:
 }
 ```
 
-#### Translate
+**TAPi18n.__(key, options) (Client)**
 
-```javascript
-TAPi18n.__("key", "options")
-```  
+Translates key to the current client's language. If inside a reactive
+computation, invalidate the computation the next time the client language get
+changed (by TAPi18n.setLanguage).
 
-Translates key to the current client's language.
+The function is a proxy to the i18next.t() method. 
+Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
+to learn about its possible options.
 
-## The tap-i18n Handlebars Helper
+### The tap-i18n Handlebars Helper
 
 To use tap-i18n to internationalize your templates you can use the \_ helper
 that we set on the project's templates and on packages' templates for packages
@@ -148,8 +184,8 @@ template from which it is being used:
   tap-i18n we'll always look for the translation in that package's translation
   files.
 * If the helper is being used in one of the project's templates we'll look for
-  the translation in the project's translation files (tap-i18n has to be enabled
-  of course).
+  the translation in the project's translation files (tap-i18n has to be
+  installed of course).
 
 **Usage Examples:**
 
@@ -279,7 +315,7 @@ pick one of its dialects.
 Example: A developer can either refer to English in general using: "en" or to
 use the Great Britain dialect with "en-GB".
 
-**If tap-i18n is enabled** we'll attempt to look for a translation of a certain
+**If tap-i18n is install** we'll attempt to look for a translation of a certain
 string in the following order:
 * Language dialect, if specified ("pt-BR")
 * Base language ("pt")
@@ -334,27 +370,29 @@ Example for languages files:
   more advanced translations structures you can use in your JSONs files (Such as
   variables, plural form, etc.).
 
-### Enabling tap-i18n
-```javascript
-if (Meteor.isClient) {
-  Meteor.startup(function () {
-    Session.set("showLoadingIndicator", true);
+### Adding your Project Translation Files
 
-    TAPi18n.setLanguage(getUserLanguage())
-      .done(function () {
-        Session.set("showLoadingIndicator", false);
-      })
-      .fail(function (error_message) {
-        // Handle the situation
-        console.log(error_message);
-      });
-  });
-}
-```
+To translate keys that you use in your project create the languages\_files\_dir
+directory (default: "i18n") in your project's root, and add your translation
+files to it, as follow:
 
-* Read TAPi18n.setLanguage() documentation in the API section above.
-* If you won't set a language on startup your project will be served in the default language: English.
-* You probably want to show a loading indicator until the language is ready (as shown in the example), otherwise the templates in your projects will be in English until the language will be ready.
+    |--project-root
+    |----i18n # Should be the same path as the languages_files_dir option
+    |------en.i18n.json
+    |------fr.i18n.json
+    |------pt.i18n.json
+    |------pt-BR.i18n.json
+    .
+    .
+    .
+
+* If you only want to install tap-i18n to configure the internationalization of
+  packages you use in your project that use tap-i18n you don't have to create
+  the languages\_files\_dir.
+* If you want to put your languages files in another directory refer to the
+  "Configuring tap-i18n build process" section below.
+* Refer to the "Structure of Languages Files" section above to learn how to
+  build your languages files.
 
 ### Configuring tap-i18n Build Process
 
@@ -393,30 +431,6 @@ Notes:
 
 **Important:** if you set this file it has to be in your package root.
 
-### Adding your Project Translation Files
-
-To translate keys that you use in your project create the languages\_files\_dir
-directory (default: "i18n") in your project's root, and add your translation
-files to it, as follow:
-
-    |--project-root
-    |----i18n # Should be the same path as the languages_files_dir option
-    |------en.i18n.json
-    |------fr.i18n.json
-    |------pt.i18n.json
-    |------pt-BR.i18n.json
-    .
-    .
-    .
-
-* If you only want to enable tap-i18n to configure the internationalization of
-  packages you use in your project that use tap-i18n you don't have to create
-  the languages\_files\_dir.
-* If you want to put your languages files in another directory refer to the
-  "Configuring tap-i18n build process" section above.
-* Refer to the "Structure of Languages Files" section above to learn how to
-  build your languages files.
-
 ### Disabling tap-i18n
 
 **Step 1:** Remove tap-i18n method calls from your project.
@@ -424,59 +438,6 @@ files to it, as follow:
 **Step 2:** Remove tap-i18n package
 
     $ mrt remove tap-i18n
-
-### TAPi18n API
-
-**TAPi18n.setLanguage(language\_tag) (Client)**
-
-Sets the client's translation language.
-
-Returns a jQuery deferred object that resolves if the language load
-succeed and fails otherwise.
-
-Notes:
-  * language\_tag has to be a supported Language.
-  * jQuery deferred docs: [jQuery Deferred](http://api.jquery.com/jQuery.Deferred/)
-
-**TAPi18n.getLanguage() (Client)**
-
-Returns the tag of the client's current language or null if
-tap-i18n is not enabled in the project level.
-
-If inside a reactive computation, invalidate the computation the next time the
-client language get changed (by TAPi18n.setLanguage)
-
-**TAPi18n.getLanguages() (Client)**
-
-Returns an object with all the languages the project or one of the packages it uses are translated to.
-
-The returned object is in the following format:
-
-```javascript
-{
-  'en': {
-    'name':'English', // Local name
-    'en':'English'    // English name
-  },
-  'zh': {
-    'name':'中文'     // Local name
-    'en':'Chinese'    // English name
-  }
-  .
-  .
-  .
-}
-```
-
-**TAPi18n.__(key, options) (Client)**
-
-Translates key to the current client's language. If inside a reactive
-computation, invalidate the computation the next time the client language get
-changed (by TAPi18n.setLanguage).
-
-The function is a proxy to the i18next.t() method. 
-Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
-to learn about its possible options.
 
 ## Developing Packages
 
@@ -644,18 +605,19 @@ You can also test a specific constellation:
     # it. Break (ctrl+c) after Meteor build fails to run bash tests.
     $ ./unittest/unittest-package_with_no_base_lang_for_dialect 
 
-### Lisence
+## Lisence
+
 MIT
 
-### Author
+## Author
 
 [Daniel Chcouri](http://theosp.github.io/)
 
-### Contributors
+## Contributors
 
 [Chris Hitchcott](https://github.com/hitchcott/)
 
-### Credits
+## Credits
 
 * [i18next](http://i18next.com/)
 * [wrench-js](https://github.com/ryanmcgrath/wrench-js)
