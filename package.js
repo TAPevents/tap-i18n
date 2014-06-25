@@ -14,10 +14,10 @@ Package.on_use(function (api) {
 
   // load TAPi18n
   api.add_files('lib/globals.js', ['client', 'server']);
-  api.add_files('lib/tap_i18n/tap_i18n-common.coffee', 'server');
 
   // We use the bare option since we need TAPi18n in the package level and
   // coffee adds vars to all (so without bare all vars are in the file level)
+  api.add_files('lib/tap_i18n/tap_i18n-common.coffee', 'server');
   api.add_files('lib/tap_i18n/tap_i18n-common.coffee', 'client', {bare: true});
 
   api.add_files('lib/tap_i18n/tap_i18n-server.coffee', 'server');
