@@ -172,7 +172,7 @@ to learn about its possible options.
 
 ### The tap-i18n Handlebars Helpers
 
-## The \_  Helper
+### The \_  Helper
 
 To use tap-i18n to internationalize your templates you can use the \_ helper
 that we set on the project's templates and on packages' templates for packages
@@ -308,7 +308,7 @@ Assuming the client language is en.
 * The translation will get updated automatically after calls to
   TAPi18n.setLanguage().
 
-## More Handlebars helpers
+### More Handlebars helpers
 
 **{{languageTag}}:**
 
