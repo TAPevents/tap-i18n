@@ -1,3 +1,9 @@
+2014.06.26, Version 0.6.0
+
+* Introduce {{languageTag}}
+* README: add instuctions for deploying tap-i18n projects to *.meteor.com
+* tap-i18n now works in Meteor bundles
+
 2014.06.14, Version 0.5.1
 
 * Bugfix: Trigger buildFilesOnce for .i18n.json files for the os arch so
