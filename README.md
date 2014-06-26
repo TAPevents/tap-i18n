@@ -576,7 +576,19 @@ steps:
     $ tar -cvzf new-bundle.tar.gz bundle
     $ rm -ri bundle # -ri is used to avoid mistakes use -rf
 
+## Deploying Projects That Uses tap-i18n to \*.meteor.com
 
+If you wish to deploy your project to Meteor's cloud set your project-tap.i18n as
+follow:
+
+    project-tap.i18n:
+    -----------------
+    {
+        "build_files_path": "public/tap-i18n",
+        "browser_path": "/tap-i18n"
+    }
+
+and then call `meteor deploy` as usual.
 
 ## Unit Testing
 
