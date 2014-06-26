@@ -562,6 +562,22 @@ project level keys).
 
 See "The tap-i18n Handlebars helper" section above.
 
+## Deploying Projects That Uses tap-i18n with meteor bundle
+
+If you use `meteor bundle` to deploy your meteor project you'll have add the
+unified languages files to the bundle in order for it to work. follow these
+steps:
+
+    $ cd your-meteor-project
+    $ meteor bundle new-bundle.tar.gz
+    $ tar -xvzf new-bundle.tar.gz
+    $ rm new-bundle.tar.gz
+    $ cp -r .meteor/local/tap-i18n bundle
+    $ tar -cvzf new-bundle.tar.gz bundle
+    $ rm -ri bundle # -ri is used to avoid mistakes use -rf
+
+
+
 ## Unit Testing
 
 We have more than one unittest to test the different ways tap-i18n might be used in a
