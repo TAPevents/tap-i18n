@@ -170,7 +170,9 @@ The function is a proxy to the i18next.t() method.
 Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
 to learn about its possible options.
 
-### The tap-i18n Handlebars Helper
+### The tap-i18n Handlebars Helpers
+
+## The \_  Helper
 
 To use tap-i18n to internationalize your templates you can use the \_ helper
 that we set on the project's templates and on packages' templates for packages
@@ -305,6 +307,21 @@ Assuming the client language is en.
   to learn more about its possible options.
 * The translation will get updated automatically after calls to
   TAPi18n.setLanguage().
+
+## More Handlebars helpers
+
+**{{languageTag}}:**
+
+The {{languageTag}} helper calls TAPi18n.getLanguage().
+
+It's useful when you need to load assets depending on the current language, for
+example:
+
+```handlebars
+<template name="example">
+  <img src="welcome_{{languageTag}}.png">
+</template>
+```
 
 ### Languages Tags and Translations Prioritization
 

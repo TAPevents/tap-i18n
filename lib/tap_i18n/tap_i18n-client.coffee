@@ -79,26 +79,36 @@ _.extend TAPi18n,
 
     return dfd
 
-  _registerTemplateHelper: (package_name, template) ->
+  _registerHelpers: (package_name, template) ->
+    self = @
+
     tapI18nextProxy = @_getPackageI18nextProxy(package_name)
 
-    helper = (key, args...) ->
+    underscore_helper = (key, args...) ->
       options = (args.pop()).hash
       if not _.isEmpty(args)
         options.sprintf = args
 
       tapI18nextProxy(key, options)
 
+    # template specific helpers
     if package_name != globals.project_translations_domain
-      Template[template]._ = helper
-    else
-      UI.registerHelper "_", helper
+      # {{_ }}
+      Template[template]._ = underscore_helper
 
-  _getPackageRegisterTemplateHelperProxy: (package_name) ->
-    # A proxy to _registerTemplateHelper where the package_name is fixed to package_name
+    # global helpers
+    else
+      # {{_ }}
+      UI.registerHelper "_", underscore_helper
+
+      # {{languageTag}}
+      UI.registerHelper "languageTag", () -> self.getLanguage()
+
+  _getRegisterHelpersProxy: (package_name) ->
+    # A proxy to _registerHelpers where the package_name is fixed to package_name
     self = @
     (template) ->
-      self._registerTemplateHelper(package_name, template)
+      self._registerHelpers(package_name, template)
 
   _getPackageI18nextProxy: (package_name) ->
     # A proxy to TAPi18next.t where the namespace is preset to the package's
@@ -124,4 +134,4 @@ Meteor.startup ->
   # If tap-i18n is enabled for that project register the project domain
   # template helper
   if TAPi18n.conf?
-    TAPi18n._registerTemplateHelper globals.project_translations_domain
+    TAPi18n._registerHelpers globals.project_translations_domain

@@ -536,7 +536,7 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
 
     // add the package's proxies to tap-i18next
     __ = TAPi18n._getPackageI18nextProxy("#{package_name}");
-    registerTemplate = TAPi18n._getPackageRegisterTemplateHelperProxy("#{package_name}");
+    registerTemplate = TAPi18n._getRegisterHelpersProxy("#{package_name}");
 
     // Record list of templates prior to package load
     _ = Package.underscore._;

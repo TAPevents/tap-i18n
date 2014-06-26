@@ -128,6 +128,8 @@ Package.on_test(function (api) {
 
   api.use(['test-pack-a', 'test-pack-b'], ['client', 'server']);
 
+  api.add_files('unittest/utils/project-templates/basic.html', ['client']);
+
   $test_specific
 
   api.add_files('unittest/tests/common.coffee', ['client']);
@@ -271,8 +273,6 @@ test_enabled_project_level_translations () {
     package_js_on_test="$(cat <<EOF
     api.use('tap-i18n', ['client', 'server']);
 
-    api.add_files('unittest/utils/project-templates/basic.html', ['client']);
-
     api.add_files([
       'i18n/en.i18n.json',
       'i18n/cc.i18n.json',
@@ -302,8 +302,6 @@ test_enabled_project_level_translations_custom_translations_dir () {
 
     package_js_on_test="$(cat <<EOF
     api.use('tap-i18n', ['client', 'server']);
-
-    api.add_files('unittest/utils/project-templates/basic.html', ['client']);
 
     api.add_files('project-tap.i18n', ['client', 'server']);
 
