@@ -558,7 +558,7 @@ startup automatically. You have to register only templates that you define
 dynamically after Meteor loads (otherwise the \_ helper will be linked to the
 project level keys).
 
-### Using tap-i18n in your package templates
+### Using tap-i18n in Your Package Templates
 
 See "The tap-i18n Handlebars helper" section above.
 
