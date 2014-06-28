@@ -650,7 +650,7 @@ You can also test a specific constellation:
     # it. Break (ctrl+c) after Meteor build fails to run bash tests.
     $ ./unittest/unittest-package_with_no_base_lang_for_dialect 
 
-## Lisence
+## License
 
 MIT
 
