@@ -53,11 +53,9 @@ Tinytest.addAsync 'Enabled tap-i18n - {{languageTag}}', (test, onComplete) ->
 Tinytest.add 'Enabled tap-i18n - getLanguages method return correct data for all supported languages', (test) ->
   languages_info = TAPi18n.getLanguages()
   _.each languages_info, (info, lang_tag) ->
-    console.log info, lang_tag
     if lang_tag != "en"
       test.equal(info.name, lang_tag)
       test.equal(info.en, lang_tag)
     else
       test.equal(info.name, "English")
       test.equal(info.en, "English")
-

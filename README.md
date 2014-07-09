@@ -668,5 +668,3 @@ MIT
 * [wrench-js](https://github.com/ryanmcgrath/wrench-js)
 * [simple-schema](https://github.com/aldeed/meteor-simple-schema)
 * [http-methods](https://github.com/CollectionFS/Meteor-http-methods)
-
-Sponsored by [TAPevents](http://tapevents.com)
