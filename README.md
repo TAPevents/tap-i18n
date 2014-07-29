@@ -616,11 +616,12 @@ certain project, to test all of them run:
 
 The unittest will be available on: [http://localhost:3000](http://localhost:3000) .
 
-Every time you'll break the run of the above command (every time you'll
-press ctrl+c) the next test constellation will run, refresh your browser to load
-the new constellation.
+We call the different ways tap-i18n might be used *environments*. Each time
+you'll break the run of the above command (by pressing ctrl+c) the test for
+another environment will run, refresh your browser to load the test for the new
+environment.
 
-You can also test a specific constellation:
+You can also test a specific environment:
 
     # tap-i18n is disabled in the project level
     $ ./unittest/unittest-disabled 
