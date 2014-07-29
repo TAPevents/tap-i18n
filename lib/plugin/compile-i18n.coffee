@@ -210,29 +210,109 @@ loadPackageTapMap = (package_tap_i18n_file_path) ->
 
   return map
 
-buildUnifiedLangFiles = (compileStep=null, lang_files_path=default_build_files_path, supported_languages=null, project_translations_dir=null) ->
-  # Build the unified languages files on lang_files_path
+getUnifiedLangFiles = (supported_languages=null, project_translations_dir=null) ->
+  # Generate the unified languages files
   #
-  # Returns an object whose keys are all the supported languages (if
-  # lang_files_path is null all the languages we find translation files to
-  # either in the project or in the packages are considered supported). The
-  # value for each key is *true* if we generated a language file for that
-  # language *false* otherwise. (language file is not generated if the language
-  # is supported but there are no files for it).
+  # Returns an object whose keys are all the supported languages and their
+  # translations.
   #
   # Attributes:
-  # lang_files_path (string): the path we build the unified languages files to
   # supported_languages (array or null): Array of languages tags to which
-  # unified files will be built. If null, a language file will be built for any
-  # language the project or one of its packages was translated to.
+  # unified files will be generated. If null, a language file will be generated
+  # for any language the project or one of its packages was translated to.
+  # project_translations_dir: The project_translations_dir.
 
-  log "Building unified files directory: #{lang_files_path}"
+  log "Generating unified languages files"
+
+  packageTapI18nMaps =
+    (wrench.readdirSyncRecursive project_root, (x) -> /package-tap.i18n$/.test(x)).map (x) -> loadPackageTapMap(x)
+
+  if project_translations_dir?
+    if not fs.existsSync project_translations_dir
+      log "Couldn't find project translations directory - no project level translations"
+    else
+      project_lang_files_dir_map = mapLangFilesDir project_translations_dir
+      packageTapI18nMaps.push {
+          name: globals.project_translations_domain
+          lang_files_paths: project_lang_files_dir_map
+      }
+
+  unified_languages_files = {}
+
+  _.each packageTapI18nMaps, (package_map) ->
+    languages_files = package_map.lang_files_paths
+
+    # Make sure package has a translation file for the fallback language
+    if not (fallback_language of languages_files)
+      throw new Meteor.Error 500, "Package #{package_map.name} has no language file for the fallback language (#{fallback_language})"
+
+    # Make sure we have the base language translations file for every dialect
+    dialects = _.filter _.keys(languages_files), (lang) ->
+      "-" in lang
+    _.each dialects, (dialect) ->
+      base_language = (dialect.split "-")[0]
+      if not (base_language of languages_files)
+        throw new Meteor.Error 500, "Package #{package_map.name} has no language file for the base language (#{base_language}) of the dialect (#{dialect})"
+
+    if supported_languages
+      # pick from languages_files only the supported languages
+      languages_files = _.pick(languages_files, _.intersection(_.keys(languages_files), supported_languages))
+
+    log "Gathering #{package_map.name} languages files"
+    _.each languages_files, (file_path, lang)->
+      # Skip the fallback language since it is built into the project there is
+      # no need to build a unified file for it
+      if lang == fallback_language
+        return
+
+      # Make sure the language JSON is valid
+      try
+        lang_json = JSON.parse(fs.readFileSync(file_path))
+      catch error
+        throw new Meteor.Error 500, "Failed to build unified languages files. Invalid JSON in language file: `#{file_path}' of package #{package_map.name}",
+          {file_path: file_path, error: error}
+
+      if not _.isObject lang_json
+        throw new Meteor.Error 500, "Failed to build unified languages files. The JSON in language file: `#{file_path}' of package #{package_map.name} is not an object.",
+          {file_path: file_path}
+
+      # if we haven't created a unified file for this file's language, create one
+      if not (lang of unified_languages_files)
+        unified_languages_files[lang] = "{\"#{package_map.name}\": "
+      else # if there is already a unified file for this language
+        unified_languages_files[lang] += ",\"#{package_map.name}\": "
+
+      # write the package translations to the unified JSON
+      unified_languages_files[lang] += JSON.stringify lang_json
+
+  for lang of unified_languages_files
+    unified_languages_files[lang] += "}"
+
+  # Add empty JSONs for supported languages we find no translation files for
+  unified_languages_files = _.extend(
+    _.object(_.map(supported_languages, (lang) -> [lang, "{}"])),
+    unified_languages_files
+  )
+
+  log "Done generating unified languages files"
+  return unified_languages_files
+
+addUnifiedFilesAsFsFiles = (unified_languages_files, lang_files_path=default_build_files_path) ->
+  log "Writing unified files directory to FS: #{lang_files_path}"
 
   lang_files_path = removeFileTrailingSeparator lang_files_path
   lang_files_backup_path = "#{lang_files_path}~"
 
   getLangFilePath = (lang) ->
     lang_files_path + path.sep + lang + ".json"
+
+  # A rollback procedure to use on failure
+  rollback = ->
+    log "Build failed, rolling back `#{lang_files_path}'"
+    wrench.rmdirSyncRecursive lang_files_path
+    try
+      fs.renameSync lang_files_backup_path, lang_files_path
+    catch error
 
   # Remove old backup
   try
@@ -252,116 +332,16 @@ buildUnifiedLangFiles = (compileStep=null, lang_files_path=default_build_files_p
   try
     wrench.mkdirSyncRecursive lang_files_path, 0o744 # 0744 - owner: rwx, rest: r
   catch error
+    rollback()
+
     throw new Meteor.Error 500, "Can't create folder `#{lang_files_path}'",
       {error: error}
 
-  # A rollback procedure to use on failure
-  rollback = ->
-    log "Build failed, rolling back `#{lang_files_path}'"
-    wrench.rmdirSyncRecursive lang_files_path
-    try
-      fs.renameSync lang_files_backup_path, lang_files_path
-    catch error
-
-  packageTapI18nMaps =
-    (wrench.readdirSyncRecursive project_root, (x) -> /package-tap.i18n$/.test(x)).map (x) -> loadPackageTapMap(x)
-
-  if project_translations_dir?
-    if not fs.existsSync project_translations_dir
-      log "Couldn't find project translations directory - no project level translations"
-    else
-      project_lang_files_dir_map = mapLangFilesDir project_translations_dir
-      packageTapI18nMaps.push {
-          name: globals.project_translations_domain
-          lang_files_paths: project_lang_files_dir_map
-      }
-
-      # If compileStep is defined and the base language was translated in the
-      # project level, add it to the bundle
-      if compileStep? and fallback_language of project_lang_files_dir_map
-        fallback_language_file = project_lang_files_dir_map[fallback_language]
-
-        try
-          lang_json = JSON.parse(fs.readFileSync(fallback_language_file))
-        catch error
-          throw new Meteor.Error 500, "Project fallback language file (#{fallback_language}) has an invalid JSON: `#{fallback_language_file}'",
-            {file_path: fallback_language_file, error: error}
-
-        if not _.isObject lang_json
-          throw new Meteor.Error 500, "Project fallback language file (#{fallback_language}) should contain a JSON object: `#{fallback_language_file}'",
-            {file_path: fallback_language_file}
-
-        project_fallback_lang_translation_js_file =
-          """
-          // add the project translations for the fallback language
-          TAPi18next.addResourceBundle('#{fallback_language}', '#{globals.project_translations_domain}', #{JSON.stringify lang_json});
-
-          """
-
-        compileStep.addJavaScript
-          path: "project-fallback-lang-translations.js",
-          sourcePath: compileStep.inputPath,
-          data: project_fallback_lang_translation_js_file,
-          bare: false
-
-  unified_languages_files = {}
-
-  _.each packageTapI18nMaps, (package_map) ->
-    languages_files = package_map.lang_files_paths
-
-    # Make sure package has a translation file for the fallback language
-    if not (fallback_language of languages_files)
-      rollback()
-      throw new Meteor.Error 500, "Package #{package_map.name} has no language file for the fallback language (#{fallback_language})"
-
-    # Make sure we have the base language translations file for every dialect
-    dialects = _.filter _.keys(languages_files), (lang) ->
-      "-" in lang
-    _.each dialects, (dialect) ->
-      base_language = (dialect.split "-")[0]
-      if not (base_language of languages_files)
-        rollback()
-        throw new Meteor.Error 500, "Package #{package_map.name} has no language file for the base language (#{base_language}) of the dialect (#{dialect})"
-
-    if supported_languages
-      # pick from languages_files only the supported languages
-      languages_files = _.pick(languages_files, _.intersection(_.keys(languages_files), supported_languages))
-
-    log "Gathering #{package_map.name} languages files"
-    _.each languages_files, (file_path, lang)->
-      # Skip the fallback language since it is built into the project there is
-      # no need to build a unified file for it
-      if lang == fallback_language
-        return
-
-      # Make sure the language JSON is valid
-      try
-        lang_json = JSON.parse(fs.readFileSync(file_path))
-      catch error
-        rollback()
-
-        throw new Meteor.Error 500, "Failed to build unified languages files. Invalid JSON in language file: `#{file_path}' of package #{package_map.name}",
-          {file_path: file_path, error: error}
-
-      if not _.isObject lang_json
-        rollback()
-
-        throw new Meteor.Error 500, "Failed to build unified languages files. The JSON in language file: `#{file_path}' of package #{package_map.name} is not an object.",
-          {file_path: file_path}
-
-      # if we haven't created a unified file for this file's language, create one
-      if not (lang of unified_languages_files)
-        unified_languages_files[lang] = "{\"#{package_map.name}\": "
-      else # if there is already a unified file for this language
-        unified_languages_files[lang] += ",\"#{package_map.name}\": "
-
-      # write the package translations to the unified JSON
-      unified_languages_files[lang] += JSON.stringify lang_json
-
   for lang of unified_languages_files
-    lang_file_path = getLangFilePath lang
+    if unified_languages_files[lang] == "{}"
+      continue
 
-    unified_languages_files[lang] += "}"
+    lang_file_path = getLangFilePath lang
 
     try
       fs.writeFileSync lang_file_path, unified_languages_files[lang], {mode: 0o644}
@@ -371,52 +351,32 @@ buildUnifiedLangFiles = (compileStep=null, lang_files_path=default_build_files_p
       throw new Meteor.Error 500, "Failed to build unified languages files. Failed to create a file: #{lang_file_path}",
         {lang_file_path: lang_file_path, error: error}
 
-  # Map the unified languages files
-  has_unified_languages_files = _.extend(
-    _.object(_.map(supported_languages, (lang) -> [lang, false])),
-    _.object(_.map(unified_languages_files, (content, lang) -> [lang, true]))
-  )
-
-  log "Done building unified languages files"
-
-  return has_unified_languages_files
-
 build_files_once_log = {}
 build_files_once_arch_log = {}
 projectTapI18n = null
+unified_languages_files = {}
 buildFilesOnce = (compileStep) ->
-  # Builds the unified languages files and the project configuration (for each
-  # arch) once per build cycle
+  # Builds the unified languages files and the project configuration once
+  # per build cycle
 
-  # To tell whether or not we are in a new build cycle we assume that if the
-  # same file triggered a call to that function for the same architecture we
-  # are in a new cycle
-  current_step_file = "#{compileStep._fullInputPath}::#{compileStep.arch}"
-
-  # Once per build cycle - regardless of arch
-  #
-  # If the build_files_once_log is empty or if the current_step_file is already
-  # in the log - we are in a new build cycle
-  if _.isEmpty(build_files_once_log) or (current_step_file of build_files_once_log)
-    # Init logs
-    build_files_once_log = {}
-    build_files_once_arch_log = {}
-
+  oncePerCycle = () ->
     # Reload the project configuration
     projectTapI18n = loadProjectConf()
 
-    # Build the unified languages files only if tap-i18n is enabled in the
-    # project level
+    # Generate and build the unified languages files only
+    # if tap-i18n is enabled in the project level
     if projectTapI18n?
-      langs_with_unified_lang_files =
-        buildUnifiedLangFiles compileStep, projectTapI18n.build_files_path, projectTapI18n.supported_languages, projectTapI18n.languages_files_dir
+      unified_languages_files =
+        getUnifiedLangFiles projectTapI18n.supported_languages, projectTapI18n.languages_files_dir
+
+      addUnifiedFilesAsFsFiles unified_languages_files, projectTapI18n.build_files_path
 
       # If the supported languages for that project haven't been specified - all
       # the languages we have a unified language file for (and the fallback
       # language) are supported 
-      projectTapI18n.supported_languages ?= _.union([fallback_language], _.keys langs_with_unified_lang_files)
+      projectTapI18n.supported_languages ?= _.union([fallback_language], _.keys unified_languages_files)
 
-      projectTapI18n.unified_lang_files_map = langs_with_unified_lang_files
+      projectTapI18n.unified_lang_files_map = _.object _.map(unified_languages_files, (content, lang) -> [lang, if content != "{}" then true else false])
 
       # Map supported language tags with respective titles in english and native
       projectTapI18n.language_names = {}
@@ -432,12 +392,10 @@ buildFilesOnce = (compileStep) ->
           lang_obj.name = language_names[tag_name][1]
 
         projectTapI18n.language_names[tag_name] = lang_obj
-
     else
       log "tap-i18n is not enabled in the project level, don't build unified languages files"
 
-  # Once per ARCH per build cycle
-  if not (compileStep.arch of build_files_once_arch_log)
+  oncePerCyclePerArch = (arch) ->
     if projectTapI18n?
       # If tap-i18n is enabled, add the project configurations to the TAPi18n
       # object if we haven't done that for the current arch already. (remember:
@@ -454,7 +412,66 @@ buildFilesOnce = (compileStep) ->
         data: project_i18n_js_file,
         bare: false
 
+      # For the browser arch add the base language file translation of the project
+      # to the bundle (if tap-i18n is enabled in the project level and the file exists)
+      if arch == "browser"
+        project_translations_dir = projectTapI18n.languages_files_dir
+
+        if project_translations_dir?
+          if not fs.existsSync project_translations_dir
+            log "Couldn't find project translations directory - no project level translations"
+          else
+            project_lang_files_dir_map = mapLangFilesDir project_translations_dir
+            if project_translations_dir?
+              if fs.existsSync project_translations_dir
+                # If the base language was translated in the project level, add it to the bundle
+                if fallback_language of project_lang_files_dir_map
+                  fallback_language_file = project_lang_files_dir_map[fallback_language]
+
+                  try
+                    lang_json = JSON.parse(fs.readFileSync(fallback_language_file))
+                  catch error
+                    throw new Meteor.Error 500, "Project fallback language file (#{fallback_language}) has an invalid JSON: `#{fallback_language_file}'",
+                      {file_path: fallback_language_file, error: error}
+
+                  if not _.isObject lang_json
+                    throw new Meteor.Error 500, "Project fallback language file (#{fallback_language}) should contain a JSON object: `#{fallback_language_file}'",
+                      {file_path: fallback_language_file}
+
+                  project_fallback_lang_translation_js_file =
+                    """
+                    // add the project translations for the fallback language
+                    TAPi18next.addResourceBundle('#{fallback_language}', '#{globals.project_translations_domain}', #{JSON.stringify lang_json});
+
+                    """
+
+                  compileStep.addJavaScript
+                    path: "project-fallback-lang-translations.js",
+                    sourcePath: compileStep.inputPath,
+                    data: project_fallback_lang_translation_js_file,
+                    bare: false
+
+  # To tell whether or not we are in a new build cycle we assume that if the
+  # same file triggered a call to that function for the same architecture we
+  # are in a new cycle
+  current_step_file = "#{compileStep._fullInputPath}::#{compileStep.arch}"
+
+  # Once per build cycle - regardless of arch
+  #
+  # If the build_files_once_log is empty or if the current_step_file is already
+  # in the log - we are in a new build cycle
+  if _.isEmpty(build_files_once_log) or (current_step_file of build_files_once_log)
+    # Init logs
+    build_files_once_log = {}
+    build_files_once_arch_log = {}
+
+    oncePerCycle()
+
+  # Once per ARCH per build cycle
+  if not (compileStep.arch of build_files_once_arch_log)
     build_files_once_arch_log[compileStep.arch] = true
+
+    oncePerCyclePerArch(compileStep.arch)
 
   # Same build cycle - log file
   build_files_once_log[current_step_file] = true
