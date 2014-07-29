@@ -483,120 +483,135 @@ current_package_name = null
 Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   log "package-tap.i18n file found #{compileStep._fullInputPath}: building"
 
-  # Remember that whenever any of the package's i18n.json files will change
-  # Meteor will build the entire package so this handler will be called
-  buildFilesOnce compileStep
-
-  # From here on, keep building only the browser arch
-  if not compileStep.archMatches 'browser'
-    return
-
-  # We make English an integral part of the package build.
-  # We do this regardless of whether or not the containing project enables
-  # tap-i18n since the same Meteor package copy might be shared by more than
-  # one Meteor projects (meteorite for instance stores all the packages in a
-  # centralized directory and use symlinks to add them to the project's
-  # packages dir).
-  # That of course means the package build must be agnostic to the containing
-  # project configuration.
-  package_map = loadPackageTapMap compileStep._fullInputPath
-  package_name = package_map.name
-  lang_files_paths = package_map.lang_files_paths
-
-  if not (fallback_language of lang_files_paths)
-    throw new Meteor.Error 500, "Package #{package_name} has no language file for the fallback language (#{fallback_language})"
-
-  fallback_language_file = lang_files_paths[fallback_language]
-
   try
-    lang_json = JSON.parse(fs.readFileSync(fallback_language_file))
-  catch error
-    throw new Meteor.Error 500, "Package #{package_name} fallback language file (#{fallback_language}) has an invalid JSON: `#{fallback_language_file}'",
-      {file_path: fallback_language_file, error: error}
+    # Remember that whenever any of the package's i18n.json files will change
+    # Meteor will build the entire package so this handler will be called
+    buildFilesOnce compileStep
 
-  if not _.isObject lang_json
-    throw new Meteor.Error 500, "Package #{package_name} fallback language file (#{fallback_language}) should contain a JSON object: `#{fallback_language_file}'",
-      {file_path: fallback_language_file}
+    # From here on, keep building only the browser arch
+    if not compileStep.archMatches 'browser'
+      return
 
-  package_i18n_js_file =
-    """
-    // add the package translations for the fallback language
-    TAPi18next.addResourceBundle('#{fallback_language}', '#{package_name}', #{JSON.stringify lang_json});
+    # We make English an integral part of the package build.
+    # We do this regardless of whether or not the containing project enables
+    # tap-i18n since the same Meteor package copy might be shared by more than
+    # one Meteor projects (meteorite for instance stores all the packages in a
+    # centralized directory and use symlinks to add them to the project's
+    # packages dir).
+    # That of course means the package build must be agnostic to the containing
+    # project configuration.
+    package_map = loadPackageTapMap compileStep._fullInputPath
+    package_name = package_map.name
+    lang_files_paths = package_map.lang_files_paths
 
-    // add the package's proxies to tap-i18next
-    __ = TAPi18n._getPackageI18nextProxy("#{package_name}");
-    registerTemplate = TAPi18n._getRegisterHelpersProxy("#{package_name}");
+    if not (fallback_language of lang_files_paths)
+      throw new Meteor.Error 500, "Package #{package_name} has no language file for the fallback language (#{fallback_language})"
 
-    // Record list of templates prior to package load
-    _ = Package.underscore._;
-    Template = Package.templating.Template;
-    if (typeof Template !== "object") {
-      non_package_templates = [];
-    } else {
-      non_package_templates = _.keys(Template);
-    }
+    fallback_language_file = lang_files_paths[fallback_language]
 
-    """
+    try
+      lang_json = JSON.parse(fs.readFileSync(fallback_language_file))
+    catch error
+      throw new Meteor.Error 500, "Package #{package_name} fallback language file (#{fallback_language}) has an invalid JSON: `#{fallback_language_file}'",
+        {file_path: fallback_language_file, error: error}
 
-  compileStep.addJavaScript
-    path: "#{package_name}-package-i18n.js",
-    sourcePath: compileStep.inputPath,
-    data: package_i18n_js_file,
-    bare: false
+    if not _.isObject lang_json
+      throw new Meteor.Error 500, "Package #{package_name} fallback language file (#{fallback_language}) should contain a JSON object: `#{fallback_language_file}'",
+        {file_path: fallback_language_file}
 
-  # See the above note titled: templatesRegistrationsNeeded and the process of
-  # tap-i18n package-specific templates registration
-  templatesRegistrationsNeeded = true
-  current_package_name = package_name
-
-Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
-  log "project-tap.i18n file found #{compileStep._fullInputPath}: building"
-
-  # Build the project files
-  buildFilesOnce compileStep
-
-Plugin.registerSourceHandler "i18n.json", (compileStep) ->
-  # Build the project files
-  # we build it for both the browser and server arch so the .18n.json files
-  # will trigger the buildFilesOnce for server in case there is no
-  # project-tap.i18n
-  buildFilesOnce compileStep
-
-  # Build only for the browser arch
-  if not compileStep.archMatches 'browser'
-    return
-
-  # Add the sha1 of the .i18n.json files as a comment to the build js, so
-  # Meteor will know when it was changed and will refresh the clients.
-  # This is needed because (except for the fallback language) the content of
-  # the .i18n.json files isn't added to the built js and therefore Meteor can't
-  # tell when they are changed, and won't refresh the client unless we'll
-  # indicate that.
-  compileStep.addJavaScript
-    path: compileStep.inputPath,
-    sourcePath: compileStep.inputPath,
-    data: "// #{compileStep.inputPath}: #{sha1(fs.readFileSync compileStep._fullInputPath)}",
-    bare: true
-
-  # See the above note titled: templatesRegistrationsNeeded and the process of
-  # tap-i18n package-specific templates registration
-  if templatesRegistrationsNeeded
-    package_i18n_templates_registration_js_file =
+    package_i18n_js_file =
       """
-      var package_templates = _.difference(_.keys(Template), non_package_templates);
+      // add the package translations for the fallback language
+      TAPi18next.addResourceBundle('#{fallback_language}', '#{package_name}', #{JSON.stringify lang_json});
 
-      for (var i = 0; i < package_templates.length; i++) {
-        var package_template = package_templates[i];
+      // add the package's proxies to tap-i18next
+      __ = TAPi18n._getPackageI18nextProxy("#{package_name}");
+      registerTemplate = TAPi18n._getRegisterHelpersProxy("#{package_name}");
 
-        registerTemplate(package_template);
+      // Record list of templates prior to package load
+      _ = Package.underscore._;
+      Template = Package.templating.Template;
+      if (typeof Template !== "object") {
+        non_package_templates = [];
+      } else {
+        non_package_templates = _.keys(Template);
       }
 
       """
 
     compileStep.addJavaScript
-      path: "i18n-templates-registration.js",
+      path: "#{package_name}-package-i18n.js",
       sourcePath: compileStep.inputPath,
-      data: package_i18n_templates_registration_js_file,
+      data: package_i18n_js_file,
       bare: false
 
-    templatesRegistrationsNeeded = false
+    # See the above note titled: templatesRegistrationsNeeded and the process of
+    # tap-i18n package-specific templates registration
+    templatesRegistrationsNeeded = true
+    current_package_name = package_name
+  catch e
+    compileStep.error
+      message: e.message,
+      sourcePath: compileStep.inputPath
+
+Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
+  log "project-tap.i18n file found #{compileStep._fullInputPath}: building"
+
+  try
+    # Build the project files
+    buildFilesOnce compileStep
+  catch e
+    compileStep.error
+      message: e.message,
+      sourcePath: compileStep.inputPath
+
+Plugin.registerSourceHandler "i18n.json", (compileStep) ->
+  try
+    # Build the project files
+    # we build it for both the browser and server arch so the .18n.json files
+    # will trigger the buildFilesOnce for server in case there is no
+    # project-tap.i18n
+    buildFilesOnce compileStep
+
+    # Build only for the browser arch
+    if not compileStep.archMatches 'browser'
+      return
+
+    # Add the sha1 of the .i18n.json files as a comment to the build js, so
+    # Meteor will know when it was changed and will refresh the clients.
+    # This is needed because (except for the fallback language) the content of
+    # the .i18n.json files isn't added to the built js and therefore Meteor can't
+    # tell when they are changed, and won't refresh the client unless we'll
+    # indicate that.
+    compileStep.addJavaScript
+      path: compileStep.inputPath,
+      sourcePath: compileStep.inputPath,
+      data: "// #{compileStep.inputPath}: #{sha1(fs.readFileSync compileStep._fullInputPath)}",
+      bare: true
+
+    # See the above note titled: templatesRegistrationsNeeded and the process of
+    # tap-i18n package-specific templates registration
+    if templatesRegistrationsNeeded
+      package_i18n_templates_registration_js_file =
+        """
+        var package_templates = _.difference(_.keys(Template), non_package_templates);
+
+        for (var i = 0; i < package_templates.length; i++) {
+          var package_template = package_templates[i];
+
+          registerTemplate(package_template);
+        }
+
+        """
+
+      compileStep.addJavaScript
+        path: "i18n-templates-registration.js",
+        sourcePath: compileStep.inputPath,
+        data: package_i18n_templates_registration_js_file,
+        bare: false
+
+      templatesRegistrationsNeeded = false
+  catch e
+    compileStep.error
+      message: e.message,
+      sourcePath: compileStep.inputPath
