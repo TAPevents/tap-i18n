@@ -223,10 +223,16 @@ EOF
 
     common_enabled_bash_tests
 
-    supported_languages=("bb" "cc" "xx" "cc-CC" "xx-XX")
+    supported_languages=("bb" "cc" "cc-CC")
     for lang in ${supported_languages[@]}; do
         [ -f "${default_unified_langs_dir}/${lang}.json" ]
         record_test_result $? "Unified language file for supported language ${lang} created"
+    done
+
+    supported_languages_with_no_translations=("xx" "xx-XX")
+    for lang in ${supported_languages_with_no_translations[@]}; do
+        [ ! -f "${default_unified_langs_dir}/${lang}.json" ]
+        record_test_result $? "Unified language file for supported language ${lang} that has no translations wasn't created"
     done
 
     (( $( ls ${default_unified_langs_dir} | wc -l ) == ${#supported_languages[@]} ))

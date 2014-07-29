@@ -39,7 +39,7 @@ _.extend TAPi18n,
     self = @
 
     if (languageTag in self.conf.supported_languages)
-      if not (languageTag in self._loaded_languages)
+      if (not (languageTag in self._loaded_languages)) and (self.conf.unified_lang_files_map[languageTag])
         loadLanguageTag = ->
           jqXHR = $.getJSON("#{self.conf.browser_path}/#{languageTag}.json")
 
