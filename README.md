@@ -49,7 +49,7 @@ You don't need to worry about domain prefixing or package conflicts when you tra
 * 3rd Party CDN Support
 
 
-## Quickstart for Project Developers
+## Quickstart
 
 **Step 1:** Install tap-i18n using meteorite in your project's root directory:
 
