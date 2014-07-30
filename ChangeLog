@@ -1,15 +1,21 @@
-2014.06.26, Version 0.6.0
+2014.07.30, Version 0.7.0
+
+* Refactor build plugin. Fix a rare bug causing the proj base lang not to load
+* build plugin: catch all build errors and use compileStep.error to report them
+* Do not build/load supported languages with no translation files
+
+2014.06.26, Version 0.6.0, 7e9685ce75165a6a5998f6f4643490fc1e14c166
 
 * Introduce {{languageTag}}
 * README: add instuctions for deploying tap-i18n projects to *.meteor.com
 * tap-i18n now works in Meteor bundles
 
-2014.06.14, Version 0.5.1
+2014.06.14, Version 0.5.1, 71a9ad595e972998e16d7cbd60fed699127464c3
 
 * Bugfix: Trigger buildFilesOnce for .i18n.json files for the os arch so
   TAPi18n.conf will get set if there is no project-tap.i18n
 
-2014.06.13, Version 0.5.0
+2014.06.13, Version 0.5.0, 0d7ea8c3ac8307b3d48efc6c8b80b1ce2dd1e8b1
 
 * Unittests now work on mac
 * Introduce TAPi18n.getLanguages()
