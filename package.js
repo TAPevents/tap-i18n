@@ -1,5 +1,6 @@
 Package.describe({
-  summary: 'A comprehensive internationalization solution for Meteor'
+  summary: 'A comprehensive internationalization solution for Meteor',
+  version: '0.7.0'
 });
 
 Package.on_use(function (api) {
