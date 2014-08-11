@@ -347,27 +347,6 @@ test_package_with_no_fallback_language () {
     bash_unittests_end
 }
 
-test_package_with_no_base_lang_for_dialect () {
-    local test_name="package_with_no_base_lang_for_dialect" test_packages=("a" "b" "no_base_lang_for_dialect") port=3000
-
-    meteor_unittests_start "$test_name" "tap-i18n package has a translation to a dialect but not to its base language. Break (ctrl+c) after Meteor build fails to run bash tests."
-
-    install_test_packages "${test_packages[@]}"
-
-    add_package_js_test_section ""
-
-    TAP_I18N="enabled" run_meteor_test $port
-
-    meteor_unittests_end
-
-    bash_unittests_start "$test_name"
-
-    (( $( cat "$test_run_log_file_path" | grep "test-pack-no_base_lang_for_dialect has no language file for the base language" | wc -l ) > 0 ))
-    record_test_result $? "Error thrown"
-
-    bash_unittests_end
-}
-
 ########################## MAIN ###########################
 
 if [[ $test_name == "all" ]]; then
@@ -378,7 +357,6 @@ if [[ $test_name == "all" ]]; then
     test_enabled_project_level_translations
     test_enabled_project_level_translations_custom_translations_dir
     test_package_with_no_fallback_language
-    test_package_with_no_base_lang_for_dialect
 else
     test_"$test_name"
 fi

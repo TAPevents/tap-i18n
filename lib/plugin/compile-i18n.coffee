@@ -250,14 +250,6 @@ getUnifiedLangFiles = (supported_languages=null, project_translations_dir=null) 
     if not (fallback_language of languages_files)
       throw new Meteor.Error 500, "Package #{package_map.name} has no language file for the fallback language (#{fallback_language})"
 
-    # Make sure we have the base language translations file for every dialect
-    dialects = _.filter _.keys(languages_files), (lang) ->
-      "-" in lang
-    _.each dialects, (dialect) ->
-      base_language = (dialect.split "-")[0]
-      if not (base_language of languages_files)
-        throw new Meteor.Error 500, "Package #{package_map.name} has no language file for the base language (#{base_language}) of the dialect (#{dialect})"
-
     if supported_languages
       # pick from languages_files only the supported languages
       languages_files = _.pick(languages_files, _.intersection(_.keys(languages_files), supported_languages))
