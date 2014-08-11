@@ -76,9 +76,10 @@ projectTapI18nSchema =
       label: "Browser Path"
       autoValue: ->
         # Make sure browser_path has no trailing slash
-        value = if @isSet then @value else default_browser_path
+        value = if @value? then @value else default_browser_path
         
         removeFileTrailingSeparator value
+      optional: true
 
 # Helpers
 log = ->
