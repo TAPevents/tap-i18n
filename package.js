@@ -4,13 +4,13 @@ Package.describe({
 });
 
 Package.on_use(function (api) {
-  api.use(["coffeescript", "underscore", "meteor"], ['server', 'client']);
-  api.use(["http-methods"], 'server');
-  api.use(["deps", "session", "jquery", "templating"], 'client');
+  api.use(['coffeescript', 'underscore', 'meteor'], ['server', 'client']);
+  api.use(['http-methods'], 'server');
+  api.use(['deps', 'session', 'jquery', 'templating'], 'client');
 
   // load and init TAPi18next
   api.add_files('lib/tap_i18next/tap_i18next-1.7.3.js', 'client');
-  api.export("TAPi18next");
+  api.export('TAPi18next');
   api.add_files('lib/tap_i18next/tap_i18next_init.js', 'client');
 
   // load TAPi18n
@@ -24,13 +24,13 @@ Package.on_use(function (api) {
   api.add_files('lib/tap_i18n/tap_i18n-server.coffee', 'server');
   api.add_files('lib/tap_i18n/tap_i18n-client.coffee', 'client', {bare: true});
 
-  api.export("TAPi18n");
+  api.export('TAPi18n');
 });
 
 // Register our build plugin
 Package._transitional_registerBuildPlugin({
-  name: "compileI18n",
-  use: ["coffeescript", "meteor", "simple-schema", "check", "templating"],
+  name: 'compileI18n',
+  use: ['coffeescript', 'meteor', 'simple-schema', 'check', 'templating'],
   sources: [
     'lib/globals.js',
     'lib/plugin/wrench.js',
@@ -38,4 +38,3 @@ Package._transitional_registerBuildPlugin({
     'lib/plugin/compile-i18n.coffee'
   ]
 });
-
