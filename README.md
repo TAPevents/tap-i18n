@@ -646,11 +646,6 @@ You can also test a specific environment:
     # (ctrl+c) after Meteor build fails to run bash tests.
     $ ./unittest/unittest-package_with_no_fallback_language 
 
-    # tap-i18n package has a translation to a dialect but not to its base language.
-    # Since the build fails for this environment, there are only bash test for
-    # it. Break (ctrl+c) after Meteor build fails to run bash tests.
-    $ ./unittest/unittest-package_with_no_base_lang_for_dialect 
-
 ## License
 
 MIT
