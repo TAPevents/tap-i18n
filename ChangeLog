@@ -1,4 +1,10 @@
-2014.07.30, Version 0.7.0
+2014.08.11, Version 0.8.0
+
+* [MINOR] package.js: only use single quotes to enclose strings
+* Do not require having a file for the base language of a dialect
+* Build plugin: make sure isString before removeFileTrailingSeparator
+
+2014.07.30, Version 0.7.0, 7c414420e65cb67a9e49896826542db1815a257c
 
 * Refactor build plugin. Fix a rare bug causing the proj base lang not to load
 * build plugin: catch all build errors and use compileStep.error to report them

@@ -3,7 +3,7 @@
   "description": "A comprehensive internationalization solution for Meteor",
   "homepage": "https://github.com/TAPevents/tap-i18n",
   "author": "Daniel Chcouri <333222@gmail.com> for tap-events: http://www.tapevents.com",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "git": "https://github.com/TAPevents/tap-i18n",
   "packages": {
     "simple-schema": {},
