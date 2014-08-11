@@ -92,7 +92,10 @@ escapeRegExp = (str) ->
   str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
 
 removeFileTrailingSeparator = (file) ->
-  file.trim().replace RegExp("#{escapeRegExp path.sep}$"), ""
+  if _.isString file
+    file.trim().replace RegExp("#{escapeRegExp path.sep}$"), ""
+  else
+    file
 
 loadProjectConf = (conf_file=path.join(project_root, 'project-tap.i18n')) ->
   # Returns the project's tap-i18n configuration if tap-i18n is installed
