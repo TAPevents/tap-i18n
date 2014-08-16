@@ -77,7 +77,7 @@ _.extend TAPi18n,
     else
       dfd.reject(["Language #{languageTag} is not supported"])
 
-    return dfd
+    return dfd.promise()
 
   _registerHelpers: (package_name, template) ->
     self = @
