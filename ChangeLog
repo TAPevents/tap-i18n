@@ -1,3 +1,8 @@
+2014.08.30, Version 0.9.2
+
+* Bugfix: Build plugin should consider projects with a *:i18n package as tap:i18n enabled
+* Use tap:http-methods instead of raix:http-methods which isn't ready for v0.9.0
+
 2014.08.30, Version 0.9.0
 
 * tap-i18n is now tap:i18n
