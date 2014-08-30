@@ -124,7 +124,7 @@ loadProjectConf = (conf_file=path.join(project_root, 'project-tap.i18n')) ->
   # (package.on_test) aren't listed in .meteor/packages and I don't know of a
   # more straightforward way to indicate whether tap-i18n is enabled or not in
   # that case
-  if (not _.contains project_packages, "tap-i18n") and (process.env.TAP_I18N != "enabled")
+  if (not (true in _.map(project_packages, ((x) -> /:i18n$/.test(x))))) and (process.env.TAP_I18N != "enabled")
     return null
 
   # If conf_file doesn't exist return the defaults
