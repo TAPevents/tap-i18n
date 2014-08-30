@@ -1,4 +1,9 @@
-2014.08.11, Version 0.8.0
+2014.08.30, Version 0.9.0
+
+* tap-i18n is now tap:i18n
+* Migrate to Meteor v0.9
+
+2014.08.11, Version 0.8.0, a500ae5c5c6da2aa0ccd56bfe407bfa9c8a77b62
 
 * [MINOR] package.js: only use single quotes to enclose strings
 * Do not require having a file for the base language of a dialect
