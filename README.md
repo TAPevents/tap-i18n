@@ -53,6 +53,14 @@ You don't need to worry about domain prefixing or package conflicts when you tra
 
 **Step 1:** Install tap-i18n using meteorite in your project's root directory:
 
+**For Meteor version >= v0.9.0**
+
+```bash
+$ meteor add tap:i18n
+```
+
+**For Meteor version < v0.9.0**
+
 ```bash
 $ mrt add tap-i18n
 ```
@@ -454,7 +462,17 @@ Notes:
 
 **Step 2:** Remove tap-i18n package
 
-    $ mrt remove tap-i18n
+**For Meteor version >= v0.9.0**
+
+```bash
+$ meteor remove tap:i18n
+```
+
+**For Meteor version < v0.9.0**
+
+```bash
+$ mrt remove tap-i18n
+```
 
 ## Developing Packages
 
