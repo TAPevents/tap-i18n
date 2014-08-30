@@ -410,7 +410,7 @@ buildFilesOnce = (compileStep) ->
 
       # For the browser arch add the base language file translation of the project
       # to the bundle (if tap-i18n is enabled in the project level and the file exists)
-      if arch == "browser"
+      if arch == "web.browser" or arch == "web.cordova"
         project_translations_dir = projectTapI18n.languages_files_dir
 
         if project_translations_dir?
@@ -501,8 +501,8 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
     # Meteor will build the entire package so this handler will be called
     buildFilesOnce compileStep
 
-    # From here on, keep building only the browser arch
-    if not compileStep.archMatches 'browser'
+    # From here on, keep building only web archs
+    if not compileStep.archMatches 'web'
       return
 
     # We make English an integral part of the package build.
@@ -586,8 +586,8 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
     # project-tap.i18n
     buildFilesOnce compileStep
 
-    # Build only for the browser arch
-    if not compileStep.archMatches 'browser'
+    # Build only for the web archs
+    if not compileStep.archMatches 'web'
       return
 
     # Add the sha1 of the .i18n.json files as a comment to the build js, so

@@ -21,8 +21,8 @@ Tinytest.addAsync 'Enabled tap-i18n - All languages loads successfully', (test, 
           TAPi18n.setLanguage lang
 
       dfd.done ->
-        test.equal Template.pack_a_test_template_a.render()(), "#{_.last lang}01"
-        test.equal Template.pack_a_test_template_post_load_template.render()(), "#{_.last lang}01"
+        test.equal share.render(Template.pack_a_test_template_a), "#{_.last lang}01"
+        test.equal share.render(Template.pack_a_test_template_post_load_template), "#{_.last lang}01"
 
       dfd.fail ->
         test.fail "Failed to load language #{lang}"
@@ -42,7 +42,7 @@ Tinytest.addAsync 'Enabled tap-i18n - {{languageTag}}', (test, onComplete) ->
           TAPi18n.setLanguage lang
 
       dfd.done ->
-        test.equal Template.project_template_languageTag.render()(), lang
+        test.equal share.render(Template.project_template_languageTag), lang
 
       dfd.fail ->
         test.fail "Failed to load language #{lang}"

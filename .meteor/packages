@@ -6,4 +6,5 @@
 standard-app-packages
 autopublish
 insecure
-simple-schema
+aldeed:simple-schema
+

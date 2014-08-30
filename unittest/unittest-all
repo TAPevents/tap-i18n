@@ -68,8 +68,11 @@ install_test_packages () {
     local test_name
 
     for test_name in "$@"; do
-        cp -LR "unittest/utils/test-packages/test-pack-${test_name}" packages
+        mkdir -p "packages/test-pack-${test_name}"
+        cp -LR "unittest/utils/test-packages/test-pack-${test_name}" "packages/"
         mv "packages/test-pack-${test_name}/package-tap.i18n." "packages/test-pack-${test_name}/package-tap.i18n"
+
+        mrt install
     done
 }
 
@@ -99,7 +102,7 @@ record_test_result () {
 }
 
 clean () {
-    rm -rf packages/test-pack-*
+    rm -rf packages
     rm -f project-tap.i18n
     rm -rf public i18n custom-i18n
     remove_package_js_test_section
@@ -132,6 +135,7 @@ Package.on_test(function (api) {
 
   $test_specific
 
+  api.add_files('unittest/tests/tests_helpers.coffee', ['client']);
   api.add_files('unittest/tests/common.coffee', ['client']);
 EOF
 
@@ -179,7 +183,7 @@ test_enabled () {
     install_test_packages "${test_packages[@]}"
 
     package_js_on_test="$(cat <<EOF
-    api.use('tap-i18n', ['client', 'server']);
+    api.use('tap:i18n', ['client', 'server']);
 EOF
     )"
 
@@ -205,7 +209,7 @@ test_enabled_custom_supported_languages () {
     echo '{"supported_languages": ["bb", "cc-CC", "xx-XX"]}' > project-tap.i18n
 
     package_js_on_test="$(cat <<EOF
-    api.use('tap-i18n', ['client', 'server']);
+    api.use('tap:i18n', ['client', 'server']);
 
     api.add_files('project-tap.i18n', ['client', 'server']);
 EOF
@@ -251,9 +255,9 @@ test_enabled_custom_build_files_path () {
     echo '{"build_files_path": "public/x", "browser_path": "/x"}' > project-tap.i18n
 
     package_js_on_test="$(cat <<EOF
-    api.use('tap-i18n', ['client', 'server']);
+    api.use('tap:i18n', ['client', 'server']);
 
-    api.use('http-methods', ['client', 'server']);
+    api.use('raix:http-methods@0.0.23', ['client', 'server']);
 
     api.add_files('project-tap.i18n', ['client', 'server']);
 EOF
@@ -277,7 +281,7 @@ test_enabled_project_level_translations () {
     install_test_packages "${test_packages[@]}"
 
     package_js_on_test="$(cat <<EOF
-    api.use('tap-i18n', ['client', 'server']);
+    api.use('tap:i18n', ['client', 'server']);
 
     api.add_files([
       'i18n/en.i18n.json',
@@ -307,7 +311,7 @@ test_enabled_project_level_translations_custom_translations_dir () {
     echo '{"languages_files_dir": "custom-i18n"}' > project-tap.i18n
 
     package_js_on_test="$(cat <<EOF
-    api.use('tap-i18n', ['client', 'server']);
+    api.use('tap:i18n', ['client', 'server']);
 
     api.add_files('project-tap.i18n', ['client', 'server']);
 
@@ -327,7 +331,7 @@ EOF
 }
 
 test_package_with_no_fallback_language () {
-    local test_name="package_with_no_fallback_language" test_packages=("a" "b" "no_fallback_lang") port=3000
+    local test_name="package_with_no_fallback_language" test_packages=("a" "b" "no-fallback-lang") port=3000
 
     meteor_unittests_start "$test_name" "tap-i18n package has no translation for the fallback language. Break (ctrl+c) after Meteor build fails to run bash tests."
 
@@ -341,7 +345,7 @@ test_package_with_no_fallback_language () {
 
     bash_unittests_start "$test_name"
 
-    (( $( cat "$test_run_log_file_path" | grep "test-pack-no_fallback_lang has no language file for the fallback language" | wc -l ) > 0 ))
+    (( $( cat "$test_run_log_file_path" | grep "test-pack-no-fallback-lang has no language file for the fallback language" | wc -l ) > 0 ))
     record_test_result $? "Error thrown"
 
     bash_unittests_end

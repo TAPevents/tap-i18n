@@ -15,7 +15,7 @@ Tinytest.addAsync 'Enabled tap-i18n with project level translations - All langua
 
       dfd.done ->
         test.equal TAPi18n.__("a01"), "#{_.last lang}01"
-        test.equal Template.project_template_a.render()(), "#{_.last lang}01"
+        test.equal share.render(Template.project_template_a), "#{_.last lang}01"
 
       dfd.fail ->
         test.fail "Failed to load language #{lang}"

@@ -1,5 +1,5 @@
 Package.on_use(function (api) {
-  api.use(['tap-i18n'], ['client']);
+  api.use(['tap:i18n'], ['client', 'server']);
 
   api.use(['coffeescript'], ['client']);
 
