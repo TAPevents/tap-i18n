@@ -4,6 +4,12 @@
 
 **tap-i18n** is a smart package for [Meteor](http://www.meteor.com) that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for project and package developers.
 
+**Meteor v0.9 Package Manager**
+
+tap-i18n migrated to Meteor v0.9 and is now availble on the Meteor's package
+manager as [tap:i18n](http://atmospherejs.com/tap/i18n). Check the Quickstart
+section below for installation instructions.
+
 ## Key Features
 
 ### Readable Syntax
