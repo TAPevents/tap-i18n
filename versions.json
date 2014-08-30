@@ -97,10 +97,6 @@
       "1.0.0"
     ],
     [
-      "raix:http-methods",
-      "0.0.23"
-    ],
-    [
       "random",
       "1.0.0"
     ],
@@ -127,6 +123,10 @@
     [
       "spacebars-compiler",
       "1.0.1"
+    ],
+    [
+      "tap:http-methods",
+      "0.0.23"
     ],
     [
       "templating",

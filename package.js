@@ -21,7 +21,7 @@ Package.onUse(function (api) {
   api.use('jquery', client);
   api.use('templating', client);
 
-  api.use('raix:http-methods@0.0.23', server);
+  api.use('tap:http-methods@0.0.23', server);
 
   // load and init TAPi18next
   api.add_files('lib/tap_i18next/tap_i18next-1.7.3.js', client);
