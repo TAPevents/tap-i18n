@@ -1,9 +1,33 @@
-2014.08.30, Version 0.9.2
+2014.09.09, Version 1.0.0
+
+* Build plugin rewritten
+* tap-i18n now fully support Meteor v0.9
+* Ready to be used with Cordova
+* **New Features:**
+* Server side internationalization is now supported.
+* The template translation helper name (_) and the package translation function
+name (__) are now customizable.
+* Transparent bundling, no need for special procedures for deploying project
+that uses tap-i18n.
+* Language files and project-tap.i18n can now be located anywhere in the project tree.
+* A project/package can now have more than one language file for the same
+language.
+* getLanguages() now works in both server and client.
+* **Backward compatibility:**
+* package i18n files now have to be added to both the client and the server
+architectures, not only the client.
+* The base language of a dialects are no longer added automatically as a supported
+language.
+* project-tap.i18n: languages_files_dir and build_files_path properties are now
+obsolete. browser_path property renamed to cdn_path.
+* package-tap.i18n: languages_files_dir is now obsolete.
+
+2014.08.30, Version 0.9.2, 742e44f659dfb7800d332bf4b2aa990e6f220d36
 
 * Bugfix: Build plugin should consider projects with a *:i18n package as tap:i18n enabled
 * Use tap:http-methods instead of raix:http-methods which isn't ready for v0.9.0
 
-2014.08.30, Version 0.9.0
+2014.08.30, Version 0.9.0, 118aa825e76165aac9df9f3153fbb8edc044a864
 
 * tap-i18n is now tap:i18n
 * Migrate to Meteor v0.9
