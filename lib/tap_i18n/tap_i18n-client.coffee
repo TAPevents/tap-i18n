@@ -1,13 +1,17 @@
-fallback_language = globals.fallback_language
+loaded_lang_session_key = "#{TAPi18n._loaded_lang_session_key}"
 
-sessions_prefix = "TAPi18n::"
-loaded_lang_session_key = "#{sessions_prefix}loaded_lang"
-# Before the first language is ready - loaded_lang is null
 Session.set loaded_lang_session_key, null
 
 _.extend TAPi18n,
-  # en, which is our fallback language is built into the project, so we don't need to load it again
-  _loaded_languages: [fallback_language]
+  _getLanguageFilePath: (lang_tag) ->
+    if not @_enabled()
+      return null
+
+    path = if @.conf.cdn_path? then @.conf.cdn_path else @.conf.i18n_files_route
+    path = path.replace /\/$/, ""
+
+    "#{path}/#{lang_tag}.json"
+
   _loadLanguage: (languageTag) ->
     # Load languageTag and its dependencies languages to TAPi18next if we
     # haven't loaded them already.
@@ -38,10 +42,12 @@ _.extend TAPi18n,
 
     self = @
 
-    if (languageTag in self.conf.supported_languages)
-      if (not (languageTag in self._loaded_languages)) and (self.conf.unified_lang_files_map[languageTag])
+    project_languages = self._getProjectLanguages()
+
+    if languageTag in project_languages
+      if languageTag not in self._loaded_languages
         loadLanguageTag = ->
-          jqXHR = $.getJSON("#{self.conf.browser_path}/#{languageTag}.json")
+          jqXHR = $.getJSON(self._getLanguageFilePath(languageTag))
 
           jqXHR.done (data) ->
             for package_name, package_keys of data
@@ -54,12 +60,10 @@ _.extend TAPi18n,
           jqXHR.fail (xhr, error_code) ->
             dfd.reject("Couldn't load language '#{languageTag}' JSON: #{error_code}")
 
-        if languageTag != fallback_language
-          # Since languageTag is in self.conf.supported_languages and self.conf is
-          # carefully validated during the build process we can count on
-          # languageTag to be a valid language tag
-          directDependencyLanguageTag = if "-" in languageTag then languageTag.replace(/-.*/, "") else fallback_language
+        directDependencyLanguageTag = if "-" in languageTag then languageTag.replace(/-.*/, "") else fallback_language
 
+        # load dependency language if it is part of the project and not the fallback language
+        if languageTag != fallback_language and directDependencyLanguageTag in project_languages
           dependencyLoadDfd = self._loadLanguage directDependencyLanguageTag
 
           dependencyLoadDfd.done ->
@@ -94,12 +98,13 @@ _.extend TAPi18n,
     # template specific helpers
     if package_name != globals.project_translations_domain
       # {{_ }}
-      Template[template]._ = underscore_helper
+      if Template[template]?
+        Template[template][self.packages[package_name].helper_name] = underscore_helper
 
     # global helpers
     else
       # {{_ }}
-      UI.registerHelper "_", underscore_helper
+      UI.registerHelper self.conf.helper_name, underscore_helper
 
       # {{languageTag}}
       UI.registerHelper "languageTag", () -> self.getLanguage()
@@ -112,11 +117,14 @@ _.extend TAPi18n,
 
   _getPackageI18nextProxy: (package_name) ->
     # A proxy to TAPi18next.t where the namespace is preset to the package's
-    (key, options) ->
+    (key, options, lang_tag=null) ->
+      if lang_tag?
+        console.log "Warning: specifying lang_tag is not supported in client side, using session language"
+      
       # If inside a reactive computation, we want to invalidate the computation if the client lang changes
       Session.get loaded_lang_session_key
 
-      TAPi18next.t "#{package_name}:#{key}", options
+      TAPi18next.t "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
 
   setLanguage: (lang_tag) ->
     @_loadLanguage(lang_tag).then ->
@@ -124,9 +132,13 @@ _.extend TAPi18n,
 
       Session.set loaded_lang_session_key, lang_tag
 
-  getLanguage: -> Session.get loaded_lang_session_key
+  getLanguage: ->
+    if not @._enabled()
+      return null
 
-  getLanguages: -> TAPi18n.conf.language_names
+    session_lang = Session.get loaded_lang_session_key
+
+    if session_lang? then session_lang else @._fallback_language
 
 TAPi18n.__ = TAPi18n._getPackageI18nextProxy(globals.project_translations_domain)
 

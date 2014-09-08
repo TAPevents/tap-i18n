@@ -133,6 +133,10 @@
       "0.0.23"
     ],
     [
+      "tap:i18n",
+      "0.9.3"
+    ],
+    [
       "templating",
       "1.0.5"
     ],
@@ -149,33 +153,7 @@
       "1.0.3"
     ]
   ],
-  "pluginDependencies": [
-    [
-      "tap-i18n-compiler",
-      {
-        "blaze": "2.0.0",
-        "ordered-dict": "1.0.0",
-        "random": "1.0.0",
-        "templating": "1.0.5",
-        "coffeescript": "1.0.2",
-        "deps": "1.0.3",
-        "tracker": "1.0.2",
-        "underscore": "1.0.0",
-        "json": "1.0.0",
-        "check": "1.0.0",
-        "geojson-utils": "1.0.0",
-        "minimongo": "1.0.2",
-        "jquery": "1.0.0",
-        "id-map": "1.0.0",
-        "meteor": "1.0.3",
-        "ejson": "1.0.1",
-        "aldeed:simple-schema": "1.0.2",
-        "observe-sequence": "1.0.2",
-        "reactive-var": "1.0.1",
-        "htmljs": "1.0.0"
-      }
-    ]
-  ],
+  "pluginDependencies": [],
   "toolVersion": "meteor-tool@1.0.28",
   "format": "1.0"
 }

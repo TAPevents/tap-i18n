@@ -1,7 +1,7 @@
 Package.describe({
   name: 'tap:i18n',
   summary: 'A comprehensive internationalization solution for Meteor',
-  version: '0.9.2',
+  version: '0.9.3',
   git: 'https://github.com/TAPevents/tap-i18n'
 });
 
@@ -10,7 +10,7 @@ server = 'server';
 client = 'client';
 
 Package.onUse(function (api) {
-  api.versionsFrom('METEOR@0.9.0');
+  api.versionsFrom('METEOR@0.9.1');
 
   api.use('coffeescript', both);
   api.use('underscore', both);
@@ -23,13 +23,15 @@ Package.onUse(function (api) {
 
   api.use('tap:http-methods@0.0.23', server);
 
-  // load and init TAPi18next
-  api.add_files('lib/tap_i18next/tap_i18next-1.7.3.js', client);
-  api.export('TAPi18next');
-  api.add_files('lib/tap_i18next/tap_i18next_init.js', client);
-
   // load TAPi18n
   api.add_files('lib/globals.js', both);
+
+  // load and init TAPi18next
+  api.add_files('lib/tap_i18next/tap_i18next-1.7.3.js', both);
+  api.export('TAPi18next');
+  api.add_files('lib/tap_i18next/tap_i18next_init.js', both);
+
+  api.add_files('lib/tap_i18n/tap_i18n-helpers.coffee', both);
 
   // We use the bare option since we need TAPi18n in the package level and
   // coffee adds vars to all (so without bare all vars are in the file level)
@@ -42,14 +44,23 @@ Package.onUse(function (api) {
   api.export('TAPi18n');
 });
 
-// Register our build plugin
 Package._transitional_registerBuildPlugin({
-  name: 'compileI18n',
-  use: ['coffeescript', 'meteor', 'aldeed:simple-schema@0.7.0', 'check', 'templating'],
+  name: 'tap-i18n-compiler',
+  use: ['coffeescript', 'underscore', 'aldeed:simple-schema@0.7.0', 'check', 'templating'],
   sources: [
     'lib/globals.js',
-    'lib/plugin/wrench.js',
-    'lib/plugin/language_names.js',
-    'lib/plugin/compile-i18n.coffee'
+
+    'lib/plugin/etc/language_names.js',
+
+    'lib/plugin/compiler_configuration.coffee',
+
+    'lib/plugin/helpers/helpers.coffee',
+    'lib/plugin/helpers/load_json.coffee',
+    'lib/plugin/helpers/compile_step_helpers.coffee',
+
+    'lib/plugin/compilers/i18n.coffee',
+    'lib/plugin/compilers/project-tap.i18n.coffee',
+    'lib/plugin/compilers/package-tap.i18n.coffee',
+    'lib/plugin/compilers/i18n.json.coffee'
   ]
 });

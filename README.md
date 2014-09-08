@@ -2,13 +2,7 @@
 
 ### Internationalization for Meteor
 
-**tap-i18n** is a smart package for [Meteor](http://www.meteor.com) that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for project and package developers.
-
-**Meteor v0.9 Package Manager**
-
-tap-i18n migrated to Meteor v0.9 and is now availble on the Meteor's package
-manager as [tap:i18n](http://atmospherejs.com/tap/i18n). Check the Quickstart
-section below for installation instructions.
+**tap-i18n** is a Meteor package for [Meteor](http://www.meteor.com) that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for project and package developers.
 
 ## Key Features
 
@@ -59,16 +53,8 @@ You don't need to worry about domain prefixing or package conflicts when you tra
 
 **Step 1:** Install tap-i18n using meteorite in your project's root directory:
 
-**For Meteor version >= v0.9.0**
-
 ```bash
 $ meteor add tap:i18n
-```
-
-**For Meteor version < v0.9.0**
-
-```bash
-$ mrt add tap-i18n
 ```
 
 **Step 2:** Add translation helpers to your markup:
@@ -79,7 +65,7 @@ $ mrt add tap-i18n
 <div>{{_ "hello"}}</div>
 ```
 
-**Step 3:** Define translations in JSON format under the /i18n folder in your project's root:
+**Step 3:** Define translations in JSON format:
   
 **i18n/en.i18n.json**
 
@@ -92,6 +78,12 @@ $ mrt add tap-i18n
 ```json
 { "hello": "Bonjour" }
 ```
+
+Translations files should end with lang_tag.i18n.json.
+
+You can split translations of a certain language to multiple files. We ignore prefixed
+text. You can have file named: menu.en.i18n.json, we add its translations the same way
+we add those of en.i18n.json . 
 
 **Step 4:** Initiate the client language on startup
 
@@ -152,7 +144,7 @@ tap-i18n is not installed.
 If inside a reactive computation, invalidate the computation the next time the
 client language get changed (by TAPi18n.setLanguage)
 
-**TAPi18n.getLanguages() (Client)**
+**TAPi18n.getLanguages() (Anywhere)**
 
 Returns an object with all the languages the project or one of the packages it uses are translated to.
 
@@ -174,6 +166,7 @@ The returned object is in the following format:
 }
 ```
 
+**TAPi18n.__(key, options, lang_tag) (Server)**
 **TAPi18n.__(key, options) (Client)**
 
 Translates key to the current client's language. If inside a reactive
@@ -184,6 +177,9 @@ The function is a proxy to the i18next.t() method.
 Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
 to learn about its possible options.
 
+**On the server**, TAPi18n.__ is not a reactive resource. You have to specify
+the language tag you want to translate the key to.
+
 ### The tap-i18n Handlebars Helpers
 
 ### The \_  Helper
@@ -193,6 +189,8 @@ that we set on the project's templates and on packages' templates for packages
 that uses tap-i18n:
 
     {{_ "key" "sprintf_arg1" "sprintf_arg2" ... op1="option-value" op2="option-value" ... }}
+
+**You can customize the helper name, see "Configuring tap-i18n" section.**
 
 The translation files that will be used to translate key depends on the
 template from which it is being used:
@@ -360,8 +358,11 @@ Notes:
 
 ### Structure of Languages Files
 
-Languages files must be named by their language tag name with the i18n.json
-suffix.
+Languages files should be named: arbitrary.text.lang_tag.i18n.json . e.g., en.i18n.json, menu.pt-BR.i18n.json.
+
+You can have more than one file for the same language.
+
+You can put languages files anywhere in your project tree.
 
 Example for languages files:
 
@@ -399,68 +400,40 @@ Example for languages files:
   fallback to English.
 * Check [i18next features documentation](http://i18next.com/pages/doc_features.html) for
   more advanced translations structures you can use in your JSONs files (Such as
-  variables, plural form, etc.).
+  variables, plural form, etc.).  
 
-### Adding your Project Translation Files
+### Configuring tap-i18n
 
-To translate keys that you use in your project create the languages\_files\_dir
-directory (default: "i18n") in your project's root, and add your translation
-files to it, as follow:
+To configure tap-i18n add to it a file named **project-tap.i18n**.
 
-    |--project-root
-    |----i18n # Should be the same path as the languages_files_dir option
-    |------en.i18n.json
-    |------fr.i18n.json
-    |------pt.i18n.json
-    |------pt-BR.i18n.json
-    .
-    .
-    .
-
-* If you only want to install tap-i18n to configure the internationalization of
-  packages you use in your project that use tap-i18n you don't have to create
-  the languages\_files\_dir.
-* If you want to put your languages files in another directory refer to the
-  "Configuring tap-i18n build process" section below.
-* Refer to the "Structure of Languages Files" section above to learn how to
-  build your languages files.
-
-### Configuring tap-i18n Build Process
-
-To configure tap-i18n add the **project-tap.i18n** configuration file to your **project root** (the values below are the defaults):
+This JSON can have the following properties. All of them are optional. The values bellow
+are the defaults.
 
     project-root/project-tap.i18n
     -----------------------------
     {
-        "languages_files_dir": "i18n",
+        "helper_name": "_",
         "supported_languages": null,
-        "build_files_path": null,
-        "browser_path": null
+        "i18n_files_route": "/tap-i18n",
+        "cdn_path": null
     }
 
 Options:
 
-**languages\_files\_dir:** the path to your languages files directory relative to your project root
+**helper\_name:** the name for the templates' translation helper.
 
-**supported\_languages:** A list of languages tags you want to make available on your project. If null, all the languages we'll find translation files for will be available.
+**supported\_languages:** A list of languages tags you want to make available on
+your project. If null, all the languages we'll find translation files for, in the
+project, will be available.
 
 **build\_files\_path:** Can be an absolute path or relative to the project's root. If you change this value we assume you want to serve the files yourself (via cdn, or by other means) so we won't initiate the tap-i18n's built-in files server. Therefore if you set build\_files\_path you **must** set the browser\_path.
 
-**browser\_path:** Can be a full url, or an absolute path. Examples:
-"http://cdn.domain.com/i18n/", "/custom-i18n/"
+**i18n\_files\_route:** The route in which the tap-i18n resources will be available in the project.
 
-**Important**: **You must** set browser\_path if you set build\_files\_path.
-If build\_files\_path is null we ignore browser\_path.
+**cdn\_path:** An alternative path from which you want tap-i18n resources to be loaded. Example: "http://cdn.example.com/tap-i18n".
 
 Notes: 
-* We use AJAX to load the languages files so if your browser\_path is in
-  another domain you'll have to set CORS on it.
-* If you specify a dialect as one of the supported languages its
-  base language will be supported also. Since English is used by tap-i18n as
-  the fallback language it is always supported, even if it isn't listed in the
-  array.
-
-**Important:** if you set this file it has to be in your package root.
+* We use AJAX to load the languages files so you'll have to set CORS on your CDN.
 
 ### Disabling tap-i18n
 
@@ -468,16 +441,8 @@ Notes:
 
 **Step 2:** Remove tap-i18n package
 
-**For Meteor version >= v0.9.0**
-
 ```bash
 $ meteor remove tap:i18n
-```
-
-**For Meteor version < v0.9.0**
-
-```bash
-$ mrt remove tap-i18n
 ```
 
 ## Developing Packages
@@ -507,19 +472,19 @@ language (English)
 
 In order to use tap-i18n to internationalize your package:
 
-**Step 1:** Add the package-tap.i18n configuration file to your **package root**:
+**Step 1:** Add the package-tap.i18n configuration file:
 
-The values below are the defaults, you can use empty JSON object if you don't
-need to change them.
+You can use empty file or an empty JSON object if you don't need to change them.
+
+The values below are the defaults.
 
     package_dir/package-tap.i18n
     ----------------------------
     {
-        "languages_files_dir": "i18n" // the path to your languages files
-                                      // directory relative to your package root
+        "translation_function_name": "__", // The name for the translation function that
+                                           // will be available in package's namespace.
+        "helper_name": "_" // the name for the package templates' translation helper
     }
-
-**Important:** You must set this file in your package root.
 
 **Step 2:** Create your languages\_files\_dir:
 
@@ -565,20 +530,19 @@ Your package's package.js should be structured as follow:
         "i18n/fr.i18n.json",
         "i18n/pt.i18n.json",
         "i18n/pt-br.i18n.json"
-      ], ["client"]);
+      ], ["client", "server"]);
     });
 
-Note: The fact that all the languages files are added in the package.js doesn't
-mean that they will all actually be loaded for every single client that uses
-your package. We use this listing for two purposes: (1) to be able to watch
-these files for changes to trigger rebuild, and (2) to have a mark in the
-package loading process in which we know all the templates of the package
-are loaded so we can register them with tap-i18n.
+Note: en, which is the fallback language, is the only language we integrate
+into the clients bundle. All the other languages files will be loaded only
+to the server bundle and will be served as part of the unified languages files,
+that contain all the project's translations.
 
 ### Package Level tap-i18n Functions
 
 The following functions are added to your package namespace by tap-i18n:
 
+**\_\_("key", options, lang_tag) (Server)**
 **\_\_("key", options) (Client)**
 
 Translates key to the current client's language. If inside a reactive
@@ -589,86 +553,27 @@ The function is a proxy to the i18next.t() method.
 Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
 to learn about its possible options.
 
-**registerTemplate(template\_name) (Client)**
+**On the server**, TAPi18n.__ is not a reactive resource. You have to specify
+the language tag you want to translate the key to.
 
-This function defines the \_ helper that maps to the \_\_ function for the
+You can use package-tap.i18n to change the name of this function.
+
+**registerI18nHelper(template\_name) (Client)**
+**registerTemplate(template\_name) (Client) [obsolete alias, will be removed in future versions]**
+
+Register the \_ helper that maps to the \_\_ function for the
 template with the given name.
 
-**Important:** tap-i18n registers the templates defined by your package prior to
-startup automatically. You have to register only templates that you define
-dynamically after Meteor loads (otherwise the \_ helper will be linked to the
-project level keys).
+**Important:** As long as you load the package templates after you add package-tap.i18n
+and before you start adding the languages files you won't need to register templates yourself.
 
 ### Using tap-i18n in Your Package Templates
 
 See "The tap-i18n Handlebars helper" section above.
 
-## Deploying Projects That Uses tap-i18n with meteor bundle
-
-If you use `meteor bundle` to deploy your meteor project you'll have add the
-unified languages files to the bundle in order for it to work. follow these
-steps:
-
-    $ cd your-meteor-project
-    $ meteor bundle new-bundle.tar.gz
-    $ tar -xvzf new-bundle.tar.gz
-    $ rm new-bundle.tar.gz
-    $ cp -r .meteor/local/tap-i18n bundle
-    $ tar -cvzf new-bundle.tar.gz bundle
-    $ rm -ri bundle # -ri is used to avoid mistakes use -rf
-
-## Deploying Projects That Uses tap-i18n to \*.meteor.com
-
-If you wish to deploy your project to Meteor's cloud set your project-tap.i18n as
-follow:
-
-    project-tap.i18n:
-    -----------------
-    {
-        "build_files_path": "public/tap-i18n",
-        "browser_path": "/tap-i18n"
-    }
-
-and then call `meteor deploy` as usual.
-
 ## Unit Testing
 
-We have more than one unittest to test the different ways tap-i18n might be used in a
-certain project, to test all of them run:
-
-    $ ./unittest/unittest-all
-
-The unittest will be available on: [http://localhost:3000](http://localhost:3000) .
-
-We call the different ways tap-i18n might be used *environments*. Each time
-you'll break the run of the above command (by pressing ctrl+c) the test for
-another environment will run, refresh your browser to load the test for the new
-environment.
-
-You can also test a specific environment:
-
-    # tap-i18n is disabled in the project level
-    $ ./unittest/unittest-disabled 
-
-    # tap-i18n enabled in the project level - default project-tap.i18n
-    $ ./unittest/unittest-enabled
-
-    # tap-i18n enabled in the project level - custom supported language is set on project-tap.i18n
-    $ ./unittest/unittest-enabled_custom_supported_languages
-
-    # tap-i18n enabled in the project level - custom build files path is set on project-tap.i18n
-    $ ./unittest/unittest-enabled_custom_build_files_path 
-
-    # tap-i18n enabled in the project level - project level translations
-    $ ./unittest/unittest-test_enabled_project_level_translations
-
-    # tap-i18n enabled in the project level - project level translations in a custom translation dir
-    $ ./unittest/unittest-test_enabled_project_level_translations_custom_translations_dir
-
-    # tap-i18n package has no translation for the fallback language. Since the
-    # build fails for this environment, there are only bash test for it. Break
-    # (ctrl+c) after Meteor build fails to run bash tests.
-    $ ./unittest/unittest-package_with_no_fallback_language 
+See /unittest/test-packages/README.md .
 
 ## License
 
@@ -685,6 +590,5 @@ MIT
 ## Credits
 
 * [i18next](http://i18next.com/)
-* [wrench-js](https://github.com/ryanmcgrath/wrench-js)
 * [simple-schema](https://github.com/aldeed/meteor-simple-schema)
 * [http-methods](https://github.com/CollectionFS/Meteor-http-methods)

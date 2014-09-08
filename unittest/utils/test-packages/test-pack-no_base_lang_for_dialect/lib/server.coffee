@@ -1,1 +1,0 @@
-#TAPi18n.register()
