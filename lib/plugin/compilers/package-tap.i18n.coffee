@@ -14,6 +14,8 @@ schema = new SimpleSchema
     optional: true
 
 Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
+  compiler_configuration.registerInputFile(compileStep)
+
   if helpers.isPackage(compileStep)
     compileStep.error
       message: "More than one package-tap.i18n found for package: #{compileStep.packageName}",

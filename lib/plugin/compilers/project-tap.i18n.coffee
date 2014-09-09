@@ -34,6 +34,8 @@ getProjectConfJs = share.getProjectConfJs = (conf) ->
   """
 
 Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
+  compiler_configuration.registerInputFile(compileStep)
+
   if helpers.isPackage(compileStep)
     compileStep.error
       message: "Can't load project-tap.i18n in a package: #{compileStep.packageName}",

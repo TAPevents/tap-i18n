@@ -8,3 +8,16 @@ share.compiler_configuration =
                                         # Default project conf is inserted by the *.i18.json compiler to be used
                                         # in case the project has no project-tap.i18n
   project_tap_i18n_loaded_for: [] # Keeps track of the archs we've loaded project_tap_i18n for
+
+  tap_i18n_input_files: []
+  registerInputFile: (compileStep) ->
+    input_file = "#{compileStep.arch}:#{compileStep.inputPath}"
+    if input_file in @tap_i18n_input_files
+      # A new build cycle
+      @packages = []
+      @templates_registered_for = []
+      @default_project_conf_inserted_for = []
+      @project_tap_i18n_loaded_for = []
+      @tap_i18n_input_files = []
+
+    @tap_i18n_input_files.push(input_file)

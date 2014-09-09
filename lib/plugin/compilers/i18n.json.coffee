@@ -4,6 +4,8 @@ helpers = share.helpers
 compiler_configuration = share.compiler_configuration
 
 Plugin.registerSourceHandler "i18n.json", (compileStep) ->
+  compiler_configuration.registerInputFile(compileStep)
+
   language = path.basename(compileStep.inputPath).split(".").slice(0, -2).pop()
   if _.isUndefined(language) or _.isEmpty(language)
     compileStep.error
