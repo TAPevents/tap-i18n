@@ -1,4 +1,10 @@
-2014.09.09, Version 1.0.0
+2014.09.10, Version 1.0.1
+
+* Allow project-tap.i18n's supported_languages to have a lang with no
+translation files
+* [bugfix] tap-i18n compiler: init compiler_configuration upon a rebuild
+
+2014.09.09, Version 1.0.0, 5964838f9ab085136d45899d38bb126958c3deda
 
 * Build plugin rewritten
 * tap-i18n now fully support Meteor v0.9
