@@ -1,4 +1,8 @@
-2014.09.10, Version 1.0.1
+2014.09.10, Version 1.0.2
+
+* [bugfix] compiler: fix error for invalid JSON
+
+2014.09.10, Version 1.0.1, 7f92b8fbd8ced171873b8afd70a808f51167e7ac
 
 * Allow project-tap.i18n's supported_languages to have a lang with no
 translation files
