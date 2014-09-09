@@ -48,7 +48,7 @@ Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
       sourcePath: compileStep.inputPath
     return
 
-  project_tap_i18n = helpers.loadJSON compileStep.inputPath
+  project_tap_i18n = helpers.loadJSON compileStep.inputPath, compileStep
 
   if not project_tap_i18n?
     project_tap_i18n = schema.clean {}

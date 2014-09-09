@@ -19,7 +19,7 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
       sourcePath: compileStep.inputPath
     return
 
-  translations = helpers.loadJSON(compileStep.inputPath)
+  translations = helpers.loadJSON compileStep.inputPath, compileStep
 
   output =
     """

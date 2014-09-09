@@ -36,7 +36,7 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
 
   helpers.markAsPackage(compileStep)
 
-  package_tap_i18n = helpers.loadJSON compileStep.inputPath
+  package_tap_i18n = helpers.loadJSON compileStep.inputPath, compileStep
 
   if not package_tap_i18n?
   	package_tap_i18n = schema.clean {}
