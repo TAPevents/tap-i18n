@@ -48,7 +48,12 @@ _.extend TAPi18n,
            lang_tag == self._fallback_language # fallback language is integrated to the bundle
           return @setStatusCode(404) # not found
 
-        return JSON.stringify self.translations[lang_tag]
+        language_translations = self.translations[lang_tag]
+        # returning {} if lang_tag is not in translations allows the project
+        # developer to force a language supporte with project-tap.i18n's
+        # supported_languages property, even if that language has no lang
+        # files.
+        return JSON.stringify(if language_translations? then language_translations else {})
 
     HTTP.methods methods
 
