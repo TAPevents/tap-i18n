@@ -5,7 +5,7 @@ Tinytest.add 'project with no project-tap.i18n - TAPi18n._getProjectLanguages() 
   test.equal TAPi18n._getProjectLanguages(), ["en", "bb", "cc-CC"]
 
 Tinytest.add 'project with no project-tap.i18n - TAPi18n.getLanguages() return expected value', (test) ->
-  test.equal TAPi18n.getLanguages(), {"en":["English","English"],"bb":["bb","bb"],"cc-CC":["cc-CC","cc-CC"]}
+  test.equal TAPi18n.getLanguages(), {"en":{"name":"English","en":"English"},"bb":{"name":"bb","en":"bb"},"cc-CC":{"name":"cc-CC","en":"cc-CC"}}
 
 Tinytest.add 'project with no project-tap.i18n - project translation function works as expected', (test) ->
   test.equal TAPi18n.__("a01"), "n01"

@@ -1,4 +1,8 @@
-2014.09.10, Version 1.0.2
+2014.09.16, Version 1.0.3
+
+* [bugfix] TAPi18n.getLanguages() format is now compatible with docs
+
+2014.09.10, Version 1.0.2, 66fcd441f3b6a107db0aa32c8f3ea9692c1c8c09
 
 * [bugfix] compiler: fix error for invalid JSON
 

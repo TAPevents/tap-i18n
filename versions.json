@@ -2,7 +2,11 @@
   "dependencies": [
     [
       "application-configuration",
-      "1.0.1"
+      "1.0.2"
+    ],
+    [
+      "base64",
+      "1.0.0"
     ],
     [
       "binary-heap",
@@ -17,6 +21,10 @@
       "1.0.0"
     ],
     [
+      "boilerplate-generator",
+      "1.0.0"
+    ],
+    [
       "callback-hook",
       "1.0.0"
     ],
@@ -26,7 +34,7 @@
     ],
     [
       "coffeescript",
-      "1.0.2"
+      "1.0.3"
     ],
     [
       "ddp",
@@ -38,7 +46,7 @@
     ],
     [
       "ejson",
-      "1.0.1"
+      "1.0.2"
     ],
     [
       "follower-livedata",
@@ -54,7 +62,7 @@
     ],
     [
       "htmljs",
-      "1.0.0"
+      "1.0.1"
     ],
     [
       "id-map",
@@ -70,23 +78,23 @@
     ],
     [
       "logging",
-      "1.0.2"
-    ],
-    [
-      "meteor",
       "1.0.3"
     ],
     [
+      "meteor",
+      "1.1.0"
+    ],
+    [
       "minifiers",
-      "1.0.2"
+      "1.1.0"
     ],
     [
       "minimongo",
-      "1.0.2"
+      "1.0.3"
     ],
     [
       "mongo",
-      "1.0.4"
+      "1.0.5"
     ],
     [
       "observe-sequence",
@@ -114,7 +122,7 @@
     ],
     [
       "routepolicy",
-      "1.0.0"
+      "1.0.1"
     ],
     [
       "session",
@@ -134,10 +142,14 @@
     ],
     [
       "templating",
-      "1.0.5"
+      "1.0.6"
     ],
     [
       "tracker",
+      "1.0.2"
+    ],
+    [
+      "ui",
       "1.0.2"
     ],
     [
@@ -146,7 +158,11 @@
     ],
     [
       "webapp",
-      "1.0.3"
+      "1.1.1"
+    ],
+    [
+      "webapp-hashing",
+      "1.0.0"
     ]
   ],
   "pluginDependencies": [
@@ -156,26 +172,27 @@
         "blaze": "2.0.0",
         "ordered-dict": "1.0.0",
         "random": "1.0.0",
-        "templating": "1.0.5",
-        "coffeescript": "1.0.2",
+        "templating": "1.0.6",
+        "coffeescript": "1.0.3",
         "deps": "1.0.3",
         "tracker": "1.0.2",
         "underscore": "1.0.0",
         "json": "1.0.0",
         "check": "1.0.0",
         "geojson-utils": "1.0.0",
-        "minimongo": "1.0.2",
+        "minimongo": "1.0.3",
         "jquery": "1.0.0",
         "id-map": "1.0.0",
-        "meteor": "1.0.3",
-        "ejson": "1.0.1",
+        "meteor": "1.1.0",
+        "ejson": "1.0.2",
         "aldeed:simple-schema": "1.0.2",
+        "base64": "1.0.0",
         "observe-sequence": "1.0.2",
         "reactive-var": "1.0.1",
-        "htmljs": "1.0.0"
+        "htmljs": "1.0.1"
       }
     ]
   ],
-  "toolVersion": "meteor-tool@1.0.28",
+  "toolVersion": "meteor-tool@1.0.30",
   "format": "1.0"
 }
