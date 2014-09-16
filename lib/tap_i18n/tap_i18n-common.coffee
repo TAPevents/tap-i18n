@@ -50,4 +50,10 @@ _.extend TAPi18n,
     if not @._enabled()
       return null
 
-    return @.languages_available_for_project
+    languages = {}
+    for lang_tag, desc of @.languages_available_for_project
+      languages[lang_tag] =
+        name: desc[1]
+        en: desc[0]
+
+    languages
