@@ -33,7 +33,7 @@ _.extend TAPi18n,
     package_name.replace(/:/g, "-")
 
   addResourceBundle: (lang_tag, package_name, translations) ->
-    TAPi18next.addResourceBundle(lang_tag, TAPi18n._getPackageDomain(package_name), translations);
+    TAPi18next.addResourceBundle(lang_tag, TAPi18n._getPackageDomain(package_name), translations)
 
   _getProjectLanguages: () ->
     # Return an array of languages available for the current project
