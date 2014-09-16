@@ -4,6 +4,30 @@
 
 **tap-i18n** is a Meteor package for [Meteor](http://www.meteor.com) that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for project and package developers.
 
+**Add your projects/packages to our [Internationalized with tap:i18n](https://github.com/TAPevents/tap-i18n/wiki/Internationalized-with-tap:i18n) wiki page**
+
+**Users of tap-i18n v0.9** and below, read [tap:i18n v1.0 New Feautres & Backward Compatibility](https://github.com/TAPevents/tap-i18n/wiki/tap:i18n-v1.0-New-Feautres-&-Backward-Compatibility) and update your app to v1.0 .
+
+## Contents
+
+- [Key Features](#key-features)
+- [Quickstart](#quickstart)
+- [Documentation & Examples](#documentation--examples)
+    - [TAPi18n API](#tapi18n-api)
+    - [The tap-i18n Helpers](#the-tap-i18n-helpers)
+    - [Languages Tags and Translations Prioritization](#languages-tags-and-translations-prioritization)
+    - [Structure of Languages Files](#structure-of-languages-files)
+    - [Configuring tap-i18n](#configuring-tap-i18n)
+    - [Disabling tap-i18n](#disabling-tap-i18n)
+- [Developing Packages](#developing-packages)
+    - [tap-i18n Two Work Modes](#tap-i18n-two-work-modes)
+    - [Setup tap-i18n](#setup-tap-i18n)
+    - [Package Level tap-i18n Functions](#package-level-tap-i18n-functions)
+    - [Using tap-i18n in Your Package Templates](#using-tap-i18n-in-your-package-templates)
+- [Unit Testing](#unit-testing)
+- [License](#license)
+- [Credits](#credits)
+
 ## Key Features
 
 ### Readable Syntax
@@ -180,7 +204,7 @@ to learn about its possible options.
 **On the server**, TAPi18n.__ is not a reactive resource. You have to specify
 the language tag you want to translate the key to.
 
-### The tap-i18n Handlebars Helpers
+### The tap-i18n Helpers
 
 ### The \_  Helper
 
@@ -320,7 +344,7 @@ Assuming the client language is en.
 * The translation will get updated automatically after calls to
   TAPi18n.setLanguage().
 
-### More Handlebars helpers
+### More helpers
 
 **{{languageTag}}:**
 
@@ -569,7 +593,7 @@ and before you start adding the languages files you won't need to register templ
 
 ### Using tap-i18n in Your Package Templates
 
-See "The tap-i18n Handlebars helper" section above.
+See "The tap-i18n helper" section above.
 
 ## Unit Testing
 
