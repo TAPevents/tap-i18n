@@ -2,7 +2,7 @@
 
 ### Internationalization for Meteor
 
-**tap-i18n** is a [Meteor](http://www.meteor.com) that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for Meteor apps and packages,
+**tap-i18n** is a [Meteor](http://www.meteor.com) package that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for Meteor apps and packages,
 with the goal of standardizing the way package developers internationalize their
 packages.
 
