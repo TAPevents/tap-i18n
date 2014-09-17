@@ -8,6 +8,8 @@
 
 **Users of tap-i18n v0.9** and below, read [tap:i18n v1.0 New Feautres & Backward Compatibility](https://github.com/TAPevents/tap-i18n/wiki/tap:i18n-v1.0-New-Feautres-&-Backward-Compatibility) and update your app to v1.0 .
 
+Check [tap-i18n-db](https://github.com/TAPevents/tap-i18n-db) for Meteor collections internationalization.
+
 ## Contents
 
 - [Key Features](#key-features)
