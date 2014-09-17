@@ -2,7 +2,9 @@
 
 ### Internationalization for Meteor
 
-**tap-i18n** is a Meteor package for [Meteor](http://www.meteor.com) that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for project and package developers.
+**tap-i18n** is a [Meteor](http://www.meteor.com) that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for Meteor apps and packages,
+with the goal of standardizing the way package developers internationalize their
+packages.
 
 **Add your projects/packages to our [Internationalized with tap:i18n](https://github.com/TAPevents/tap-i18n/wiki/Internationalized-with-tap:i18n) wiki page**
 
@@ -32,6 +34,10 @@ Check [tap-i18n-db](https://github.com/TAPevents/tap-i18n-db) for Meteor collect
 
 ## Key Features
 
+### All Encompassing
+
+tap-i18n is designed in a way that distinguishes the role of the package developer, that is, making the package available in multiple languages, from the role of the app developer which is to translate the app, but more importantly, to manage the app's internationalization aspects, such as: setting the supported languages for the project, setting the client language, configuring CDNs for language files, and so on.
+
 ### Readable Syntax
 
 ```handlebars
@@ -59,10 +65,6 @@ tap-i18n uses [i18next](http://i18next.com/) as its internationalization engine 
 }
 ```
 See more examples below.
-
-### All Encompassing
-
-Understanding the different perspectives of project and package developers, tap-i18n provides specific tools for project and package developers, allowing for total coverage and seamless integration into the Meteor package ecosystem.
 
 ### Transparent Namespacing 
 
