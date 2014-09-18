@@ -536,7 +536,7 @@ Example for the default languages\_files\_dir path and its structure:
 Your package's package.js should be structured as follow:
 
     Package.on_use(function (api) {
-      api.use(["tap-i18n"], ["client", "server"]);
+      api.use(["tap:i18n@1.0.0"], ["client", "server"]);
     
       .
       .
