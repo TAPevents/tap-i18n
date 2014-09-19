@@ -142,7 +142,7 @@
     ],
     [
       "tap:i18n",
-      "1.0.3"
+      "1.0.4"
     ],
     [
       "templating",
@@ -170,6 +170,6 @@
     ]
   ],
   "pluginDependencies": [],
-  "toolVersion": "meteor-tool@1.0.30",
+  "toolVersion": "meteor-tool@1.0.31",
   "format": "1.0"
 }

@@ -1,4 +1,9 @@
-2014.09.16, Version 1.0.3
+2014.09.19, Version 1.0.4
+
+* [bugfix] each language file should have its own output path
+  (this bug prevented multiple files per language in the app level)
+
+2014.09.16, Version 1.0.3, 888f3dd5066e320513a76f5bb1ce711a7a84478d
 
 * [bugfix] TAPi18n.getLanguages() format is now compatible with docs
 
