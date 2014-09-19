@@ -88,8 +88,9 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
         """
       compiler_configuration.templates_registered_for.push helpers.getCompileStepArchAndPackage(compileStep)
 
+  output_path = compileStep.inputPath.replace /json$/, "js"
   compileStep.addJavaScript
-    path: "#{language}.js",
+    path: output_path,
     sourcePath: compileStep.inputPath,
     data: output,
     bare: false
