@@ -1,4 +1,10 @@
-2014.09.19, Version 1.0.4
+2014.09.24, Version 1.0.5
+
+* Project level: languages files should be common to server and client
+* Fix unitests - add languages files to the tree
+* Remove redundant output from i18n.json and project-tap.i18n compilers
+
+2014.09.19, Version 1.0.4, 4d843a11cf757ef6d2ff6534a1c6b757b91eedda
 
 * [bugfix] each language file should have its own output path
   (this bug prevented multiple files per language in the app level)
