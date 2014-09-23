@@ -29,6 +29,12 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
 
   # only for project
   if not helpers.isPackage(compileStep)
+    if /^(client|server)/.test(compileStep.inputPath)
+      compileStep.error
+        message: "Languages files should be common to the server and the client. Do not put them under /client or /server .",
+        sourcePath: compileStep.inputPath
+      return
+
     # add the language names to TAPi18n.languages_available_for_project 
     language_name = [language, language]
     if language_names[language]?

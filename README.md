@@ -109,9 +109,13 @@ $ meteor add tap:i18n
 
 Translations files should end with lang_tag.i18n.json.
 
-You can split translations of a certain language to multiple files. We ignore prefixed
-text. You can have file named: menu.en.i18n.json, we add its translations the same way
-we add those of en.i18n.json . 
+You can split translations of a certain language to multiple files, we ignore
+the prefixed text, e.g., we add the translations of menu.en.i18n.json in the
+same way we add those of en.i18n.json .
+
+You can put languages files anywhere in your project tree, as long as they are
+common to both your server and client - **do not put languages files under
+/client or under /server**.
 
 **Step 4:** Initiate the client language on startup
 
@@ -390,7 +394,9 @@ Languages files should be named: arbitrary.text.lang_tag.i18n.json . e.g., en.i1
 
 You can have more than one file for the same language.
 
-You can put languages files anywhere in your project tree.
+You can put languages files anywhere in your project tree, as long as they are
+common to both your server and client - **do not put languages files under
+/client or under /server**.
 
 Example for languages files:
 
