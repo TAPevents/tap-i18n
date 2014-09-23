@@ -29,7 +29,6 @@ getProjectConfJs = share.getProjectConfJs = (conf) ->
   """
     TAPi18n.conf = #{JSON.stringify(conf)};
     TAPi18n.languages_available_for_project["#{globals.fallback_language}"] = #{JSON.stringify fallback_language_name};
-    TAPi18n[TAPi18n.conf.helper_name] = TAPi18n._getPackageI18nextProxy("#{globals.project_translations_domain}");
 
   """
 

@@ -33,11 +33,14 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
     language_name = [language, language]
     if language_names[language]?
       language_name = language_names[language]
-    output +=
-      """
-      TAPi18n.languages_available_for_project["#{language}"] = #{JSON.stringify language_name};
 
-      """
+    if language != globals.fallback_language
+      # the name for the fallback_language is part of the getProjectConfJs()'s output
+      output +=
+        """
+        TAPi18n.languages_available_for_project["#{language}"] = #{JSON.stringify language_name};
+
+        """
 
     # If this is a project but project-tap.i18n haven't compiled yet add default project conf
     # for case there is no project-tap.i18n defined in this project.
