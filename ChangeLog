@@ -1,4 +1,10 @@
-2014.09.24, Version 1.0.5
+2014.09.24, Version 1.0.6
+
+* [bugfix] Project level: Make loading of tap:i18n files insensitive to order by
+  Registering template helpers as soon as tap:i18n gets enabled and not on
+  Meteor.ready() . Thanks to @danieljonce for reporting this issue
+
+2014.09.24, Version 1.0.5, df044dc3523d1ebb608f1e115a31539b4ba42742
 
 * Project level: languages files should be common to server and client
 * Fix unitests - add languages files to the tree
