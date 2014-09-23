@@ -9,10 +9,8 @@ _.extend TAPi18n,
 
   _loaded_lang_session_key: "TAPi18n::loaded_lang"
 
-  conf: null # This parameter will be set by the js that is being added by the
-             # build plugin of project-tap.i18n.
-             # if it isn't null we assume that it is valid (we clean and
-             # validate it thoroughly during the build process)
+  conf: null # if conf isn't null we assume that we are tap:i18n is enabled for the project.
+             # We assume conf is valid, we sterilize and validate it during the build process.
 
   packages: {} # Stores the packages' package-tap.i18n jsons
 
@@ -24,6 +22,20 @@ _.extend TAPi18n,
 
   translations: {} # Stores the packages/project translations - Server side only
                    # fallback_language translations are not stored here
+
+  _enable: (conf) ->
+    # tap:i18n gets enabled for a project once a conf file is set for it.
+    # It can be either a conf object that was set by project-tap.i18n file or
+    # a default conf, which is being added if the project has lang files
+    # (*.i18n.json) but not project-tap.i18n
+    @conf = conf
+
+    @._onceEnabled()
+
+  _onceEnabled: () ->
+    # The arch specific code can use this for procedures that should be performed once
+    # tap:i18n gets enabled (project conf file is being set)
+    return
 
   _enabled: ->
     # read the comment of @conf

@@ -126,6 +126,9 @@ _.extend TAPi18n,
 
       TAPi18next.t "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
 
+  _onceEnabled: () ->
+    TAPi18n._registerHelpers globals.project_translations_domain
+
   setLanguage: (lang_tag) ->
     @_loadLanguage(lang_tag).then ->
       TAPi18next.setLng(lang_tag)
@@ -141,9 +144,3 @@ _.extend TAPi18n,
     if session_lang? then session_lang else @._fallback_language
 
 TAPi18n.__ = TAPi18n._getPackageI18nextProxy(globals.project_translations_domain)
-
-Meteor.startup ->
-  # If tap-i18n is enabled for that project register the project domain
-  # template helper
-  if TAPi18n.conf?
-    TAPi18n._registerHelpers globals.project_translations_domain

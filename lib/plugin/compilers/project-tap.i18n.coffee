@@ -27,7 +27,7 @@ getProjectConfJs = share.getProjectConfJs = (conf) ->
   fallback_language_name = language_names[globals.fallback_language]
 
   """
-    TAPi18n.conf = #{JSON.stringify(conf)};
+    TAPi18n._enable(#{JSON.stringify(conf)});
     TAPi18n.languages_available_for_project["#{globals.fallback_language}"] = #{JSON.stringify fallback_language_name};
 
   """
