@@ -1,4 +1,4 @@
-# tap-i18n 
+# tap-i18n
 
 ### Internationalization for Meteor
 
@@ -8,7 +8,7 @@ packages.
 
 **Add your projects/packages to our [Internationalized with tap:i18n](https://github.com/TAPevents/tap-i18n/wiki/Internationalized-with-tap:i18n) wiki page**
 
-**Users of tap-i18n v0.9** and below, read [tap:i18n v1.0 New Feautres & Backward Compatibility](https://github.com/TAPevents/tap-i18n/wiki/tap:i18n-v1.0-New-Feautres-&-Backward-Compatibility) and update your app to v1.0 .
+**Users of tap-i18n v0.9** and below, read [tap:i18n v1.0 New Features & Backward Compatibility](https://github.com/TAPevents/tap-i18n/wiki/tap:i18n-v1.0-New-Features-&-Backward-Compatibility) and update your app to v1.0 .
 
 Check [tap-i18n-db](https://github.com/TAPevents/tap-i18n-db) for Meteor collections internationalization.
 
@@ -59,14 +59,14 @@ tap-i18n uses [i18next](http://i18next.com/) as its internationalization engine 
 **i18n/en.i18n.json**
 
 ```json
-{ 
+{
   "inbox_status": "Hey, %s! You have received one new message today.",
-  "inbox_status_plural": "Hey, %s! You have received %s new messages today." 
+  "inbox_status_plural": "Hey, %s! You have received %s new messages today."
 }
 ```
 See more examples below.
 
-### Transparent Namespacing 
+### Transparent Namespacing
 
 You don't need to worry about domain prefixing or package conflicts when you translate your project or package. Behind the scenes we automatically generate scoped namesapaces for you.
 
@@ -79,7 +79,7 @@ You don't need to worry about domain prefixing or package conflicts when you tra
 
 ## Quickstart
 
-**Step 1:** Install tap-i18n using meteorite in your project's root directory:
+**Step 1:** Install tap-i18n using meteor:
 
 ```bash
 $ meteor add tap:i18n
@@ -94,7 +94,7 @@ $ meteor add tap:i18n
 ```
 
 **Step 3:** Define translations in JSON format:
-  
+
 **i18n/en.i18n.json**
 
 ```json
@@ -117,9 +117,9 @@ You can put languages files anywhere in your project tree, as long as they are
 common to both your server and client - **do not put languages files under
 /client or under /server**.
 
-**Step 4:** Initiate the client language on startup
+**Step 4:** Initiate the client language on startup (optional)
 
-If you want the client to be served by a specific language on startup 
+If you want the client to be served by a specific language on startup
 
 Assuming that you have a function getUserLanguage() that returns the language
 for tag for the current user.
@@ -205,7 +205,7 @@ Translates key to the current client's language. If inside a reactive
 computation, invalidate the computation the next time the client language get
 changed (by TAPi18n.setLanguage).
 
-The function is a proxy to the i18next.t() method. 
+The function is a proxy to the i18next.t() method.
 Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
 to learn about its possible options.
 
@@ -466,7 +466,7 @@ project, will be available.
 
 **cdn\_path:** An alternative path from which you want tap-i18n resources to be loaded. Example: "http://cdn.example.com/tap-i18n".
 
-Notes: 
+Notes:
 * We use AJAX to load the languages files so you'll have to set CORS on your CDN.
 
 ### Disabling tap-i18n
@@ -543,17 +543,17 @@ Your package's package.js should be structured as follow:
 
     Package.on_use(function (api) {
       api.use(["tap-i18n"], ["client", "server"]);
-    
+
       .
       .
       .
-    
+
       // You must load your package's package-tap.i18n before you load any
       // template
       api.add_files("package-tap.i18n", ["client", "server"]);
-    
+
       // Templates loads (if any)
-    
+
       // List your languages files so Meteor will watch them and rebuild your
       // package as they change.
       // You must load the languages files after you load your templates -
@@ -583,7 +583,7 @@ Translates key to the current client's language. If inside a reactive
 computation, invalidate the computation the next time the client language get
 changed (by TAPi18n.setLanguage).
 
-The function is a proxy to the i18next.t() method. 
+The function is a proxy to the i18next.t() method.
 Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
 to learn about its possible options.
 
