@@ -8,7 +8,7 @@ packages.
 
 **Add your projects/packages to our [Internationalized with tap:i18n](https://github.com/TAPevents/tap-i18n/wiki/Internationalized-with-tap:i18n) wiki page**
 
-**Users of tap-i18n v0.9** and below, read [tap:i18n v1.0 New Features & Backward Compatibility](https://github.com/TAPevents/tap-i18n/wiki/tap:i18n-v1.0-New-Features-&-Backward-Compatibility) and update your app to v1.0 .
+**Users of tap-i18n v0.9** and below, read [tap:i18n v1.0 New Features & Backward Compatibility](https://github.com/TAPevents/tap-i18n/wiki/tap:i18n-v1.0-New-Feautres-&-Backward-Compatibility) and update your app to v1.0 .
 
 Check [tap-i18n-db](https://github.com/TAPevents/tap-i18n-db) for Meteor collections internationalization.
 
