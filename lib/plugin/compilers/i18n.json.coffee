@@ -30,7 +30,7 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
 
   # only for project
   if not helpers.isPackage(compileStep)
-    if /^(client|server)/.test(input_path)
+    if /^(client|server)/.test(compileStep.inputPath)
       compileStep.error
         message: "Languages files should be common to the server and the client. Do not put them under /client or /server .",
         sourcePath: input_path

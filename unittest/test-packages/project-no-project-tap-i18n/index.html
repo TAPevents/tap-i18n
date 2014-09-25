@@ -1,3 +1,15 @@
 <template name="project__no_project_tap_i18n__basic_template">
     {{_ "a01" }}, {{_ "a05"}}, {{_ "a10"}}, {{_ "a100" }}
 </template>
+
+<template name="project__no_project_tap_i18n__templates_introduced_by_packages">
+  {{>blank_tap_i18n_package__a01_template}}
+  {{>blank_tap_i18n_package__a01_template__post_load}}
+  {{>blank_tap_i18n_package__a01_template__post_load__registered_with_registerTemplate}}
+  {{>custom_tap_i18n_package__a01_template}}
+  {{>custom_tap_i18n_package__a01_template__post_load}}
+  {{>custom_tap_i18n_package__a01_template__post_load__registered_with_registerTemplate}}
+  {{>empty_tap_i18n_package__a01_template}}
+  {{>empty_tap_i18n_package__a01_template__post_load}}
+  {{>empty_tap_i18n_package__a01_template__post_load__registered_with_registerTemplate}}
+</template>

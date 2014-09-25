@@ -51,7 +51,7 @@ _.extend TAPi18n,
 
           jqXHR.done (data) ->
             for package_name, package_keys of data
-              TAPi18next.addResourceBundle(languageTag, self._getPackageDomain(package_name), package_keys)
+              TAPi18n.addResourceBundle(languageTag, package_name, package_keys)
 
             self._loaded_languages.push languageTag
 
