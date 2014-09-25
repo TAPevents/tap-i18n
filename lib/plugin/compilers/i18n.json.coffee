@@ -5,21 +5,22 @@ compiler_configuration = share.compiler_configuration
 
 Plugin.registerSourceHandler "i18n.json", (compileStep) ->
   compiler_configuration.registerInputFile(compileStep)
+  input_path = compileStep._fullInputPath
 
-  language = path.basename(compileStep.inputPath).split(".").slice(0, -2).pop()
+  language = path.basename(input_path).split(".").slice(0, -2).pop()
   if _.isUndefined(language) or _.isEmpty(language)
     compileStep.error
-      message: "Language-tag is not specified for *.i18n.json file: `#{compileStep.inputPath}'",
-      sourcePath: compileStep.inputPath
+      message: "Language-tag is not specified for *.i18n.json file: `#{input_path}'",
+      sourcePath: input_path
     return
 
   if not RegExp("^#{globals.langauges_tags_regex}$").test(language)
     compileStep.error
-      message: "Can't recognise '#{language}' as a language-tag: `#{compileStep.inputPath}'",
-      sourcePath: compileStep.inputPath
+      message: "Can't recognise '#{language}' as a language-tag: `#{input_path}'",
+      sourcePath: input_path
     return
 
-  translations = helpers.loadJSON compileStep.inputPath, compileStep
+  translations = helpers.loadJSON input_path, compileStep
 
   output =
     """
@@ -29,10 +30,10 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
 
   # only for project
   if not helpers.isPackage(compileStep)
-    if /^(client|server)/.test(compileStep.inputPath)
+    if /^(client|server)/.test(input_path)
       compileStep.error
         message: "Languages files should be common to the server and the client. Do not put them under /client or /server .",
-        sourcePath: compileStep.inputPath
+        sourcePath: input_path
       return
 
     # add the language names to TAPi18n.languages_available_for_project 
@@ -97,9 +98,9 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
         """
       compiler_configuration.templates_registered_for.push helpers.getCompileStepArchAndPackage(compileStep)
 
-  output_path = compileStep.inputPath.replace /json$/, "js"
+  output_path = input_path.replace /json$/, "js"
   compileStep.addJavaScript
     path: output_path,
-    sourcePath: compileStep.inputPath,
+    sourcePath: input_path,
     data: output,
     bare: false

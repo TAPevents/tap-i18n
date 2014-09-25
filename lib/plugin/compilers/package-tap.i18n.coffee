@@ -15,28 +15,29 @@ schema = new SimpleSchema
 
 Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   compiler_configuration.registerInputFile(compileStep)
+  input_path = compileStep._fullInputPath
 
   if helpers.isPackage(compileStep)
     compileStep.error
       message: "More than one package-tap.i18n found for package: #{compileStep.packageName}",
-      sourcePath: compileStep.inputPath
+      sourcePath: input_path
     return
 
   if helpers.isProjectI18nLoaded(compileStep)
     compileStep.error
       message: "Can't compile package-tap.i18n if project-tap.i18n is present",
-      sourcePath: compileStep.inputPath
+      sourcePath: input_path
     return
 
   if helpers.isDefaultProjectConfInserted(compileStep)
     compileStep.error
       message: "package-tap.i18n should be loaded before languages files (*.i18n.json)",
-      sourcePath: compileStep.inputPath
+      sourcePath: input_path
     return
 
   helpers.markAsPackage(compileStep)
 
-  package_tap_i18n = helpers.loadJSON compileStep.inputPath, compileStep
+  package_tap_i18n = helpers.loadJSON input_path, compileStep
 
   if not package_tap_i18n?
   	package_tap_i18n = schema.clean {}
@@ -47,7 +48,7 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   catch error
     compileStep.error
       message: "File `#{file_path}' is an invalid package-tap.i18n file (#{error})",
-      sourcePath: compileStep.inputPath
+      sourcePath: input_path
     return
 
   package_name = compileStep.packageName
@@ -81,6 +82,6 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
 
   compileStep.addJavaScript
     path: "package-i18n.js",
-    sourcePath: compileStep.inputPath,
+    sourcePath: input_path,
     data: package_i18n_js_file,
     bare: false

@@ -19,6 +19,6 @@ _.extend share.helpers,
         if compileStep?
           compileStep.error
             message: "Can't load `#{file_path}' JSON",
-            sourcePath: compileStep.inputPath
+            sourcePath: compileStep._fullInputPath
 
         throw new Error "Can't load `#{file_path}' JSON"

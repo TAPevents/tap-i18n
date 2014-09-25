@@ -11,7 +11,7 @@ share.compiler_configuration =
 
   tap_i18n_input_files: []
   registerInputFile: (compileStep) ->
-    input_file = "#{compileStep.arch}:#{compileStep.inputPath}"
+    input_file = "#{compileStep.arch}:#{compileStep._fullInputPath}"
     if input_file in @tap_i18n_input_files
       # A new build cycle
       @packages = []

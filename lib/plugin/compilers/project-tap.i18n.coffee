@@ -34,20 +34,21 @@ getProjectConfJs = share.getProjectConfJs = (conf) ->
 
 Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
   compiler_configuration.registerInputFile(compileStep)
+  input_path = compileStep._fullInputPath
 
   if helpers.isPackage(compileStep)
     compileStep.error
       message: "Can't load project-tap.i18n in a package: #{compileStep.packageName}",
-      sourcePath: compileStep.inputPath
+      sourcePath: input_path
     return
 
   if helpers.isProjectI18nLoaded(compileStep)
     compileStep.error
       message: "Can't have more than one project-tap.i18n",
-      sourcePath: compileStep.inputPath
+      sourcePath: input_path
     return
 
-  project_tap_i18n = helpers.loadJSON compileStep.inputPath, compileStep
+  project_tap_i18n = helpers.loadJSON input_path, compileStep
 
   if not project_tap_i18n?
     project_tap_i18n = schema.clean {}
@@ -58,7 +59,7 @@ Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
   catch error
     compileStep.error
       message: "File `#{file_path}' is an invalid project-tap.i18n file (#{error})",
-      sourcePath: compileStep.inputPath
+      sourcePath: input_path
     return
 
   project_i18n_js_file = getProjectConfJs project_tap_i18n
@@ -67,6 +68,6 @@ Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
 
   compileStep.addJavaScript
     path: "project-i18n.js",
-    sourcePath: compileStep.inputPath,
+    sourcePath: input_path,
     data: project_i18n_js_file,
     bare: false
