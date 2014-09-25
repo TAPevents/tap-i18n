@@ -1,4 +1,11 @@
-2014.09.24, Version 1.0.6
+2014.09.25, Version 1.0.7
+
+* [bugfix] Packages non-fallback languages now load see issue #13 Thanks
+  to @francocatena .
+* [bugfix] tap:i18n files of packages under /packages directory now load
+  correctly
+
+2014.09.24, Version 1.0.6, 304e1ee00e2916646bf672fd53ef5a6cceb69db4
 
 * [bugfix] Project level: Make loading of tap:i18n files insensitive to order by
   Registering template helpers as soon as tap:i18n gets enabled and not on
