@@ -199,6 +199,7 @@ The returned object is in the following format:
 ```
 
 **TAPi18n.__(key, options, lang_tag) (Server)**
+
 **TAPi18n.__(key, options) (Client)**
 
 Translates key to the current client's language. If inside a reactive
@@ -577,6 +578,7 @@ that contain all the project's translations.
 The following functions are added to your package namespace by tap-i18n:
 
 **\_\_("key", options, lang_tag) (Server)**
+
 **\_\_("key", options) (Client)**
 
 Translates key to the current client's language. If inside a reactive
@@ -593,6 +595,7 @@ the language tag you want to translate the key to.
 You can use package-tap.i18n to change the name of this function.
 
 **registerI18nHelper(template\_name) (Client)**
+
 **registerTemplate(template\_name) (Client) [obsolete alias, will be removed in future versions]**
 
 Register the \_ helper that maps to the \_\_ function for the
