@@ -423,6 +423,7 @@ Example for languages files:
         "color": "Colour"
     }
 
+* Do not use colons and periods in translation keys.
 * To avoid translation bugs all the keys in your package must be translated to
   English ("en") which is the default language, and the fallback language when
   tap-i18n is not installed or when it can't find a translation for a certain key.
