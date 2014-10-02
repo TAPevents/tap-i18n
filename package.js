@@ -24,25 +24,45 @@ Package.onUse(function (api) {
   api.use('tap:http-methods@0.0.23', server);
 
   // load TAPi18n
-  api.add_files('lib/globals.js', both);
+  api.addFiles('lib/globals.js', both);
 
   // load and init TAPi18next
-  api.add_files('lib/tap_i18next/tap_i18next-1.7.3.js', both);
+  api.addFiles('lib/tap_i18next/tap_i18next-1.7.3.js', both);
   api.export('TAPi18next');
-  api.add_files('lib/tap_i18next/tap_i18next_init.js', both);
+  api.addFiles('lib/tap_i18next/tap_i18next_init.js', both);
 
-  api.add_files('lib/tap_i18n/tap_i18n-helpers.coffee', both);
+  api.addFiles('lib/tap_i18n/tap_i18n-helpers.coffee', both);
 
   // We use the bare option since we need TAPi18n in the package level and
   // coffee adds vars to all (so without bare all vars are in the file level)
-  api.add_files('lib/tap_i18n/tap_i18n-common.coffee', server);
-  api.add_files('lib/tap_i18n/tap_i18n-common.coffee', client, {bare: true});
+  api.addFiles('lib/tap_i18n/tap_i18n-common.coffee', server);
+  api.addFiles('lib/tap_i18n/tap_i18n-common.coffee', client, {bare: true});
 
-  api.add_files('lib/tap_i18n/tap_i18n-server.coffee', server);
-  api.add_files('lib/tap_i18n/tap_i18n-client.coffee', client, {bare: true});
+  api.addFiles('lib/tap_i18n/tap_i18n-server.coffee', server);
+  api.addFiles('lib/tap_i18n/tap_i18n-client.coffee', client, {bare: true});
 
   api.export('TAPi18n');
 });
+
+Package.onTest(function(api){
+    api.use('tinytest');
+    api.use('tap:i18n');
+
+    api.addFiles([
+        'unittest/common-tests/both/disabled.coffee',
+        'unittest/common-tests/both/enabled.coffee'
+    ], both);
+
+    api.addFiles([
+        'unittest/common-tests/client/disabled.coffee',
+        'unittest/common-tests/client/enabled.coffee'
+    ], client);
+
+    api.addFiles([
+        'unittest/common-tests/server/disabled.coffee',
+        'unittest/common-tests/server/enabled.coffee'
+    ], server);
+})
 
 Package._transitional_registerBuildPlugin({
   name: 'tap-i18n-compiler',
