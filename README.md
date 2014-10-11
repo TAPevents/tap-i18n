@@ -243,18 +243,21 @@ Assuming the client language is en.
     en.i18n.json:
     -------------
     {
-        "click": "Click Here"
+        "click": "Click Here",
+        "html_key": "<b>BOLD</b>"
     }
 
     page.html:
     ----------
     <template name="x">
         {{_ "click"}}
+        {{{_ "html_key"}}} <!-- Note that we use triple {{{ for html rendering -->
     </template>
 
     output:
     -------
     Click Here
+    <b>BOLD</b>
 
 **Example 2:** Sprintf:
 
