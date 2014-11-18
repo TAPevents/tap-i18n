@@ -1,4 +1,5 @@
 fs = Npm.require 'fs'
+JSON.minify = JSON.minify || Npm.require("node-json-minify")
 
 # loads a json from file_path
 #
@@ -14,7 +15,7 @@ _.extend share.helpers,
       	return null
 
       try
-        content = JSON.parse(fs.readFileSync(file_path))
+        content = JSON.parse(JSON.minify(fs.readFileSync(file_path, "utf8")))
       catch error
         if compileStep?
           compileStep.error

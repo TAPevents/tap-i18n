@@ -47,6 +47,7 @@ Package.onUse(function (api) {
 Package._transitional_registerBuildPlugin({
   name: 'tap-i18n-compiler',
   use: ['coffeescript', 'underscore', 'aldeed:simple-schema@0.7.0', 'check', 'templating'],
+  npmDependencies: {"node-json-minify": "0.1.3-a"},
   sources: [
     'lib/globals.js',
 
