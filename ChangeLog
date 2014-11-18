@@ -1,3 +1,10 @@
+2014.11.18, Version 1.1.0
+
+* Allow the use of comments in *.i18n.json files
+* [MINOR] package.js: use METEOR@0.9.4, and the stable version of registerBuildPlugin
+* [MINOR] fix a symbolic link
+* [MINOR] add to the tree files that were missing due to wrong .gitignore
+
 2014.09.25, Version 1.0.7
 
 * [bugfix] Packages non-fallback languages now load see issue #13 Thanks
