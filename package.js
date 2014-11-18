@@ -10,7 +10,7 @@ server = 'server';
 client = 'client';
 
 Package.onUse(function (api) {
-  api.versionsFrom('METEOR@0.9.1');
+  api.versionsFrom('0.9.4');
 
   api.use('coffeescript', both);
   api.use('underscore', both);
@@ -44,7 +44,7 @@ Package.onUse(function (api) {
   api.export('TAPi18n');
 });
 
-Package._transitional_registerBuildPlugin({
+Package.registerBuildPlugin({
   name: 'tap-i18n-compiler',
   use: ['coffeescript', 'underscore', 'aldeed:simple-schema@0.7.0', 'check', 'templating'],
   npmDependencies: {"node-json-minify": "0.1.3-a"},
