@@ -1,3 +1,8 @@
+2014.11.22, Version 1.1.1
+
+* [bugfix] build plugin: don't assign _ var to global namespace. Thanks
+@smeijer . #30
+
 2014.11.18, Version 1.1.0
 
 * Allow the use of comments in *.i18n.json files
