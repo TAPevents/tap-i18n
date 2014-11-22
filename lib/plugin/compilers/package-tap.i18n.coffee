@@ -70,7 +70,7 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
       registerTemplate = registerI18nTemplate; // XXX OBSOLETE, kept for backward compatibility will be removed in the future
 
       // Record the list of templates prior to package load
-      _ = Package.underscore._;
+      var _ = Package.underscore._;
       Template = Package.templating.Template;
       if (typeof Template !== "object") {
         non_package_templates = [];

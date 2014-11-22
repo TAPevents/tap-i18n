@@ -24,7 +24,7 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
 
   output =
     """
-    _ = Package.underscore._;
+    var _ = Package.underscore._;
 
     """
 
