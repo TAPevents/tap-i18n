@@ -149,12 +149,16 @@
       "0.0.1"
     ],
     [
+      "tap-tests:pack-with-project-trans-tap-i18n",
+      "0.0.2"
+    ],
+    [
       "tap:http-methods",
       "0.0.23"
     ],
     [
       "tap:i18n",
-      "1.1.1"
+      "1.2.0"
     ],
     [
       "templating",
