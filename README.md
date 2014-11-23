@@ -12,7 +12,7 @@ packages.
 
 Check [tap-i18n-db](https://github.com/TAPevents/tap-i18n-db) for Meteor collections internationalization.
 
-Developed by <a href="http://www.meteorspark.com"><img src="http://www.meteorspark.com/logo/logo-github.png" title="MeteorSpark" alt="MeteorSpark"></a> [Professional Meteor Services](http://www.meteorspark.com) for <a href="http://tapevents.com/"><img src="http://www.meteorspark.com/logo/customers/tapevents.png" title="TAPevents" alt="TAPevents"></a> [World's Best Event Technology](http://tapevents.com/).
+Developed by <a href="http://www.meteorspark.com"><img src="http://www.meteorspark.com/logo/logo-github.png" title="MeteorSpark" alt="MeteorSpark"></a> [Professional Meteor Services](http://www.meteorspark.com)<br/> for <a href="http://tapevents.com/"><img src="http://tapevents.com/images/TAPevents_logo_144px.png" title="TAPevents" alt="TAPevents"></a>&nbsp; [Leading Conference Technology](http://tapevents.com/).
 
 ## Contents
 
