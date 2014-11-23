@@ -12,6 +12,11 @@ schema = new SimpleSchema
     defaultValue: "_"
     label: "Helper Name"
     optional: true
+  namespace:
+    type: String
+    defaultValue: null
+    label: "Translations Namespace"
+    optional: true
 
 Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   compiler_configuration.registerInputFile(compileStep)
@@ -53,12 +58,17 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
 
   package_name = compileStep.packageName
 
+  if not package_tap_i18n.namespace?
+    package_tap_i18n.namespace = package_name
+
+  namespace = package_tap_i18n.namespace
+
   package_i18n_js_file =
     """
     TAPi18n.packages["#{package_name}"] = #{JSON.stringify(package_tap_i18n)};
 
     // define package's translation function (proxy to the i18next)
-    #{package_tap_i18n.translation_function_name} = TAPi18n._getPackageI18nextProxy("#{package_name}");
+    #{package_tap_i18n.translation_function_name} = TAPi18n._getPackageI18nextProxy("#{namespace}");
 
     """
 

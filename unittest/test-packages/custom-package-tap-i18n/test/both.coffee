@@ -1,5 +1,5 @@
 Tinytest.add 'custom-package-tap-i18n - TAPi18n.packages generated correctly', (test) ->
-  test.equal Package["tap:i18n"].TAPi18n.packages, {"tap-tests:custom-package-tap-i18n":{"translation_function_name":"i18n_func","helper_name":"i18n_helper"}}
+  test.equal Package["tap:i18n"].TAPi18n.packages, {"tap-tests:custom-package-tap-i18n":{"translation_function_name":"i18n_func","helper_name":"i18n_helper","namespace":"tap-tests:blank-package-tap-i18n"}}
 
 Tinytest.add 'custom-package-tap-i18n - package translation function works as expected', (test) ->
   test.equal custom_tap_i18n_package__translate("a01"), "n01"

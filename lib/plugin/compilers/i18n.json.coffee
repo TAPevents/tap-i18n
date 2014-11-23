@@ -22,9 +22,16 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
 
   translations = helpers.loadJSON input_path, compileStep
 
+  package_name = if helpers.isPackage(compileStep) then compileStep.packageName else globals.project_translations_domain
   output =
     """
-    var _ = Package.underscore._;
+    var _ = Package.underscore._,
+        package_name = "#{package_name}",
+        namespace = "#{package_name}";
+
+    if (package_name != "#{globals.project_translations_domain}") {
+        namespace = TAPi18n.packages[package_name].namespace;
+    }
 
     """
 
@@ -58,13 +65,13 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
 
       helpers.markDefaultProjectConfInserted(compileStep)
 
+
   # if fallback_language -> integrate, otherwise add to TAPi18n.translations if server arch.
-  package_name = if helpers.isPackage(compileStep) then compileStep.packageName else globals.project_translations_domain
   if language == compiler_configuration.fallback_language
     output +=
     """
     // integrate the fallback language translations 
-    TAPi18n.addResourceBundle("#{compiler_configuration.fallback_language}", "#{package_name}", #{JSON.stringify translations});
+    TAPi18n.addResourceBundle("#{compiler_configuration.fallback_language}", namespace, #{JSON.stringify translations});
 
     """
   else if compileStep.archMatches "os"
@@ -74,11 +81,11 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
       TAPi18n.translations["#{language}"] = {};
     }
 
-    if(_.isUndefined(TAPi18n.translations["#{language}"]["#{package_name}"])) {
-      TAPi18n.translations["#{language}"]["#{package_name}"] = {};
+    if(_.isUndefined(TAPi18n.translations["#{language}"][namespace])) {
+      TAPi18n.translations["#{language}"][namespace] = {};
     }
 
-    _.extend(TAPi18n.translations["#{language}"]["#{package_name}"], #{JSON.stringify translations});
+    _.extend(TAPi18n.translations["#{language}"][namespace], #{JSON.stringify translations});
 
     """
 

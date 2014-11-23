@@ -86,7 +86,10 @@ _.extend TAPi18n,
   _registerHelpers: (package_name, template) ->
     self = @
 
-    tapI18nextProxy = @_getPackageI18nextProxy(package_name)
+    if package_name != globals.project_translations_domain
+      tapI18nextProxy = @_getPackageI18nextProxy(self.packages[package_name].namespace)
+    else
+      tapI18nextProxy = @_getPackageI18nextProxy(globals.project_translations_domain)
 
     underscore_helper = (key, args...) ->
       options = (args.pop()).hash

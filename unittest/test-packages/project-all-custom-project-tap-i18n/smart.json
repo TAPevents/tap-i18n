@@ -11,6 +11,9 @@
     },
     "tap-tests:empty-object-package-tap-i18n": {
         "path": "../empty-object-package-tap-i18n/"
+    },
+    "tap-tests:pack-with-project-trans-tap-i18n": {
+        "path": "../pack-with-project-trans-tap-i18n/"
     }
   }
 }
