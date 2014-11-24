@@ -1,3 +1,8 @@
+2014.11.25, Version 1.2.1
+
+* Register helpers with Template.template.helpers()
+* [bugfix] fix the package templates detection (got broken by a Meteor API change)
+
 2014.11.25, Version 1.2.0
 
 * package-tap.i18n: Introduce the namespace option
