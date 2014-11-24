@@ -81,12 +81,7 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
 
       // Record the list of templates prior to package load
       var _ = Package.underscore._;
-      Template = Package.templating.Template;
-      if (typeof Template !== "object") {
-        non_package_templates = [];
-      } else {
-        non_package_templates = _.keys(Template);
-      }
+      non_package_templates = _.keys(Template);
 
       """
 
