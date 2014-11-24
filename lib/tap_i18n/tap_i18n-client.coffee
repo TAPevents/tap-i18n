@@ -101,8 +101,10 @@ _.extend TAPi18n,
     # template specific helpers
     if package_name != globals.project_translations_domain
       # {{_ }}
-      if Template[template]?
-        Template[template][self.packages[package_name].helper_name] = underscore_helper
+      if Template[template]? and Template[template].helpers?
+        helpers = {}
+        helpers[self.packages[package_name].helper_name] = underscore_helper
+        Template[template].helpers(helpers)
 
     # global helpers
     else
