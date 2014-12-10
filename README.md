@@ -117,7 +117,7 @@ same way we add those of en.i18n.json .
 
 You can put languages files anywhere in your project tree, as long as they are
 common to both your server and client - **do not put languages files under
-/client or under /server**.
+/client, /server or /public**.
 
 **Step 4:** Initiate the client language on startup (optional)
 
@@ -402,7 +402,7 @@ You can have more than one file for the same language.
 
 You can put languages files anywhere in your project tree, as long as they are
 common to both your server and client - **do not put languages files under
-/client or under /server**.
+/client, /server or /public**.
 
 Example for languages files:
 
