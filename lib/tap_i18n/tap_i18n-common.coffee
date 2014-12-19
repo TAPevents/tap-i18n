@@ -9,7 +9,7 @@ _.extend TAPi18n,
 
   _loaded_lang_session_key: "TAPi18n::loaded_lang"
 
-  conf: null # if conf isn't null we assume that we are tap:i18n is enabled for the project.
+  conf: null # If conf isn't null we assume that tap:i18n is enabled for the project.
              # We assume conf is valid, we sterilize and validate it during the build process.
 
   packages: {} # Stores the packages' package-tap.i18n jsons

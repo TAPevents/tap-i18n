@@ -1,4 +1,4 @@
-loaded_lang_session_key = "#{TAPi18n._loaded_lang_session_key}"
+loaded_lang_session_key = TAPi18n._loaded_lang_session_key
 
 Session.set loaded_lang_session_key, null
 
@@ -35,12 +35,12 @@ _.extend TAPi18n,
     #
     # The above example will attempt to load pt-BR, pt and en
 
+    self = @
+
     dfd = new $.Deferred()
 
     if not @_enabled()
       return dfd.reject "tap-i18n is not enabled in the project level, check tap-i18n README"
-
-    self = @
 
     project_languages = self._getProjectLanguages()
 
