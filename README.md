@@ -166,7 +166,8 @@ Sets the client's translation language.
 Returns a jQuery deferred object that resolves if the language load
 succeed and fails otherwise.
 
-Notes:
+**Notes:**
+
   * language\_tag has to be a supported Language.
   * jQuery deferred docs: [jQuery Deferred](http://api.jquery.com/jQuery.Deferred/)
 
@@ -214,6 +215,74 @@ to learn about its possible options.
 
 **On the server**, TAPi18n.__ is not a reactive resource. You have to specify
 the language tag you want to translate the key to.
+
+**TAPi18n.loadTranslations(translations, namespace="project") (Anywhere)**
+
+Use *translations* in addition or instead of the translations defined in the
+i18n.json files. Translations defined by loadTranslations will have priority
+over those defined in language files (i18n.json) of *namespace* (the project,
+or package name).
+
+To enjoy [the benefits of tap:i18n](#key-features), you should use language
+files to internationalize your project whenever you can.
+
+Legitimate cases for *loadTranslations* are:
+
+* Allowing users to change the project translations
+* Changing translations of 3rd party packages that you don't want to fork (see
+  the Note below).
+
+Example:
+
+```javascript
+TAPi18n.loadTranslations({
+    {
+        es: {
+            meteor_status_waiting: "Desconectado"
+        },
+        fr: {
+            meteor_status_failed: "La connexion au serveur a Ã©chouÃ©"
+        }
+    },
+    "francocatena:status"
+});
+```
+
+**Arguments:**
+
+* `translations`: An object of the following format:
+
+```javascript
+{
+    'lang-tag': {
+        'translation-key1': 'translation',
+        'translation-key2': 'translation',
+        ...
+    },
+    ...
+}
+```
+
+* `namespace="project"`: The namespace you want to add the translations to. by
+  default translations are added to the project namespace, if you want to
+  change a package translation use the package name as the namespace like the
+  above example.
+
+**Notes:**
+
+* **Adding support to a new language in your app:** You can't use
+  *addTranslations* in order to add support to a new language, that is, to allow
+  users to change the interface language of the app to that language. In order
+  to start support a new language in your app, you'll have to either add a
+  language file to that language (*.i18n.json file) or add that languages to your
+  project-tap.i18n file.
+
+* **Translating a package that uses tap:i18n to another language**: If you want
+  to add a new language to a 3rd party package (and you can't get it's owner to
+  merge your pull request) consider introducing a "translation" package in which
+  package-tap.i18n has the "namespace" options set to the package you are
+  translating. That way you can translate with languages files instead of
+  *addTranslations* and share your translation package with others.
 
 ### The tap-i18n Helpers
 
@@ -388,7 +457,8 @@ string in the following order:
 * Base language ("pt")
 * Base English ("en")
 
-Notes:
+**Notes:**
+
 * We currently support only one dialect level. e.g. nan-Hant-TW is not
   supported.
 * "en-US" is the dialect we use for the base English translations "en".
@@ -473,7 +543,8 @@ project, will be available.
 
 **cdn\_path:** An alternative path from which you want tap-i18n resources to be loaded. Example: "http://cdn.example.com/tap-i18n".
 
-Notes:
+**Notes:**
+
 * We use AJAX to load the languages files so you'll have to set CORS on your CDN.
 
 ### Disabling tap-i18n

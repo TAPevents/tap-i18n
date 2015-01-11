@@ -3,8 +3,10 @@ Tinytest.add 'custom-package-tap-i18n - TAPi18n.packages generated correctly', (
 
 Tinytest.add 'custom-package-tap-i18n - package translation function works as expected', (test) ->
   test.equal custom_tap_i18n_package__translate("a01"), "n01"
+  test.equal custom_tap_i18n_package__translate("a02"), "nX2"
   test.equal custom_tap_i18n_package__translate("a100"), "n100"
 
 Tinytest.add 'custom-package-tap-i18n - package translation function translates to fallback language when package language is specified', (test) ->
   test.equal custom_tap_i18n_package__translate("a01", {}, "bb"), "n01"
+  test.equal custom_tap_i18n_package__translate("a02", {}, "bb"), "nX2"
   test.equal custom_tap_i18n_package__translate("a100", {}, "bb"), "n100"

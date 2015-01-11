@@ -3,6 +3,8 @@ TAPi18n = {}
 fallback_language = globals.fallback_language
 
 _.extend TAPi18n,
+  _language_changed_tracker: new Tracker.Dependency
+
   _loaded_languages: [fallback_language] # stores the loaded languages, the fallback language is loaded automatically
 
   _fallback_language: fallback_language
@@ -69,3 +71,29 @@ _.extend TAPi18n,
         en: desc[0]
 
     languages
+
+  _loadLangFileObject: (language_tag, data) ->
+    for package_name, package_keys of data
+      # Translations that are added by loadTranslations() have higher priority
+      package_keys = _.extend({}, package_keys, @_loadTranslations_cache[language_tag]?[package_name] or {})
+
+      TAPi18n.addResourceBundle(language_tag, package_name, package_keys)
+
+  _loadTranslations_cache: {}
+  loadTranslations: (translations, namespace) ->
+    project_languages = @_getProjectLanguages()
+
+    for language_tag, translation_keys of translations
+      if not @_loadTranslations_cache[language_tag]?
+        @_loadTranslations_cache[language_tag] = {}
+
+      if not @_loadTranslations_cache[language_tag][namespace]?
+        @_loadTranslations_cache[language_tag][namespace] = {}
+
+      _.extend(@_loadTranslations_cache[language_tag][namespace], translation_keys)
+
+      TAPi18n.addResourceBundle(language_tag, namespace, translation_keys)
+
+      if Meteor.isClient and @getLanguage() == language_tag
+        # Retranslate if session language updated
+        @_language_changed_tracker.changed()

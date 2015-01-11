@@ -50,8 +50,7 @@ _.extend TAPi18n,
           jqXHR = $.getJSON(self._getLanguageFilePath(languageTag))
 
           jqXHR.done (data) ->
-            for package_name, package_keys of data
-              TAPi18n.addResourceBundle(languageTag, package_name, package_keys)
+            TAPi18n._loadLangFileObject(languageTag, data)
 
             self._loaded_languages.push languageTag
 
@@ -122,12 +121,16 @@ _.extend TAPi18n,
 
   _getPackageI18nextProxy: (package_name) ->
     # A proxy to TAPi18next.t where the namespace is preset to the package's
+
+    self = @
+
     (key, options, lang_tag=null) ->
       if lang_tag?
         console.log "Warning: specifying lang_tag is not supported in client side, using session language"
       
       # If inside a reactive computation, we want to invalidate the computation if the client lang changes
-      Session.get loaded_lang_session_key
+      self._language_changed_tracker.depend()
+
 
       TAPi18next.t "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
 
@@ -135,9 +138,12 @@ _.extend TAPi18n,
     TAPi18n._registerHelpers globals.project_translations_domain
 
   setLanguage: (lang_tag) ->
+    self = @
+
     @_loadLanguage(lang_tag).then ->
       TAPi18next.setLng(lang_tag)
 
+      self._language_changed_tracker.changed()
       Session.set loaded_lang_session_key, lang_tag
 
   getLanguage: ->

@@ -2,7 +2,7 @@ Tinytest.add 'project with no project-tap.i18n - project translations are added 
   for lang_tag in ["bb", "cc-CC"]
     test.isTrue (lang_tag of TAPi18n.translations) and ("project" of TAPi18n.translations[lang_tag])
 
-  for lang_tag in ["dd", "cc"]
+  for lang_tag in ["dd"]
     test.isTrue (lang_tag not of TAPi18n.translations) or ("project" not of TAPi18n.translations[lang_tag])
 
 Tinytest.add 'project with no project-tap.i18n - project translation function translates to a non fallback language as expected', (test) ->

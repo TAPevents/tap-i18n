@@ -12,6 +12,7 @@ Package.on_use(function (api) {
   api.use(['tap-tests:blank-package-tap-i18n'], both);
   api.use(['tap-tests:custom-package-tap-i18n'], both);
   api.use(['tap-tests:empty-object-package-tap-i18n'], both);
+  api.use(['tap-tests:pack-with-project-trans-tap-i18n'], both);
 
   api.use(['templating'], client);
   api.use(['coffeescript'], both);

@@ -71,7 +71,9 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
     output +=
     """
     // integrate the fallback language translations 
-    TAPi18n.addResourceBundle("#{compiler_configuration.fallback_language}", namespace, #{JSON.stringify translations});
+    translations = {};
+    translations[namespace] = #{JSON.stringify translations};
+    TAPi18n._loadLangFileObject("#{compiler_configuration.fallback_language}", translations);
 
     """
   else if compileStep.archMatches "os"
