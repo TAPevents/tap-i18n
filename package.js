@@ -16,7 +16,7 @@ Package.onUse(function (api) {
   api.use('underscore', both);
   api.use('meteor', both);
 
-  api.use('deps', client);
+  api.use('tracker', both);
   api.use('session', client);
   api.use('jquery', client);
   api.use('templating', client);
@@ -46,7 +46,7 @@ Package.onUse(function (api) {
 
 Package.registerBuildPlugin({
   name: 'tap-i18n-compiler',
-  use: ['coffeescript', 'underscore', 'aldeed:simple-schema@0.7.0', 'check', 'templating'],
+  use: ['coffeescript', 'underscore', 'aldeed:simple-schema@0.7.0', 'check@1.0.3', 'templating'],
   npmDependencies: {"node-json-minify": "0.1.3-a"},
   sources: [
     'lib/globals.js',
