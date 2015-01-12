@@ -235,7 +235,7 @@ Legitimate cases for *loadTranslations* are:
 Example:
 
 ```javascript
-TAPi18n.loadTranslations({
+TAPi18n.loadTranslations(
     {
         es: {
             meteor_status_waiting: "Desconectado"
@@ -245,7 +245,7 @@ TAPi18n.loadTranslations({
         }
     },
     "francocatena:status"
-});
+);
 ```
 
 **Arguments:**
