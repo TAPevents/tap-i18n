@@ -21,7 +21,7 @@ Package.onUse(function (api) {
   api.use('jquery', client);
   api.use('templating', client);
 
-  api.use('tap:http-methods@0.0.23', server);
+  api.use('cfs:http-methods@0.0.27', server);
 
   // load TAPi18n
   api.add_files('lib/globals.js', both);
