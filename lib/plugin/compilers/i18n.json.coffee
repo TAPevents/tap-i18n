@@ -43,7 +43,7 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
         sourcePath: input_path
       return
 
-    # add the language names to TAPi18n.languages_available_for_project 
+    # add the language names to TAPi18n.languages_names 
     language_name = [language, language]
     if language_names[language]?
       language_name = language_names[language]
@@ -52,7 +52,7 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
       # the name for the fallback_language is part of the getProjectConfJs()'s output
       output +=
         """
-        TAPi18n.languages_available_for_project["#{language}"] = #{JSON.stringify language_name};
+        TAPi18n.languages_names["#{language}"] = #{JSON.stringify language_name};
 
         """
 

@@ -16,7 +16,7 @@ _.extend TAPi18n,
 
   packages: {} # Stores the packages' package-tap.i18n jsons
 
-  languages_available_for_project: {} # Stores languages that we've found languages files for in the project dir.
+  languages_names: {} # Stores languages that we've found languages files for in the project dir.
                                       # format:
                                       # {
                                       #    lang_tag: [lang_name_in_english, lang_name_in_local_language]
@@ -55,8 +55,15 @@ _.extend TAPi18n,
       if _.isArray @.conf.supported_languages
         return _.union([@._fallback_language], @.conf.supported_languages)
       else
-        # we know for certain that when tap-i18n is enabled the fallback lang is in @.languages_available_for_project
-        return _.keys @.languages_available_for_project
+        # If supported_languages is null, all the languages we found
+        # translations files to in the project level are considered supported.
+        # We use the @.languages_names array to tell which languages we found
+        # since for every i18n.json file we found in the project level we add
+        # an entry for its language to @.languages_names in the build process.
+        #
+        # We also know for certain that when tap-i18n is enabled the fallback
+        # lang is in @.languages_names
+        return _.keys @.languages_names
     else
       return [@._fallback_language]
 
@@ -65,10 +72,10 @@ _.extend TAPi18n,
       return null
 
     languages = {}
-    for lang_tag, desc of @.languages_available_for_project
+    for lang_tag in @._getProjectLanguages()
       languages[lang_tag] =
-        name: desc[1]
-        en: desc[0]
+        name: @.languages_names[lang_tag][1]
+        en: @.languages_names[lang_tag][0]
 
     languages
 

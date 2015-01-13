@@ -11,8 +11,8 @@ Tinytest.add 'Disabled tap-i18n Tests - TAPi18n.conf is null', (test) ->
 Tinytest.add 'Disabled tap-i18n Tests - TAPi18n._loaded_languages contains only the fallback_language', (test) ->
   test.equal t._loaded_languages, [t._fallback_language]
 
-Tinytest.add 'Disabled tap-i18n Tests - TAPi18n.languages_available_for_project is empty', (test) ->
-  test.isTrue _.isEmpty t.languages_available_for_project
+Tinytest.add 'Disabled tap-i18n Tests - TAPi18n.languages_names is empty', (test) ->
+  test.isTrue _.isEmpty t.languages_names
 
 Tinytest.add 'Disabled tap-i18n Tests - TAPi18n._getProjectLanguages returns only the fallback_language', (test) ->
   test.equal t._getProjectLanguages(), [t._fallback_language]

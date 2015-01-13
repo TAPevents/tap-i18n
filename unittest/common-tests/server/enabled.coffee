@@ -1,3 +1,0 @@
-Tinytest.add 'Enabled tap-i18n Tests - TAPi18n.translations should always have all the languages in TAPi18n.languages_available_for_project except the fallback lang', (test) ->
-  languages_available_for_project_without_fallback = _.without(_.keys(TAPi18n.languages_available_for_project), TAPi18n._fallback_language).sort()
-  test.equal languages_available_for_project_without_fallback, _.intersection(languages_available_for_project_without_fallback, _.keys(TAPi18n.translations)).sort()

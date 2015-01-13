@@ -181,7 +181,12 @@ client language get changed (by TAPi18n.setLanguage)
 
 **TAPi18n.getLanguages() (Anywhere)**
 
-Returns an object with all the languages the project or one of the packages it uses are translated to.
+Returns an object with all the supported languages and their names.
+
+A language is considred supported if it is in the supported_languages array of
+the project-tap.i18n json. If supported_languages is null or not defined in
+project-tap.i18n we consider all the languages we find *.i18n.json files to as
+supported.
 
 The returned object is in the following format:
 
