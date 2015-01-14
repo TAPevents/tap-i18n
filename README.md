@@ -12,14 +12,14 @@ packages.
 * [Roadmap](https://trello.com/b/w80JNkwf/tap-i18n-roadmap)
 * [New features planning on Hackpad](https://hackpad.com/collection/DRzcZ7sBdZV)
 
-**Users of tap-i18n v0.9** and below, read [tap:i18n v1.0 New Features & Backward Compatibility](https://github.com/TAPevents/tap-i18n/wiki/tap:i18n-v1.0-New-Feautres-&-Backward-Compatibility) and update your app to v1.0 .
+Developed by <a href="http://www.meteorspark.com"><img src="http://www.meteorspark.com/logo/logo-github.png" title="MeteorSpark" alt="MeteorSpark"></a> [Professional Meteor Services](http://www.meteorspark.com)<br/> for <a href="http://tapevents.com/"><img src="http://tapevents.com/images/TAPevents_logo_144px.png" title="TAPevents" alt="TAPevents"></a>&nbsp; [Leading Conference Technology](http://tapevents.com/).
 
 **Related Packages:**
 
 * Check [tap-i18n-db](https://github.com/TAPevents/tap-i18n-db) for Meteor collections internationalization.
 * Check [tap-i18n-ui](https://github.com/TAPevents/tap-i18n-ui) for bootstrap based UI components for tap:i18n.
 
-Developed by <a href="http://www.meteorspark.com"><img src="http://www.meteorspark.com/logo/logo-github.png" title="MeteorSpark" alt="MeteorSpark"></a> [Professional Meteor Services](http://www.meteorspark.com)<br/> for <a href="http://tapevents.com/"><img src="http://tapevents.com/images/TAPevents_logo_144px.png" title="TAPevents" alt="TAPevents"></a>&nbsp; [Leading Conference Technology](http://tapevents.com/).
+**Users of tap-i18n v0.9** and below, read [tap:i18n v1.0 New Features & Backward Compatibility](https://github.com/TAPevents/tap-i18n/wiki/tap:i18n-v1.0-New-Feautres-&-Backward-Compatibility) and update your app to v1.0 .
 
 ## Contents
 
