@@ -157,7 +157,7 @@ if (Meteor.isClient) {
 ```
 
 * If you won't set a language on startup your project will be served in the
-  default language: English
+  fallback language: English
 * You probably want to show a loading indicator until the language is ready (as
   shown in the example), otherwise the templates in your projects will be in
   English until the language will be ready
@@ -512,8 +512,8 @@ Example for languages files:
 
 * Do not use colons and periods in translation keys.
 * To avoid translation bugs all the keys in your package must be translated to
-  English ("en") which is the default language, and the fallback language when
-  tap-i18n is not installed or when it can't find a translation for a certain key.
+  English ("en") which is the fallback language we use if tap-i18n is not installed,
+  or when we can't find a translation for a certain key.
 * In the above example there is no need to translate "sky" in en-GB which is the
   same in en. Remember that thanks to the Languages Tags and Translations
   Prioritization (see above) if a translation for a certain key is the same for a
