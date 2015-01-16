@@ -6,6 +6,10 @@
 with the goal of standardizing the way package developers internationalize their
 packages.
 
+**Features under active planning for v1.4:**
+
+* [Allow passing an object with named variables to the translation helper](https://hackpad.com/Allow-passing-an-object-with-named-variables-to-the-translation-helpers-UN507cVbjMU)
+
 **Get involved in tap:i18n:**
 
 * [Mailing list](http://groups.google.com/d/forum/tap-i18n)
