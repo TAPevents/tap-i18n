@@ -13,6 +13,7 @@ packages.
 **Get involved in tap:i18n:**
 
 * [Mailing list](http://groups.google.com/d/forum/tap-i18n)
+* [https://gitter.im/TAPevents/tap-i18n](tap:i18n chat on Gitter)
 * [Roadmap](https://trello.com/b/w80JNkwf/tap-i18n-roadmap)
 * [New features planning on Hackpad](https://hackpad.com/collection/DRzcZ7sBdZV)
 
