@@ -1,5 +1,7 @@
 # tap-i18n
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/TAPevents/tap-i18n?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ### Internationalization for Meteor
 
 **tap-i18n** is a [Meteor](http://www.meteor.com) package that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for Meteor apps and packages,
