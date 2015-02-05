@@ -9,6 +9,8 @@ _.extend TAPi18n,
 
     path = if @.conf.cdn_path? then @.conf.cdn_path else @.conf.i18n_files_route
     path = path.replace /\/$/, ""
+    if Meteor.isCordova and path[0] == "/"
+      path = Meteor.absoluteUrl() + path
 
     "#{path}/#{lang_tag}.json"
 

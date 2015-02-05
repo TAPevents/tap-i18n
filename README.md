@@ -37,6 +37,7 @@ Developed by <a href="http://www.meteorspark.com"><img src="http://www.meteorspa
     - [Structure of Languages Files](#structure-of-languages-files)
     - [Configuring tap-i18n](#configuring-tap-i18n)
     - [Disabling tap-i18n](#disabling-tap-i18n)
+    - [Using tap-i18n in Cordova apps](#using-tap-i18n-in-cordova-apps)
 - [Developing Packages](#developing-packages)
     - [tap-i18n Two Work Modes](#tap-i18n-two-work-modes)
     - [Setup tap-i18n](#setup-tap-i18n)
@@ -573,6 +574,17 @@ project, will be available.
 ```bash
 $ meteor remove tap:i18n
 ```
+
+### Using tap-i18n in Cordova apps
+
+In order to use tap-i18n in a Cordova app you must set the `--server` flag
+to your server's root url when building your project.
+
+```bash
+$ meteor build --server="http://www.your-site-domain.com"
+```
+
+**Note:** At the moment tap-i18n works in Cordova apps only when internet connection is available.
 
 ## Developing Packages
 
