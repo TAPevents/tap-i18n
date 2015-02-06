@@ -19,7 +19,7 @@ packages.
 * [Roadmap](https://trello.com/b/w80JNkwf/tap-i18n-roadmap)
 * [New features planning on Hackpad](https://hackpad.com/collection/DRzcZ7sBdZV)
 
-Developed by <a href="http://www.meteorspark.com"><img src="http://www.meteorspark.com/logo/logo-github.png" title="MeteorSpark" alt="MeteorSpark"></a> [Professional Meteor Services](http://www.meteorspark.com)<br/> for <a href="http://tapevents.com/"><img src="http://tapevents.com/images/TAPevents_logo_144px.png" title="TAPevents" alt="TAPevents"></a>&nbsp; [Leading Conference Technology](http://tapevents.com/).
+Developed by <a href="http://www.meteorspark.com"><img src="http://www.meteorspark.com/logo/logo-github.png" title="MeteorSpark" alt="MeteorSpark"></a> [Professional Meteor Services](http://www.meteorspark.com)<br/> for <a href="http://tapevents.com/"><img src="http://tapevents.com/wp-content/uploads/2015/02/TAPevents_logo_144px.png" title="TAPevents" alt="TAPevents" style='margin-top:10px'>&nbsp; Leading Conference Technology</a>.
 
 **Related Packages:**
 
