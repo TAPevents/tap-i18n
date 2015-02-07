@@ -742,6 +742,7 @@ MIT
 ## Contributors
 
 [Chris Hitchcott](https://github.com/hitchcott/)
+[Kevin Iamburg](http://www.slickdevelopment.com)
 
 ## Credits
 
