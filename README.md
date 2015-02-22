@@ -4,6 +4,8 @@ A comprehensive internationalization solution for Meteor
 
 ### Internationalization for Meteor
 
+[![Build Status](https://travis-ci.org/hitchcott/tap-i18n.svg)](https://travis-ci.org/hitchcott/tap-i18n)
+
 **tap-i18n** is a [Meteor](http://www.meteor.com) package that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for Meteor apps and packages,
 with the goal of standardizing the way package developers internationalize their
 packages.
