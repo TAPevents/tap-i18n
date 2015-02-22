@@ -4,8 +4,6 @@ A comprehensive internationalization solution for Meteor
 
 ### Internationalization for Meteor
 
-[![Build Status](https://travis-ci.org/TAPevents/tap-i18n.svg)](https://travis-ci.org/TAPevents/tap-i18n)
-
 **tap-i18n** is a [Meteor](http://www.meteor.com) package that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for Meteor apps and packages,
 with the goal of standardizing the way package developers internationalize their
 packages.
@@ -29,6 +27,8 @@ Developed by <a href="http://www.meteorspark.com"><img src="http://www.meteorspa
 * Check [tap:i18n-ui](https://github.com/TAPevents/tap-i18n-ui) for bootstrap based UI components for tap:i18n.
 
 **Users of tap-i18n v0.9** and below, read [tap:i18n v1.0 New Features & Backward Compatibility](https://github.com/TAPevents/tap-i18n/wiki/tap:i18n-v1.0-New-Feautres-&-Backward-Compatibility) and update your app to v1.0 .
+
+[![Build Status](https://travis-ci.org/TAPevents/tap-i18n.svg)](https://travis-ci.org/TAPevents/tap-i18n)
 
 ## Contents
 
