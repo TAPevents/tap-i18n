@@ -8,7 +8,7 @@ _.extend TAPi18n,
       for lang_tag in self._getProjectLanguages()
         do (lang_tag) ->
           for package_name of self.translations[lang_tag]
-            TAPi18n.addResourceBundle(lang_tag, package_name, self.translations[lang_tag][package_name]);
+            TAPi18n.addResourceBundle(lang_tag, package_name, self.translations[lang_tag][package_name])
 
           TAPi18next.setLng lang_tag, {fixLng: true}, (lang_translator) ->
             self.server_translators[lang_tag] = lang_translator
