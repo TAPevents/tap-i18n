@@ -61,6 +61,7 @@ Package.onTest(function (api) {
   api.use(['jquery', 'templating', 'blaze'], client);
   api.addFiles('tests/mocha/both/api.app-test.js', both);
   api.addFiles('tests/mocha/both/fixed-translator.app-test.js', both);
+  api.addFiles('tests/mocha/both/plural-rules.app-test.js', both);
   api.addFiles('tests/mocha/both/catalog-cache.app-test.js', both);
   api.addFiles('tests/mocha/both/catalog-initialization.app-test.js', both);
   api.addFiles('tests/mocha/both/catalog-benchmark.app-test.js', both);

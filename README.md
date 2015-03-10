@@ -310,6 +310,14 @@ i18next shorthand mode, including `defaultValue` when explicitly selected.
 **On the server**, TAPi18n.__ is not a reactive resource. You have to specify
 the language tag you want to translate the key to.
 
+**Custom plural rules (Anywhere)**
+
+The bundled engine resolves regional plural rules through the base language:
+`en-US` uses the `en` rule. Replacing that rule with
+`TAPi18next.pluralExtensions.addRule("en", rule)` updates the active cache
+immediately; unrelated rules do not invalidate it. Register custom rules under
+the base language tag; regional rule overrides are not supported.
+
 **TAPi18n.loadTranslations(translations, namespace="project") (Anywhere)**
 
 Use *translations* in addition or instead of the translations defined in the
@@ -961,7 +969,7 @@ configuration. HTTP tests verify JSON content types, CORS, and empty responses
 through the default and custom routes.
 
 The client/server unit suites also cover fixed-language shorthand arguments,
-null and object options, and language overrides.
+null and object options, language overrides, and plural-rule replacement.
 
 The suite also checks cached snapshot identity, mutation protection, explicit
 invalidation, startup invalidation, and Tracker dependencies on cache hits.

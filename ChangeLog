@@ -12,6 +12,10 @@ FUTURE
   translators, including the server API and explicit client language calls.
   Preserve null/object options and the configured default-value shorthand mode.
   Add client/server regressions. Reported by Jessedev1 (#234).
+* Refresh the active plural-rule cache when its base-language rule is replaced,
+  including regional tags such as en-US using en. Preserve unrelated caches
+  and existing base-language lookup. Adapt hamoid's fix and add client/server
+  regressions (#52).
 
 2026.09.30, Version 2.1.0
 
