@@ -3,6 +3,9 @@ loaded_lang_session_key = TAPi18n._loaded_lang_session_key
 Session.set loaded_lang_session_key, null
 
 _.extend TAPi18n,
+  _languageSpecificTranslators: {}
+  _languageSpecificTranslatorsTrackers: {}
+
   _getLanguageFilePath: (lang_tag) ->
     if not @_enabled()
       return null
@@ -121,14 +124,49 @@ _.extend TAPi18n,
     (template) ->
       self._registerHelpers(package_name, template)
 
+  _prepareLanguageSpecificTranslator: (lang_tag) ->
+    self = @
+
+    if lang_tag of @_languageSpecificTranslatorsTrackers
+      return
+
+    @_languageSpecificTranslatorsTrackers[lang_tag] = new Tracker.Dependency
+
+    if not(lang_tag of self._languageSpecificTranslators)
+      @_loadLanguage(lang_tag)
+        .done ->
+          TAPi18next.setLng lang_tag, {fixLng: true}, (lang_translator) ->
+            self._languageSpecificTranslators[lang_tag] = lang_translator
+
+            self._languageSpecificTranslatorsTrackers[lang_tag].changed()
+
+
   _getPackageI18nextProxy: (package_name) ->
     # A proxy to TAPi18next.t where the namespace is preset to the package's
 
     self = @
 
     (key, options, lang_tag=null) ->
+      if options?.lng? and not lang_tag?
+        lang_tag = options.lng
+        # Remove options.lng so we won't pass it to the regular TAPi18next
+        # before the language specific translator is ready to keep behavior
+        # consistent.
+        # 
+        # If lang is actually ready before the language specifc translator is
+        # ready, TAPi18next will translate to lang_tag if we won't remove
+        # options.lng.
+        delete options.lng
+
       if lang_tag?
-        console.log "Warning: specifying lang_tag is not supported in client side, using session language"
+        self._prepareLanguageSpecificTranslator(lang_tag)
+
+        self._languageSpecificTranslatorsTrackers[lang_tag].depend()
+
+        if lang_tag of self._languageSpecificTranslators
+          return self._languageSpecificTranslators[lang_tag] "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
+        else
+          return TAPi18next.t "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
       
       # If inside a reactive computation, we want to invalidate the computation if the client lang changes
       self._language_changed_tracker.depend()
