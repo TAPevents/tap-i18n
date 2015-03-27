@@ -1,3 +1,21 @@
+Tinytest.addAsync 'project with no project-tap.i18n - project translation function translates to a non fallback language as expected', (test, onComplete) ->
+  count = 0
+  Tracker.autorun ->
+    if count == 0
+      test.equal Blaze.toHTML(Template.project__no_project_tap_i18n__basic_template__ccCC), "n01, nx2, n05, n10, n100"
+
+      test.equal TAPi18n.__("a01", {}, "cc-CC"), "n01"
+      test.equal TAPi18n.__("a05", {}, "cc-CC"), "n05"
+      count += 1
+    else
+      test.equal Blaze.toHTML(Template.project__no_project_tap_i18n__basic_template__ccCC), "C01, Cx2, n05, n10, n100"
+
+      test.equal TAPi18n.__("a01", {}, "cc-CC"), "C01"
+      test.equal TAPi18n.__("a05", {}, "cc-CC"), "n05"
+
+      onComplete()
+
+
 Tinytest.addAsync 'project with no project-tap.i18n - en loads correctly', (test, onComplete) ->
   dfd = TAPi18n.setLanguage "en"
 
