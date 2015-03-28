@@ -147,6 +147,11 @@ _.extend TAPi18n,
     self = @
 
     (key, options, lang_tag=null) ->
+      # Devs get confused and use lang option instead of lng option, make lang
+      # alias of lng
+      if options?.lang? and not options?.lng?
+        options.lng = options.lang
+
       if options?.lng? and not lang_tag?
         lang_tag = options.lng
         # Remove options.lng so we won't pass it to the regular TAPi18next
