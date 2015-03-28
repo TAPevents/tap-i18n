@@ -238,8 +238,8 @@ the first time with that lang_tag, or until language data load from the server
 finishes) and will get invalidated (trigger reactivity) when the translator to
 that lang_tag is ready to be used to translate the key.
 
-Using `i18next.t` `lng` option is equivalent to setting the `lang_tag`
-attribute.
+Using `i18next.t` `lng` option or `lang`, which we made as alias to `lang` in
+tap:i18n, is equivalent to setting the `lang_tag` attribute.
 
 The function is a proxy to the i18next.t() method.
 Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
@@ -376,10 +376,14 @@ Assuming the client language is en.
         "click": "Cliquez Ici"
     }
 
-    page.html:
+    page.html (lng and lang options are the same in tap:i18n you can use both):
     ----------
     <template name="x">
-        {{_ "click" lang="fr"}}
+        {{_ "click" lang="fr"}} 
+    </template>
+
+    <template name="x">
+        {{_ "click" lng="fr"}} 
     </template>
 
     output:
