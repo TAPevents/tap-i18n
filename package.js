@@ -16,6 +16,8 @@ Package.onUse(function (api) {
   api.use('underscore', both);
   api.use('meteor', both);
 
+  api.use('raix:eventemitter@0.1.1')
+
   api.use('tracker', both);
   api.use('session', client);
   api.use('jquery', client);

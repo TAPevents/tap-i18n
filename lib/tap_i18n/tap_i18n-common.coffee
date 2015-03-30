@@ -1,4 +1,4 @@
-TAPi18n = {}
+TAPi18n = new EventEmitter()
 
 fallback_language = globals.fallback_language
 
