@@ -89,6 +89,8 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
 
     _.extend(TAPi18n.translations["#{language}"][namespace], #{JSON.stringify translations});
 
+    TAPi18n._registerServerTranslator("#{language}", namespace);
+
     """
 
   # register i18n helper for templates, only once per web arch, only for packages
