@@ -221,13 +221,25 @@ The returned object is in the following format:
 }
 ```
 
-**TAPi18n.__(key, options, lang_tag) (Server)**
+**TAPi18n.__(key, options, lang_tag=null) (Anywhere)**
 
-**TAPi18n.__(key, options) (Client)**
+*If `lang_tag` is null:*
 
 Translates key to the current client's language. If inside a reactive
 computation, invalidate the computation the next time the client language get
 changed (by TAPi18n.setLanguage).
+
+*Otherwise:*
+
+Translates key to lang_tag. if you use `lang_tag` you should use `__` in a
+reactive computation since the string will be translated to the current client
+language if a translator to lang_tag is not ready in the client (if called for
+the first time with that lang_tag, or until language data load from the server
+finishes) and will get invalidated (trigger reactivity) when the translator to
+that lang_tag is ready to be used to translate the key.
+
+Using `i18next.t` `lng` option or `lang`, which we made as alias to `lang` in
+tap:i18n, is equivalent to setting the `lang_tag` attribute.
 
 The function is a proxy to the i18next.t() method.
 Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
@@ -350,7 +362,35 @@ Assuming the client language is en.
     Click Here
     <b>BOLD</b>
 
-**Example 2:** Sprintf:
+**Example 2:** Simple key specific language:
+
+    en.i18n.json:
+    -------------
+    {
+        "click": "Click Here"
+    }
+
+    fr.i18n.json:
+    -------------
+    {
+        "click": "Cliquez Ici"
+    }
+
+    page.html (lng and lang options are the same in tap:i18n you can use both):
+    ----------
+    <template name="x">
+        {{_ "click" lang="fr"}} 
+    </template>
+
+    <template name="x">
+        {{_ "click" lng="fr"}} 
+    </template>
+
+    output:
+    -------
+    Cliquez Ici
+
+**Example 3:** Sprintf:
 
     en.i18n.json:
     -------------
@@ -368,7 +408,7 @@ Assuming the client language is en.
     -------
     Hello Daniel, your last visit was on: 2014-05-22
 
-**Example 3:** Named variables and sprintf:
+**Example 4:** Named variables and sprintf:
 
     en.i18n.json:
     -------------
@@ -388,7 +428,7 @@ Assuming the client language is en.
 
 **Note:** Named variables have to be after all the sprintf parameters.
 
-**Example 4:** Named variables, sprintf, singular/plural:
+**Example 5:** Named variables, sprintf, singular/plural:
 
     en.i18n.json:
     -------------
@@ -409,7 +449,7 @@ Assuming the client language is en.
     Daniel, You have a new message (inbox last checked 2014-05-22)
     Chris, You have 4 new messages (last checked 2014-05-22)
 
-**Example 5:** Singular/plural, context:
+**Example 6:** Singular/plural, context:
 
     en.i18n.json:
     -------------
@@ -700,17 +740,9 @@ that contain all the project's translations.
 
 The following functions are added to your package namespace by tap-i18n:
 
-**\_\_("key", options, lang_tag) (Server)**
+**\_\_("key", options, lang_tag) (Anywhere)**
 
-**\_\_("key", options) (Client)**
-
-Translates key to the current client's language. If inside a reactive
-computation, invalidate the computation the next time the client language get
-changed (by TAPi18n.setLanguage).
-
-The function is a proxy to the i18next.t() method.
-Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
-to learn about its possible options.
+Read documenation for `TAPi18n.__` above.
 
 **On the server**, TAPi18n.__ is not a reactive resource. You have to specify
 the language tag you want to translate the key to.
