@@ -1,3 +1,15 @@
+2015.05.08, Version 1.5.0
+
+* Make TAPi18n a constructor instead of object, inherit from EventEmitter
+* Make the lang option alias to the lng option in tap:i18n translator functions
+* Allow translation to a specific language on the client
+* [BUGFIX] Allow pre Meteor.startup() server side translations, resolves #56
+* [BUGFIX] Allow 0 as first argument of sprintf args. fix #43
+* [MINOR] i18next: Fix plurals function for Mandinka @hamoid
+* [MINOR] README: Added note about dot notation @SachaG
+* [MINOR] Correct name for Ukrainina language @shkomg
+* [MINOR] Travis CI: Stop testing node v0.8
+
 2015.02.28, Version 1.4.1
 
 * [bugfix] Under cordova ensure absoluteUrl have no trailing /
