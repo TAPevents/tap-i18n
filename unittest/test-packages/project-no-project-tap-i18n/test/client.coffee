@@ -15,6 +15,17 @@ Tinytest.addAsync 'project with no project-tap.i18n - project translation functi
 
       onComplete()
 
+Tinytest.addAsync 'project with no project-tap.i18n - _prepareLanguageSpecificTranslator() doesn\'t change i18next underlying lang', (test, onComplete) ->
+  current_underlying_lang = TAPi18next.lng()
+
+  lang_to_prepare = "cc-CC"
+  if current_underlying_lang == lang_to_prepare
+    lang_to_prepare = "bb"
+
+  dfd = TAPi18n._prepareLanguageSpecificTranslator lang_to_prepare
+  dfd.done ->
+    test.notEqual TAPi18next.lng(), lang_to_prepare
+    onComplete()
 
 Tinytest.addAsync 'project with no project-tap.i18n - en loads correctly', (test, onComplete) ->
   dfd = TAPi18n.setLanguage "en"

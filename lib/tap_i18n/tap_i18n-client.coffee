@@ -116,19 +116,21 @@ _.extend TAPi18n.prototype,
       @_registerHelpers(package_name, template)
 
   _prepareLanguageSpecificTranslator: (lang_tag) ->
+    dfd = (new $.Deferred()).resolve().promise()
+
     if lang_tag of @_languageSpecificTranslatorsTrackers
-      return
+      return dfd
 
     @_languageSpecificTranslatorsTrackers[lang_tag] = new Tracker.Dependency
 
     if not(lang_tag of @_languageSpecificTranslators)
-      @_loadLanguage(lang_tag)
+      dfd = @_loadLanguage(lang_tag)
         .done =>
-          TAPi18next.setLng lang_tag, {fixLng: true}, (lang_translator) =>
-            @_languageSpecificTranslators[lang_tag] = lang_translator
+          @_languageSpecificTranslators[lang_tag] = @_getSpecificLangTranslator(lang_tag)
 
-            @_languageSpecificTranslatorsTrackers[lang_tag].changed()
+          @_languageSpecificTranslatorsTrackers[lang_tag].changed()
 
+    return dfd
 
   _getPackageI18nextProxy: (package_name) ->
     # A proxy to TAPi18next.t where the namespace is preset to the package's
