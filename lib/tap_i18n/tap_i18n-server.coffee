@@ -1,39 +1,34 @@
-_.extend TAPi18n,
-  server_translators: {}
+_.extend TAPi18n.prototype,
+  server_translators: null
 
   _registerServerTranslator: (lang_tag, package_name) ->
-    self = @
+    if @_enabled()
+      if not(lang_tag of @server_translators)
+        TAPi18next.setLng lang_tag, {fixLng: true}, (lang_translator) =>
+          @server_translators[lang_tag] = lang_translator
 
-    if self._enabled()
-      if not(lang_tag of self.server_translators)
-        TAPi18next.setLng lang_tag, {fixLng: true}, (lang_translator) ->
-          self.server_translators[lang_tag] = lang_translator
+      @addResourceBundle(lang_tag, package_name, @translations[lang_tag][package_name])
 
-      TAPi18n.addResourceBundle(lang_tag, package_name, self.translations[lang_tag][package_name])
-
-    if not(self._fallback_language of self.server_translators)
-      TAPi18next.setLng self._fallback_language, {fixLng: true}, (lang_translator) ->
-        self.server_translators[self._fallback_language] = lang_translator
+    if not(@_fallback_language of @server_translators)
+      TAPi18next.setLng @_fallback_language, {fixLng: true}, (lang_translator) =>
+        @server_translators[@_fallback_language] = lang_translator
 
   _registerAllServerTranslators: () ->
-    self = @
-
-    for lang_tag in self._getProjectLanguages()
-      for package_name of self.translations[lang_tag]
-        self._registerServerTranslator(lang_tag, package_name)
+    for lang_tag in @_getProjectLanguages()
+      for package_name of @translations[lang_tag]
+        @_registerServerTranslator(lang_tag, package_name)
 
   _getPackageI18nextProxy: (package_name) ->
-    self = @
     # A proxy to TAPi18next.t where the namespace is preset to the package's
-    (key, options, lang_tag=null) ->
+    (key, options, lang_tag=null) =>
       if not lang_tag?
         # translate to fallback_language
-        return self.server_translators[self._fallback_language] "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
-      else if not(lang_tag of self.server_translators)
-        console.log "Warning: language #{lang_tag} is not supported in this project, fallback language (#{self._fallback_language})"
-        return self.server_translators[self._fallback_language] "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
+        return @server_translators[@_fallback_language] "#{@_getPackageDomain(package_name)}:#{key}", options
+      else if not(lang_tag of @server_translators)
+        console.log "Warning: language #{lang_tag} is not supported in this project, fallback language (#{@_fallback_language})"
+        return @server_translators[@_fallback_language] "#{@_getPackageDomain(package_name)}:#{key}", options
       else
-        return self.server_translators[lang_tag] "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
+        return @server_translators[lang_tag] "#{@_getPackageDomain(package_name)}:#{key}", options
 
   _registerHTTPMethod: ->
     self = @
@@ -43,7 +38,7 @@ _.extend TAPi18n,
     if not self._enabled()
       throw new Meteor.Error 500, "tap-i18n has to be enabled in order to register the HTTP method"
 
-    methods["#{TAPi18n.conf.i18n_files_route.replace(/\/$/, "")}/:lang"] =
+    methods["#{self.conf.i18n_files_route.replace(/\/$/, "")}/:lang"] =
       get: () ->
         if not RegExp("^#{globals.langauges_tags_regex}.json$").test(@params.lang)
           return @setStatusCode(401)
@@ -63,12 +58,5 @@ _.extend TAPi18n,
 
     HTTP.methods methods
 
-TAPi18n.__ = TAPi18n._getPackageI18nextProxy(globals.project_translations_domain)
-
-TAPi18n._onceEnabled = ->
-  TAPi18n._registerAllServerTranslators()
-
-Meteor.startup ->
-  # If tap-i18n is enabled for that project
-  if TAPi18n._enabled()
-    TAPi18n._registerHTTPMethod()
+  _onceEnabled: ->
+    @_registerAllServerTranslators()

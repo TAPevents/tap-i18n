@@ -1,29 +1,51 @@
-TAPi18n = new EventEmitter()
-
 fallback_language = globals.fallback_language
 
-_.extend TAPi18n,
-  _language_changed_tracker: new Tracker.Dependency
+TAPi18n = ->
+  EventEmitter.call @
 
-  _loaded_languages: [fallback_language] # stores the loaded languages, the fallback language is loaded automatically
+  @_fallback_language = fallback_language
 
-  _fallback_language: fallback_language
+  @_language_changed_tracker = new Tracker.Dependency
 
-  _loaded_lang_session_key: "TAPi18n::loaded_lang"
+  @_loaded_languages = [fallback_language] # stores the loaded languages, the fallback language is loaded automatically
 
-  conf: null # If conf isn't null we assume that tap:i18n is enabled for the project.
+  @conf = null # If conf isn't null we assume that tap:i18n is enabled for the project.
              # We assume conf is valid, we sterilize and validate it during the build process.
 
-  packages: {} # Stores the packages' package-tap.i18n jsons
+  @packages = {} # Stores the packages' package-tap.i18n jsons
 
-  languages_names: {} # Stores languages that we've found languages files for in the project dir.
+  @languages_names = {} # Stores languages that we've found languages files for in the project dir.
                                       # format:
                                       # {
                                       #    lang_tag: [lang_name_in_english, lang_name_in_local_language]
                                       # }
 
-  translations: {} # Stores the packages/project translations - Server side only
+  @translations = {} # Stores the packages/project translations - Server side only
                    # fallback_language translations are not stored here
+
+
+  if Meteor.isClient
+    Session.set @_loaded_lang_session_key, null
+
+    @_languageSpecificTranslators = {}
+    @_languageSpecificTranslatorsTrackers = {}
+
+  if Meteor.isServer
+    @server_translators = {}
+
+    Meteor.startup =>
+      # If tap-i18n is enabled for that project
+      if @_enabled()
+        @_registerHTTPMethod()
+
+  @__ = @_getPackageI18nextProxy(globals.project_translations_domain)
+
+  return @
+
+Util.inherits TAPi18n, EventEmitter
+
+_.extend TAPi18n.prototype,
+  _loaded_lang_session_key: "TAPi18n::loaded_lang"
 
   _enable: (conf) ->
     # tap:i18n gets enabled for a project once a conf file is set for it.
@@ -47,7 +69,7 @@ _.extend TAPi18n,
     package_name.replace(/:/g, "-")
 
   addResourceBundle: (lang_tag, package_name, translations) ->
-    TAPi18next.addResourceBundle(lang_tag, TAPi18n._getPackageDomain(package_name), translations)
+    TAPi18next.addResourceBundle(lang_tag, @_getPackageDomain(package_name), translations)
 
   _getProjectLanguages: () ->
     # Return an array of languages available for the current project
@@ -84,7 +106,7 @@ _.extend TAPi18n,
       # Translations that are added by loadTranslations() have higher priority
       package_keys = _.extend({}, package_keys, @_loadTranslations_cache[language_tag]?[package_name] or {})
 
-      TAPi18n.addResourceBundle(language_tag, package_name, package_keys)
+      @addResourceBundle(language_tag, package_name, package_keys)
 
   _loadTranslations_cache: {}
   loadTranslations: (translations, namespace) ->
@@ -99,7 +121,7 @@ _.extend TAPi18n,
 
       _.extend(@_loadTranslations_cache[language_tag][namespace], translation_keys)
 
-      TAPi18n.addResourceBundle(language_tag, namespace, translation_keys)
+      @addResourceBundle(language_tag, namespace, translation_keys)
 
       if Meteor.isClient and @getLanguage() == language_tag
         # Retranslate if session language updated

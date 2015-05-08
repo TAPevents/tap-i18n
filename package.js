@@ -16,7 +16,8 @@ Package.onUse(function (api) {
   api.use('underscore', both);
   api.use('meteor', both);
 
-  api.use('raix:eventemitter@0.1.1')
+  api.use('raix:eventemitter@0.1.1', both);
+  api.use('meteorspark:util@0.2.0', both);
 
   api.use('tracker', both);
   api.use('session', client);
@@ -42,6 +43,9 @@ Package.onUse(function (api) {
 
   api.add_files('lib/tap_i18n/tap_i18n-server.coffee', server);
   api.add_files('lib/tap_i18n/tap_i18n-client.coffee', client, {bare: true});
+
+  api.add_files('lib/tap_i18n/tap_i18n-init.coffee', server);
+  api.add_files('lib/tap_i18n/tap_i18n-init.coffee', client, {bare: true});
 
   api.export('TAPi18n');
 });
