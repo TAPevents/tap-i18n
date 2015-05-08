@@ -40,6 +40,8 @@ TAPi18n = ->
 
   @__ = @_getPackageI18nextProxy(globals.project_translations_domain)
 
+  TAPi18next.setLng fallback_language
+
   return @
 
 Util.inherits TAPi18n, EventEmitter
@@ -70,6 +72,19 @@ _.extend TAPi18n.prototype,
 
   addResourceBundle: (lang_tag, package_name, translations) ->
     TAPi18next.addResourceBundle(lang_tag, @_getPackageDomain(package_name), translations)
+
+  _getSpecificLangTranslator: (lang) ->
+    current_lang = TAPi18next.lng()
+
+    translator = null
+    TAPi18next.setLng lang, {fixLng: true}, (lang_translator) =>
+      translator = lang_translator
+
+    # Restore i18next lang that had been changed in the process of generating
+    # lang specific translator
+    TAPi18next.setLng current_lang
+
+    return translator
 
   _getProjectLanguages: () ->
     # Return an array of languages available for the current project

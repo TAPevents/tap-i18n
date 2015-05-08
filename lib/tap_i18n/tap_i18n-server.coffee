@@ -4,14 +4,12 @@ _.extend TAPi18n.prototype,
   _registerServerTranslator: (lang_tag, package_name) ->
     if @_enabled()
       if not(lang_tag of @server_translators)
-        TAPi18next.setLng lang_tag, {fixLng: true}, (lang_translator) =>
-          @server_translators[lang_tag] = lang_translator
+        @server_translators[lang_tag] = @_getSpecificLangTranslator(lang_tag)
 
       @addResourceBundle(lang_tag, package_name, @translations[lang_tag][package_name])
 
     if not(@_fallback_language of @server_translators)
-      TAPi18next.setLng @_fallback_language, {fixLng: true}, (lang_translator) =>
-        @server_translators[@_fallback_language] = lang_translator
+      @server_translators[@_fallback_language] = @_getSpecificLangTranslator(@_fallback_language)
 
   _registerAllServerTranslators: () ->
     for lang_tag in @_getProjectLanguages()

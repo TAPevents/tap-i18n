@@ -1,3 +1,5 @@
+t = Package["tap:i18n"].TAPi18n
+
 Tinytest.add 'Enabled tap-i18n Tests - TAPi18n is defined in global namespace', (test) ->
   test.isTrue typeof TAPi18n != "undefined"
 
@@ -12,3 +14,6 @@ Tinytest.add 'Enabled tap-i18n Tests - fallback language is in the returned TAPi
 
 Tinytest.add 'Enabled tap-i18n Tests - fallback language is in the returned TAPi18n._getProjectLanguages() array', (test) ->
   test.isTrue TAPi18n._fallback_language in TAPi18n._getProjectLanguages()
+
+Tinytest.add 'Enabled tap-i18n Tests - TAPi18next language is set to the fallback_language on init', (test) ->
+  test.equal TAPi18next.lng(), t._fallback_language
