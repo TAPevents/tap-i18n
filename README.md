@@ -26,8 +26,6 @@ Developed by <a href="http://www.meteorspark.com"><img src="http://www.meteorspa
 
 **Users of tap-i18n v0.9** and below, read [tap:i18n v1.0 New Features & Backward Compatibility](https://github.com/TAPevents/tap-i18n/wiki/tap:i18n-v1.0-New-Feautres-&-Backward-Compatibility) and update your app to v1.0 .
 
-[![Build Status](https://travis-ci.org/TAPevents/tap-i18n.svg)](https://travis-ci.org/TAPevents/tap-i18n)
-
 ## Contents
 
 - [Key Features](#key-features)
