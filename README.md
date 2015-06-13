@@ -777,6 +777,7 @@ MIT
 
 [Chris Hitchcott](https://github.com/hitchcott/)
 [Kevin Iamburg](http://www.slickdevelopment.com)
+[Abe Pazos](https://github.com/hamoid/)
 
 ## Credits
 
