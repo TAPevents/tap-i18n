@@ -6,7 +6,9 @@ _.extend TAPi18n.prototype,
       if not(lang_tag of @server_translators)
         @server_translators[lang_tag] = @_getSpecificLangTranslator(lang_tag)
 
-      @addResourceBundle(lang_tag, package_name, @translations[lang_tag][package_name])
+      # fallback language is integrated, and isn't part of @translations 
+      if lang_tag != @_fallback_language
+        @addResourceBundle(lang_tag, package_name, @translations[lang_tag][package_name])
 
     if not(@_fallback_language of @server_translators)
       @server_translators[@_fallback_language] = @_getSpecificLangTranslator(@_fallback_language)

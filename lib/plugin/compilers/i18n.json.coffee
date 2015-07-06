@@ -69,29 +69,35 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
   # if fallback_language -> integrate, otherwise add to TAPi18n.translations if server arch.
   if language == compiler_configuration.fallback_language
     output +=
-    """
-    // integrate the fallback language translations 
-    translations = {};
-    translations[namespace] = #{JSON.stringify translations};
-    TAPi18n._loadLangFileObject("#{compiler_configuration.fallback_language}", translations);
+      """
+      // integrate the fallback language translations 
+      translations = {};
+      translations[namespace] = #{JSON.stringify translations};
+      TAPi18n._loadLangFileObject("#{compiler_configuration.fallback_language}", translations);
 
-    """
-  else if compileStep.archMatches "os"
-    output +=
-    """
-    if(_.isUndefined(TAPi18n.translations["#{language}"])) {
-      TAPi18n.translations["#{language}"] = {};
-    }
+      """
 
-    if(_.isUndefined(TAPi18n.translations["#{language}"][namespace])) {
-      TAPi18n.translations["#{language}"][namespace] = {};
-    }
+  if compileStep.archMatches "os"
+    if language != compiler_configuration.fallback_language
+      output +=
+        """
+        if(_.isUndefined(TAPi18n.translations["#{language}"])) {
+          TAPi18n.translations["#{language}"] = {};
+        }
 
-    _.extend(TAPi18n.translations["#{language}"][namespace], #{JSON.stringify translations});
+        if(_.isUndefined(TAPi18n.translations["#{language}"][namespace])) {
+          TAPi18n.translations["#{language}"][namespace] = {};
+        }
 
-    TAPi18n._registerServerTranslator("#{language}", namespace);
+        _.extend(TAPi18n.translations["#{language}"][namespace], #{JSON.stringify translations});
 
-    """
+        """
+
+    output += 
+      """
+      TAPi18n._registerServerTranslator("#{language}", namespace);
+
+      """
 
   # register i18n helper for templates, only once per web arch, only for packages
   if helpers.isPackage(compileStep)
