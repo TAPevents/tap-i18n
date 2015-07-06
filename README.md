@@ -83,7 +83,7 @@ See more examples below.
 
 ### Transparent Namespacing
 
-You don't need to worry about domain prefixing or package conflicts when you translate your project or package. Behind the scenes we automatically generate scoped namesapaces for you.
+You don't need to worry about domain prefixing or package conflicts when you translate your project or package. Behind the scenes we automatically generate scoped namespaces for you.
 
 ### Ready to Scale
 
