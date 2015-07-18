@@ -17,6 +17,11 @@ share.project_i18n_schema = schema = new SimpleSchema
     label: "Unified languages files path"
     defaultValue: globals.browser_path
     optional: true
+  preloaded_langs:
+    type: [String]
+    label: "Preload languages"
+    defaultValue: []
+    optional: true
   cdn_path:
     type: String
     label: "Unified languages files path on CDN"
@@ -47,7 +52,7 @@ getProjectConfJs = share.getProjectConfJs = (conf) ->
           TAPi18n.languages_names["#{lang_tag}"] = #{JSON.stringify language_names[lang_tag]};
 
         """
-  
+
   return project_conf_js
 
 Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
@@ -81,6 +86,29 @@ Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
     return
 
   project_i18n_js_file = getProjectConfJs project_tap_i18n
+
+  if compileStep.archMatches("web") and not _.isEmpty project_tap_i18n.preloaded_langs
+    preloaded_langs = "all"
+    if project_tap_i18n.preloaded_langs[0] != "*"
+      preloaded_langs = project_tap_i18n.preloaded_langs.join(",")
+
+    project_i18n_js_file +=
+      """
+      $.ajax({
+          type: 'GET',
+          url: "#{project_tap_i18n.i18n_files_route}/multi/#{preloaded_langs}.json",
+          dataType: 'json',
+          success: function(data) {
+            for (lang_tag in data) {
+              TAPi18n._loadLangFileObject(lang_tag, data[lang_tag]);
+              TAPi18n._loaded_languages.push(lang_tag);
+            }
+          },
+          data: {},
+          async: false
+      });
+
+      """
 
   helpers.markProjectI18nLoaded(compileStep)
 

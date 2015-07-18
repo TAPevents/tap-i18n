@@ -1,5 +1,5 @@
 Tinytest.add 'project with no project-tap.i18n - TAPi18n.conf generated correctly', (test) ->
-  test.equal TAPi18n.conf, {"helper_name":"_","supported_languages":null,"i18n_files_route":"/tap-i18n","cdn_path":null}
+  test.equal TAPi18n.conf, {"helper_name":"_","supported_languages":null,"i18n_files_route":"/tap-i18n","preloaded_langs":[],"cdn_path":null}
 
 Tinytest.add 'project with no project-tap.i18n - TAPi18n._getProjectLanguages() return expected value', (test) ->
   test.equal TAPi18n._getProjectLanguages(), ["en", "bb", "cc-CC"]

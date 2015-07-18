@@ -38,6 +38,29 @@ _.extend TAPi18n.prototype,
     if not self._enabled()
       throw new Meteor.Error 500, "tap-i18n has to be enabled in order to register the HTTP method"
 
+    methods["#{self.conf.i18n_files_route.replace(/\/$/, "")}/multi/:langs"] =
+      get: () ->
+        if not RegExp("^((#{globals.langauges_tags_regex},)*#{globals.langauges_tags_regex}|all).json$").test(@params.langs)
+          return @setStatusCode(401)
+
+        langs = @params.langs.replace ".json", ""
+
+        if langs == "all"
+          output = self.translations
+        else
+          output = {}
+
+          langs = langs.split(",")
+          for lang_tag in langs
+            if lang_tag in self._getProjectLanguages() and \
+               lang_tag != self._fallback_language # fallback language is integrated to the bundle
+              language_translations = self.translations[lang_tag]
+
+              if language_translations?
+                output[lang_tag] = language_translations
+
+        return JSON.stringify(output)
+
     methods["#{self.conf.i18n_files_route.replace(/\/$/, "")}/:lang"] =
       get: () ->
         if not RegExp("^#{globals.langauges_tags_regex}.json$").test(@params.lang)
