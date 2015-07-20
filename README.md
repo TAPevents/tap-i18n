@@ -132,7 +132,7 @@ You can put languages files anywhere in your project tree, as long as they are
 common to both your server and client - **do not put languages files under
 /client, /server or /public**.
 
-Note that languages files have to be saved in utf-8 encoding in order to prevent any issue with accented characters.
+Note: Languages files have to be saved in utf-8 encoding.
 
 **Step 4:** Initiate the client language on startup (optional)
 
