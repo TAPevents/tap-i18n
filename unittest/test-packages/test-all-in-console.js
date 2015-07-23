@@ -34,7 +34,8 @@ var should_succeed = [
     "empty-object-package-tap-i18n",
     "pack-with-project-trans-tap-i18n",
     "project-all-custom-project-tap-i18n",
-    "project-no-project-tap-i18n"
+    "project-no-project-tap-i18n",
+    "project-preload-all-langs"
 ];
 
 var should_fail = [
