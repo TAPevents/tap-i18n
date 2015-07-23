@@ -1,3 +1,8 @@
+2015.07.24, Version 1.6.0
+
+* Implement project-tap.i18n's preloaded_langs option
+* Improve Chinese dialects names
+
 2015.07.06, Version 1.5.1
 
 * Register server side translator for fallback language correctly, fix #82
