@@ -73,7 +73,7 @@ describe('TAPi18n - catalog and registration', function () {
       expect(Object.prototype.hasOwnProperty.call(languages, 'zz')).to.equal(false);
       if (TapI18nTest.scenario === 'configured') {
         expect(TAPi18n.conf.supported_languages).to.deep.equal(['cc-CC', 'cc', 'fr', 'cc']);
-        expect(languages.fr.en).to.deep.equal('French (France)');
+        expect(languages.fr).to.deep.equal({name: 'Français', en: 'French'});
         expect(Object.prototype.hasOwnProperty.call(languages, 'bb')).to.equal(false);
       }
     });

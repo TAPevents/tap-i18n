@@ -108,3 +108,49 @@ describe('TAPi18n compiler - batch lifecycle', function () {
     expect(code(next)).to.include('TAPi18n._enable');
   });
 });
+
+
+describe('TAPi18n compiler - language names', function () {
+  const expectedNames = {
+    'en-US': ['English (United States)', 'English (United States)'],
+    fr: ['French', 'Français'],
+    'fr-BE': ['French (Belgium)', 'Français (Belgique)'],
+    'fr-CA': ['French (Canada)', 'Français (Canada)'],
+    'fr-FR': ['French (France)', 'Français (France)']
+  };
+
+  function registeredNames(files) {
+    createCompiler().processFilesForTarget(files);
+    // Execute the compiler output with registration sinks. This checks the
+    // metadata supplied to the runtime, rather than reading the source table.
+    const TAPi18n = {
+      languages_names: {}, translations: {},
+      _enable() {}, invalidateLanguagesCache() {}, _registerServerTranslator() {}
+    };
+    const underscore = require('underscore');
+    const context = vm.createContext({TAPi18n, _: underscore, Package: {underscore: {_: underscore}}});
+    for (const file of files) vm.runInContext(code(file), context);
+    return TAPi18n.languages_names;
+  }
+
+  for (const arch of ['web.browser', 'os.osx.arm64']) {
+    it('registers friendly names from translation files on ' + arch, function () {
+      const files = Object.keys(expectedNames).map(tag => input(tag + '.i18n.json', null, arch));
+      expect(registeredNames(files)).to.deep.equal({en: ['English', 'English'], ...expectedNames});
+    });
+
+    it('registers configured names without translation files on ' + arch, function () {
+      const config = input('project-tap.i18n', null, arch,
+        JSON.stringify({supported_languages: Object.keys(expectedNames)}));
+      expect(registeredNames([config])).to.deep.equal({en: ['English', 'English'], ...expectedNames});
+    });
+  }
+
+  it('keeps generic French distinct without adding regional languages', function () {
+    const config = input('project-tap.i18n', null, 'web.browser',
+      JSON.stringify({supported_languages: ['fr']}));
+    expect(registeredNames([config])).to.deep.equal({
+      en: ['English', 'English'], fr: ['French', 'Français']
+    });
+  });
+});

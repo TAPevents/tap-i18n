@@ -2,6 +2,9 @@ FUTURE
 
 * Correct the README plural example's missing interpolation argument and test
   the published example in Blaze. Thanks to tony13tv (#207).
+* Add friendly names for en-US, fr-CA and fr-FR, correct generic French's English
+  name to "French", and align the fr-BE native name. Thanks to ubald (#103).
+  Cover names from translation files and configuration on client and server.
 
 2026.09.30, Version 2.1.0
 

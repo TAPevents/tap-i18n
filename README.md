@@ -949,7 +949,9 @@ fixture checks YAML/JSON override order and isolation between two namespaces.
 The Node Mocha suite in `tests/compiler` additionally exercises repeated compiler
 batches, target changes, empty batches, and recovery after errors. It loads the
 actual plugin sources with a small InputFile adapter; schema validation and
-runtime integration are covered by the real Meteor scenarios.
+runtime integration are covered by the real Meteor scenarios. Language-name
+regressions execute compiler output from both translation files and explicit
+configuration.
 
 The suite also checks cached snapshot identity, mutation protection, explicit
 invalidation, startup invalidation, and Tracker dependencies on cache hits.
