@@ -633,7 +633,7 @@ to your server's root url when building your project.
 $ meteor build --server="http://www.your-site-domain.com"
 ```
 
-**Note:** At the moment tap-i18n works in Cordova apps only when internet connection is available.
+If your app should work when the user is offline, install the [tap:i18n-bundler](https://atmospherejs.com/tap/i18n-bundler) package and follow [its instructions](https://github.com/TAPevents/i18n-bundler#usage).
 
 ## Developing Packages
 
