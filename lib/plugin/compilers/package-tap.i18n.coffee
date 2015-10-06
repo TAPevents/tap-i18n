@@ -45,7 +45,7 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
   package_tap_i18n = helpers.loadJSON input_path, compileStep
 
   if not package_tap_i18n?
-  	package_tap_i18n = schema.clean {}
+    package_tap_i18n = schema.clean {}
   schema.clean package_tap_i18n
 
   try
