@@ -1,4 +1,5 @@
 helpers = share.helpers
+compilers = share.compilers
 compiler_configuration = share.compiler_configuration
 
 schema = new SimpleSchema
@@ -18,7 +19,7 @@ schema = new SimpleSchema
     label: "Translations Namespace"
     optional: true
 
-Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
+compilers.package_tap_i18n = (compileStep) ->
   compiler_configuration.registerInputFile(compileStep)
   input_path = compileStep._fullInputPath
 
@@ -90,3 +91,5 @@ Plugin.registerSourceHandler "package-tap.i18n", (compileStep) ->
     sourcePath: input_path,
     data: package_i18n_js_file,
     bare: false
+
+Plugin.registerSourceHandler "package-tap.i18n", compilers.package_tap_i18n

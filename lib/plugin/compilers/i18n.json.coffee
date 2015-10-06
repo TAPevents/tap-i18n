@@ -1,9 +1,10 @@
 path = Npm.require "path"
 
 helpers = share.helpers
+compilers = share.compilers
 compiler_configuration = share.compiler_configuration
 
-Plugin.registerSourceHandler "i18n.json", (compileStep) ->
+compilers.i18n_json = (compileStep) ->
   compiler_configuration.registerInputFile(compileStep)
   input_path = compileStep._fullInputPath
 
@@ -121,3 +122,6 @@ Plugin.registerSourceHandler "i18n.json", (compileStep) ->
     sourcePath: input_path,
     data: output,
     bare: false
+
+
+Plugin.registerSourceHandler "i18n.json", compilers.i18n_json

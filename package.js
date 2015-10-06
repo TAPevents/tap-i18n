@@ -65,6 +65,7 @@ Package.registerBuildPlugin({
     'lib/plugin/helpers/load_json.coffee',
     'lib/plugin/helpers/compile_step_helpers.coffee',
 
+    'lib/plugin/compilers/share.coffee',
     'lib/plugin/compilers/i18n.coffee',
     'lib/plugin/compilers/project-tap.i18n.coffee',
     'lib/plugin/compilers/package-tap.i18n.coffee',

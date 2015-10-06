@@ -32,9 +32,15 @@ Package.on_use(function (api) {
 Package.onTest(function(api) {
   api.versionsFrom('METEOR@0.9.1');
 
+  api.use('underscore', both);
+
   api.use('tinytest', both);
 
   api.use('coffeescript', both);
+
+  api.use('templating', both);
+
+  api.use('tracker', both);
 
   api.use('tap-tests:project-no-project-tap-i18n', both);
 

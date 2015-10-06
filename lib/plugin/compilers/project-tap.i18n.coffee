@@ -1,4 +1,5 @@
 helpers = share.helpers
+compilers = share.compilers
 compiler_configuration = share.compiler_configuration
 
 share.project_i18n_schema = schema = new SimpleSchema
@@ -55,7 +56,7 @@ getProjectConfJs = share.getProjectConfJs = (conf) ->
 
   return project_conf_js
 
-Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
+compilers.project_tap_i18n = (compileStep) ->
   compiler_configuration.registerInputFile(compileStep)
   input_path = compileStep._fullInputPath
 
@@ -117,3 +118,5 @@ Plugin.registerSourceHandler "project-tap.i18n", (compileStep) ->
     sourcePath: input_path,
     data: project_i18n_js_file,
     bare: false
+
+Plugin.registerSourceHandler "project-tap.i18n", compilers.project_tap_i18n
