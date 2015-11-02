@@ -678,6 +678,9 @@ The values below are the defaults.
 
         // the name for the package templates' translation helper
         "helper_name": "_", 
+        
+        // directory for the translation files (without leading slash)
+        "languages_files_dir": "i18n",
 
         // tap:i18n automatically separates the translation strings of each package to a
         // namespace dedicated to that package, which is used by the package's translation
@@ -704,6 +707,10 @@ Example for the default languages\_files\_dir path and its structure:
     .
     .
     .
+
+NOTE: the file for the fallback language (`en.i18n.json`) **must** exist (it may be empty though).
+
+The leanest set up (for instance in a private package, where you keep the translations at the project level) is two empty files: `package-tap.i18n` and `i18n/en.i18n.json`.
 
 **Step 3:** Setup your package.js:
 
