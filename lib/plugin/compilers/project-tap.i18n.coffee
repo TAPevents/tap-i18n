@@ -56,67 +56,79 @@ getProjectConfJs = share.getProjectConfJs = (conf) ->
 
   return project_conf_js
 
-compilers.project_tap_i18n = (compileStep) ->
-  compiler_configuration.registerInputFile(compileStep)
-  input_path = compileStep._fullInputPath
+class ProjectTapCompiler extends CachingCompiler
+  constructor: ->
+    super
+      compilerName: 'project_tap_i18n'
+      defaultCacheSize: 1024*1024
 
-  if helpers.isPackage(compileStep)
-    compileStep.error
-      message: "Can't load project-tap.i18n in a package: #{compileStep.packageName}",
-      sourcePath: input_path
-    return
+  processFilesForTarget: (inputFiles) ->
+    if inputFiles.length > 1
+      inputFiles[1].error
+        message: "Can't have more than one project-tap.i18n"
 
-  if helpers.isProjectI18nLoaded(compileStep)
-    compileStep.error
-      message: "Can't have more than one project-tap.i18n",
-      sourcePath: input_path
-    return
+    super(inputFiles)
 
-  project_tap_i18n = helpers.loadJSON input_path, compileStep
+  getCacheKey: (inputFile) ->
+    inputFile.getSourceHash()
 
-  if not project_tap_i18n?
-    project_tap_i18n = schema.clean {}
-  schema.clean project_tap_i18n
+  compileOneFile: (inputFile) ->
+    input_path = inputFile.getDisplayPath()
 
-  try
-    check project_tap_i18n, schema
-  catch error
-    compileStep.error
-      message: "File `#{file_path}' is an invalid project-tap.i18n file (#{error})",
-      sourcePath: input_path
-    return
+    if inputFile.getPackageName() != null
+      return inputFile.error
+        message: "Can't load project-tap.i18n in a package: #{inputFile.getPackageName()}"
 
-  project_i18n_js_file = getProjectConfJs project_tap_i18n
+    project_tap_i18n = helpers.loadJSON(inputFile)
 
-  if compileStep.archMatches("web") and not _.isEmpty project_tap_i18n.preloaded_langs
-    preloaded_langs = "all"
-    if project_tap_i18n.preloaded_langs[0] != "*"
-      preloaded_langs = project_tap_i18n.preloaded_langs.join(",")
+    if not project_tap_i18n?
+      project_tap_i18n = schema.clean {}
+    schema.clean project_tap_i18n
 
-    project_i18n_js_file +=
-      """
-      $.ajax({
-          type: 'GET',
-          url: "#{project_tap_i18n.i18n_files_route}/multi/#{preloaded_langs}.json",
-          dataType: 'json',
-          success: function(data) {
-            for (lang_tag in data) {
-              TAPi18n._loadLangFileObject(lang_tag, data[lang_tag]);
-              TAPi18n._loaded_languages.push(lang_tag);
-            }
-          },
-          data: {},
-          async: false
-      });
+    try
+      check project_tap_i18n, schema
+    catch error
+      return inputFile.error
+        message: "File `#{file_path}' is an invalid project-tap.i18n file (#{error})"
 
-      """
+    project_i18n_js_file = getProjectConfJs project_tap_i18n
 
-  helpers.markProjectI18nLoaded(compileStep)
+    if "web" in inputFile.getArch() and not _.isEmpty project_tap_i18n.preloaded_langs
+      preloaded_langs = "all"
+      if project_tap_i18n.preloaded_langs[0] != "*"
+        preloaded_langs = project_tap_i18n.preloaded_langs.join(",")
 
-  compileStep.addJavaScript
-    path: "project-i18n.js",
-    sourcePath: input_path,
-    data: project_i18n_js_file,
-    bare: false
+      project_i18n_js_file +=
+        """
+        $.ajax({
+            type: 'GET',
+            url: "#{project_tap_i18n.i18n_files_route}/multi/#{preloaded_langs}.json",
+            dataType: 'json',
+            success: function(data) {
+              for (lang_tag in data) {
+                TAPi18n._loadLangFileObject(lang_tag, data[lang_tag]);
+                TAPi18n._loaded_languages.push(lang_tag);
+              }
+            },
+            data: {},
+            async: false
+        });
 
-Plugin.registerSourceHandler "project-tap.i18n", compilers.project_tap_i18n
+        """
+
+    helpers.markProjectI18nLoaded(compileStep)
+    return project_i18n_js_file
+
+  compileResultSize: (compileResult) ->
+    compileResult.length
+
+  addCompileResult: (inputFile, compileResult) ->
+    inputFile.addJavaScript
+      path: "project-i18n.js"
+      sourcePath: inputFile.getPathInPackage()
+      data: compileResult
+      bare: false
+
+Plugin.registerCompiler
+  filenames: ["project-tap.i18n"]
+, -> new ProjectTapCompiler()

@@ -10,7 +10,9 @@ server = 'server';
 client = 'client';
 
 Package.onUse(function (api) {
-  api.versionsFrom('0.9.4');
+  api.versionsFrom('1.2.1');
+
+  api.use('isobuild:compiler-plugin@1.0.0');
 
   api.use('coffeescript', both);
   api.use('underscore', both);
@@ -52,7 +54,14 @@ Package.onUse(function (api) {
 
 Package.registerBuildPlugin({
   name: 'tap-i18n-compiler',
-  use: ['coffeescript', 'underscore', 'aldeed:simple-schema@1.3.0', 'check@1.0.3', 'templating'],
+  use: [
+    'caching-compiler@1.0.0',
+    'coffeescript',
+    'underscore',
+    'aldeed:simple-schema@1.3.0',
+    'check@1.0.3',
+    'templating'
+  ],
   npmDependencies: {"node-json-minify": "0.1.3-a"},
   sources: [
     'lib/globals.js',
@@ -66,7 +75,6 @@ Package.registerBuildPlugin({
     'lib/plugin/helpers/compile_step_helpers.coffee',
 
     'lib/plugin/compilers/share.coffee',
-    'lib/plugin/compilers/i18n.coffee',
     'lib/plugin/compilers/project-tap.i18n.coffee',
     'lib/plugin/compilers/package-tap.i18n.coffee',
     'lib/plugin/compilers/i18n.json.coffee'
