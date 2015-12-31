@@ -68,15 +68,11 @@ Package.registerBuildPlugin({
 
     'lib/plugin/etc/language_names.js',
 
-    'lib/plugin/compiler_configuration.coffee',
-
     'lib/plugin/helpers/helpers.coffee',
     'lib/plugin/helpers/load_json.coffee',
     'lib/plugin/helpers/compile_step_helpers.coffee',
+    'lib/plugin/helpers/schemas.coffee',
 
-    'lib/plugin/compilers/share.coffee',
-    'lib/plugin/compilers/project-tap.i18n.coffee',
-    'lib/plugin/compilers/package-tap.i18n.coffee',
-    'lib/plugin/compilers/i18n.json.coffee'
+    'lib/plugin/compiler.coffee',
   ]
 });
