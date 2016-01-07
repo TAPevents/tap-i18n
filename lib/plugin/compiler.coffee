@@ -1,23 +1,4 @@
-path = Npm.require "path"
-
 helpers = share.helpers
-
-packageTapSchema = new SimpleSchema
-  translation_function_name:
-    type: String
-    defaultValue: "__"
-    label: "Translation Function Name"
-    optional: true
-  helper_name:
-    type: String
-    defaultValue: "_"
-    label: "Helper Name"
-    optional: true
-  namespace:
-    type: String
-    defaultValue: null
-    label: "Translations Namespace"
-    optional: true
 
 class TAPi18nCompiler extends CachingCompiler
   constructor: ->
@@ -29,12 +10,7 @@ class TAPi18nCompiler extends CachingCompiler
       fallback_language: globals.fallback_language
       packages: [] # Each time we compile package-tap.i18n we push "package_name:arch" to this array
       templates_registered_for: [] # Each time we register a template we push "package_name:arch" to this array
-      default_project_conf_inserted_for: [] # Keeps track of the archs we've inserted the default project conf for.
-                                            # Default project conf is inserted by the *.i18.json compiler to be used
-                                            # in case the project has no project-tap.i18n
-      project_tap_i18n_loaded_for: [] # Keeps track of the archs we've loaded project_tap_i18n for
-
-      tap_i18n_input_files: []
+      setDefaultProjectConfIn: null
 
   getLanguage: (inputFile) ->
     inputFile.getBasename().split(".").slice(0, -2).pop()
@@ -42,12 +18,22 @@ class TAPi18nCompiler extends CachingCompiler
   getCacheKey: (inputFile) ->
     [
       inputFile.getSourceHash(),
-      @configuration,
-      @getLanguage(inputFile)
+      @getCompileStepArchAndPackage(inputFile),
+      @getLanguage(inputFile),
+      @configuration
     ]
 
   isConfigFile: (inputFile) ->
     inputFile.getBasename() in ["package-tap.i18n", "project-tap.i18n"]
+
+  isClient: (inputFile) ->
+    /^web/.test(inputFile.getArch())
+
+  isServer: (inputFile) ->
+    /^os/.test(inputFile.getArch())
+
+  getCompileStepArchAndPackage: (inputFile) ->
+    "#{inputFile.getArch()}:#{inputFile.getPackageName()}"
 
   processFilesForTarget: (inputFiles) ->
     filterFilename = (filename) ->
@@ -55,6 +41,8 @@ class TAPi18nCompiler extends CachingCompiler
 
     packageTapFiles = filterFilename("package-tap.i18n")
     projectTapFiles = filterFilename("project-tap.i18n")
+
+    sortedInputFiles = _.sortBy(inputFiles, (f) => if @isConfigFile(f) then -1 else 1)
 
     if packageTapFiles.length > 1
       packageName = inputFiles[1].getPackageName()
@@ -64,18 +52,20 @@ class TAPi18nCompiler extends CachingCompiler
     if projectTapFiles.length > 1
       projectTapFiles[1].error
         message: "Can't have more than one project-tap.i18n"
+    else if projectTapFiles.length == 0
+      @configuration.setDefaultProjectConfIn = @getLanguage sortedInputFiles[sortedInputFiles.length - 1]
+    else
+      @configuration.setDefaultProjectConfIn = null
 
-    inputFiles = _.sortBy(inputFiles, (f) => @isConfigFile(f) ? 1 : 0)
-
-    super(inputFiles)
+    super(sortedInputFiles)
 
   compileOneFile: (inputFile) ->
-    if not @isConfigFile(inputFile)
-      return @compileI18nJsonFile(inputFile)
-    else if inputFile.getBasename() == "package-tap.i18n"
+    if inputFile.getBasename() == "package-tap.i18n"
       return @compilePackageTapFile(inputFile)
-    else inputFile.getBasename() == "project-tap.i18n"
-    return @compileProjectTapFile(inputFile)
+    else if inputFile.getBasename() == "project-tap.i18n"
+      return @compileProjectTapFile(inputFile)
+    else
+      return @compileI18nJsonFile(inputFile)
 
   compileI18nJsonFile: (inputFile) ->
     input_path = inputFile.getPathInPackage()
@@ -87,7 +77,7 @@ class TAPi18nCompiler extends CachingCompiler
         sourcePath: input_path
       return
 
-    if not RegExp("^#{globals.langauges_tags_regex}$").test(language)
+    if not RegExp("^#{globals.languages_tags_regex}$").test(language)
       inputFile.error
         message: "Can't recognise '#{language}' as a language-tag: `#{input_path}'",
         sourcePath: input_path
@@ -129,15 +119,11 @@ class TAPi18nCompiler extends CachingCompiler
 
           """
 
-      # # If this is a project but project-tap.i18n haven't compiled yet add default project conf
-      # # for case there is no project-tap.i18n defined in this project.
-      # # Reminder: we don't require projects to have project-tap.i18n
-      # if not(helpers.isDefaultProjectConfInserted(compileStep)) and \
-      #    not(helpers.isProjectI18nLoaded(compileStep))
-      #   output += share.getProjectConfJs(share.project_i18n_schema.clean {}) # defined in project-tap.i18n.coffee
-
-      #   helpers.markDefaultProjectConfInserted(compileStep)
-
+      # If this is a project but project-tap.i18n haven't compiled yet add default project conf
+      # for case there is no project-tap.i18n defined in this project.
+      # Reminder: we don't require projects to have project-tap.i18n
+      if @configuration.setDefaultProjectConfIn == @getLanguage inputFile
+        output += share.getProjectConfJs(share.project_i18n_schema.clean {}) # defined in project-tap.i18n.coffee
 
     # if fallback_language -> integrate, otherwise add to TAPi18n.translations if server arch.
     if language == @configuration.fallback_language
@@ -150,7 +136,7 @@ class TAPi18nCompiler extends CachingCompiler
 
         """
 
-    if "os" in inputFile.getArch()
+    if @isServer(inputFile)
       if language != @configuration.fallback_language
         output +=
           """
@@ -174,7 +160,7 @@ class TAPi18nCompiler extends CachingCompiler
 
     # register i18n helper for templates, only once per web arch, only for packages
     if helpers.isPackage(inputFile)
-      if "web" in inputFile.getArch() and helpers.getCompileStepArchAndPackage(inputFile) not in @configuration.templates_registered_for
+      if @isClient(inputFile) and @getCompileStepArchAndPackage(inputFile) not in @configuration.templates_registered_for
         output +=
           """
           var package_templates = _.difference(_.keys(Template), non_package_templates);
@@ -186,25 +172,13 @@ class TAPi18nCompiler extends CachingCompiler
           }
 
           """
-        @configuration.templates_registered_for.push helpers.getCompileStepArchAndPackage(compileStep)
+        @configuration.templates_registered_for.push @getCompileStepArchAndPackage(inputFile)
 
     return output
 
   compilePackageTapFile: (inputFile) ->
     input_path = inputFile.getDisplayPath()
     package_name = inputFile.getPackageName()
-
-    # if helpers.isProjectI18nLoaded(compileStep)
-    #   inputFile.error
-    #     message: "Can't compile package-tap.i18n if project-tap.i18n is present",
-    #     sourcePath: input_path
-    #   return
-
-    # if helpers.isDefaultProjectConfInserted(compileStep)
-    #   inputFile.error
-    #     message: "package-tap.i18n should be loaded before languages files (*.i18n.json)",
-    #     sourcePath: input_path
-    #   return
 
     package_tap_i18n = helpers.loadJSON(inputFile)
     schema = share.package_i18n_schema
@@ -235,7 +209,7 @@ class TAPi18nCompiler extends CachingCompiler
 
       """
 
-    if "web" in inputFile.getArch()
+    if @isClient(inputFile)
       package_i18n_js_file +=
         """
         // define the package's templates registrar
@@ -270,9 +244,9 @@ class TAPi18nCompiler extends CachingCompiler
       return inputFile.error
         message: "File `#{file_path}' is an invalid project-tap.i18n file (#{error})"
 
-    project_i18n_js_file = getProjectConfJs project_tap_i18n
+    project_i18n_js_file = share.getProjectConfJs project_tap_i18n
 
-    if "web" in inputFile.getArch() and not _.isEmpty project_tap_i18n.preloaded_langs
+    if @isClient(inputFile) and not _.isEmpty project_tap_i18n.preloaded_langs
       preloaded_langs = "all"
       if project_tap_i18n.preloaded_langs[0] != "*"
         preloaded_langs = project_tap_i18n.preloaded_langs.join(",")
@@ -299,7 +273,12 @@ class TAPi18nCompiler extends CachingCompiler
     return project_i18n_js_file
 
   _outputFilePath: (inputFile) ->
-    inputFile.getPathInPackage().replace /json$/, "js"
+    if inputFile.getBasename() == "package-tap.i18n"
+      "package-i18n.js"
+    else if inputFile.getBasename() == "project-tap.i18n"
+      "project-i18n.js"
+    else
+      inputFile.getPathInPackage().replace /json$/, "js"
 
   compileResultSize: (compileResult) ->
     compileResult.length

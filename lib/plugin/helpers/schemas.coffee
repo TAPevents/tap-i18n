@@ -43,7 +43,7 @@ share.project_i18n_schema = schema = new SimpleSchema
     defaultValue: null
     optional: true
 
-getProjectConfJs = share.getProjectConfJs = (conf) ->
+share.getProjectConfJs = (conf) ->
   fallback_language_name = language_names[globals.fallback_language]
 
   project_conf_js = """
