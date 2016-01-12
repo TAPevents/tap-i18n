@@ -243,7 +243,7 @@ Using `i18next.t` `lng` option or `lang`, which we made as alias to `lang` in
 tap:i18n, is equivalent to setting the `lang_tag` attribute.
 
 The function is a proxy to the i18next.t() method.
-Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
+Refer to the [documentation of i18next.t()](http://i18next.com/docs/)
 to learn about its possible options.
 
 **On the server**, TAPi18n.__ is not a reactive resource. You have to specify
