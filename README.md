@@ -62,7 +62,7 @@ tap-i18n is designed in a way that distinguishes the role of the package develop
 
 ### Advanced i18n
 
-tap-i18n uses [i18next](http://i18next.com/) as its internationalization engine and exposes all its capabilities to the Meteor's templates - variables, dialects, count/context aware keys, and more.
+tap-i18n uses [i18next v1.11](http://i18next.github.io/i18next/) as its internationalization engine and exposes all its capabilities to the Meteor's templates - variables, dialects, count/context aware keys, and more.
 
 **client/messages.html**
 
@@ -243,8 +243,8 @@ Using `i18next.t` `lng` option or `lang`, which we made as alias to `lang` in
 tap:i18n, is equivalent to setting the `lang_tag` attribute.
 
 The function is a proxy to the i18next.t() method.
-Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
-to learn about its possible options.
+Refer to the [documentation of i18next.t()](http://i18next.github.io/i18next/pages/doc_features.html)
+to learn about its possible options. (Make sure you refer to i18next v1.11 documentation and not v2)
 
 **On the server**, TAPi18n.__ is not a reactive resource. You have to specify
 the language tag you want to translate the key to.
@@ -483,8 +483,8 @@ Assuming the client language is en.
     There are 2 actors in the movie
     There are 2 actresses in the movie
 
-* Refer to the [documentation of i18next.t()](http://i18next.com/pages/doc_features.html)
-  to learn more about its possible options.
+* Refer to the [documentation of i18next.t() v1.11](http://i18next.github.io/i18next/pages/doc_features.html)
+  to learn more about its possible options. (Make sure you refer to i18next v1.11 documentation and not v2)
 * The translation will get updated automatically after calls to
   TAPi18n.setLanguage().
 
@@ -570,9 +570,9 @@ Example for languages files:
   dialect file.
 * The French file above have no translation for the color key above, it will
   fallback to English.
-* Check [i18next features documentation](http://i18next.com/pages/doc_features.html) for
+* Check [i18next features documentation](http://i18next.github.io/i18next/pages/doc_features.html) for
   more advanced translations structures you can use in your JSONs files (Such as
-  variables, plural form, etc.).  
+  variables, plural form, etc.).   (Make sure you refer to i18next v1.11 documentation and not v2)
 
 #### A note about dot notation
 
@@ -794,6 +794,6 @@ MIT
 
 ## Credits
 
-* [i18next](http://i18next.com/)
+* [i18next v1.11](http://i18next.github.io/i18next/)
 * [simple-schema](https://github.com/aldeed/meteor-simple-schema)
 * [http-methods](https://github.com/CollectionFS/Meteor-http-methods)
