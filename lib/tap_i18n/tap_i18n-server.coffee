@@ -6,7 +6,7 @@ _.extend TAPi18n.prototype,
       if not(lang_tag of @server_translators)
         @server_translators[lang_tag] = @_getSpecificLangTranslator(lang_tag)
 
-      # fallback language is integrated, and isn't part of @translations 
+      # fallback language is integrated, and isn't part of @translations
       if lang_tag != @_fallback_language
         @addResourceBundle(lang_tag, package_name, @translations[lang_tag][package_name])
 
@@ -40,7 +40,7 @@ _.extend TAPi18n.prototype,
 
     methods["#{self.conf.i18n_files_route.replace(/\/$/, "")}/multi/:langs"] =
       get: () ->
-        if not RegExp("^((#{globals.langauges_tags_regex},)*#{globals.langauges_tags_regex}|all).json$").test(@params.langs)
+        if not RegExp("^((#{globals.languages_tags_regex},)*#{globals.languages_tags_regex}|all).json$").test(@params.langs)
           return @setStatusCode(401)
 
         langs = @params.langs.replace ".json", ""
@@ -63,7 +63,7 @@ _.extend TAPi18n.prototype,
 
     methods["#{self.conf.i18n_files_route.replace(/\/$/, "")}/:lang"] =
       get: () ->
-        if not RegExp("^#{globals.langauges_tags_regex}.json$").test(@params.lang)
+        if not RegExp("^#{globals.languages_tags_regex}.json$").test(@params.lang)
           return @setStatusCode(401)
 
         lang_tag = @params.lang.replace ".json", ""

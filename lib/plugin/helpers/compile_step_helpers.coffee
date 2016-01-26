@@ -1,14 +1,14 @@
 compiler_configuration = share.compiler_configuration
 
 _.extend share.helpers,
-    getCompileStepArchAndPackage: (compileStep) ->
-      "#{compileStep.packageName}:#{compileStep.arch}"
+    getCompileStepArchAndPackage: (inputFile) ->
+      "#{inputFile.getPackageName()}:#{inputFile.getArch()}"
 
     markAsPackage: (compileStep) ->
       compiler_configuration.packages.push @.getCompileStepArchAndPackage(compileStep)
 
-    isPackage: (compileStep) ->
-      @.getCompileStepArchAndPackage(compileStep) in compiler_configuration.packages
+    isPackage: (inputFile) ->
+      inputFile.getPackageName() != null
 
     markProjectI18nLoaded: (compileStep) ->
       compiler_configuration.project_tap_i18n_loaded_for.push @.getCompileStepArchAndPackage(compileStep)

@@ -146,7 +146,7 @@ _.extend TAPi18n.prototype,
         # Remove options.lng so we won't pass it to the regular TAPi18next
         # before the language specific translator is ready to keep behavior
         # consistent.
-        # 
+        #
         # If lang is actually ready before the language specifc translator is
         # ready, TAPi18next will translate to lang_tag if we won't remove
         # options.lng.
@@ -161,7 +161,7 @@ _.extend TAPi18n.prototype,
           return @_languageSpecificTranslators[lang_tag] "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
         else
           return TAPi18next.t "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
-      
+
       # If inside a reactive computation, we want to invalidate the computation if the client lang changes
       @_language_changed_tracker.depend()
 
