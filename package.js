@@ -53,7 +53,10 @@ Package.onUse(function (api) {
 Package.registerBuildPlugin({
   name: 'tap-i18n-compiler',
   use: ['coffeescript', 'underscore', 'aldeed:simple-schema@1.3.0', 'check@1.0.3', 'templating'],
-  npmDependencies: {"node-json-minify": "0.1.3-a"},
+  npmDependencies: {
+    "node-json-minify": "0.1.3-a",
+    "yamljs": "0.2.4"
+  },
   sources: [
     'lib/globals.js',
 
@@ -63,12 +66,14 @@ Package.registerBuildPlugin({
 
     'lib/plugin/helpers/helpers.coffee',
     'lib/plugin/helpers/load_json.coffee',
+    'lib/plugin/helpers/load_yml.coffee',
     'lib/plugin/helpers/compile_step_helpers.coffee',
 
     'lib/plugin/compilers/share.coffee',
     'lib/plugin/compilers/i18n.coffee',
     'lib/plugin/compilers/project-tap.i18n.coffee',
     'lib/plugin/compilers/package-tap.i18n.coffee',
-    'lib/plugin/compilers/i18n.json.coffee'
+    'lib/plugin/compilers/i18n.json.coffee',
+    'lib/plugin/compilers/i18n.yml.coffee'
   ]
 });
