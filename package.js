@@ -73,6 +73,7 @@ Package.registerBuildPlugin({
     'lib/plugin/compilers/i18n.coffee',
     'lib/plugin/compilers/project-tap.i18n.coffee',
     'lib/plugin/compilers/package-tap.i18n.coffee',
+    'lib/plugin/compilers/i18n.generic_compiler.coffee',
     'lib/plugin/compilers/i18n.json.coffee',
     'lib/plugin/compilers/i18n.yml.coffee'
   ]
