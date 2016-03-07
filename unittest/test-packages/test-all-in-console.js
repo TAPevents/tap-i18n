@@ -30,6 +30,7 @@ var check_failed = check_code_generator(1);
 
 var should_succeed = [
     "blank-package-tap-i18n",
+    "blank-yaml-package-tap-i18n",
     "custom-package-tap-i18n",
     "empty-object-package-tap-i18n",
     "pack-with-project-trans-tap-i18n",
