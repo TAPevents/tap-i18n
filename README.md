@@ -788,9 +788,11 @@ MIT
 
 ## Contributors
 
-[Chris Hitchcott](https://github.com/hitchcott/)
-[Kevin Iamburg](http://www.slickdevelopment.com)
-[Abe Pazos](https://github.com/hamoid/)
+* [Chris Hitchcott](https://github.com/hitchcott/)
+* [Kevin Iamburg](http://www.slickdevelopment.com)
+* [Abe Pazos](https://github.com/hamoid/)
+* [@karfield](https://github.com/karfield/)
+* [@nscarcella](https://github.com/nscarcella/)
 
 ## Credits
 
