@@ -1,9 +1,11 @@
-tap-i18n tests
+tap:i18n tests
 ==============
 
-Run the different test environments by running the folowing inside the test package folder:
+Install requirements:
 
-    $ cd test
-    $ mrt install
-    $ mrt test-packages ./
+$ npm install -g meteorite
+$ npm install -g phantomjs
 
+Run tests:
+
+$ ./test-all-in-console.js
