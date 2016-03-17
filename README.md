@@ -109,7 +109,7 @@ $ meteor add tap:i18n
 <div>{{_ "hello"}}</div>
 ```
 
-**Step 3:** Define translations in JSON format:
+**Step 3:** Define translations in JSON or YAML format:
 
 **i18n/en.i18n.json**
 
@@ -123,7 +123,13 @@ $ meteor add tap:i18n
 { "hello": "Bonjour" }
 ```
 
-Translations files should end with lang_tag.i18n.json.
+**i18n/es.i18n.yml**
+
+```yaml
+hello: Hola
+```
+
+Translations files should end with lang_tag.i18n.json/yml.
 
 You can split translations of a certain language to multiple files, we ignore
 the prefixed text, e.g., we add the translations of menu.en.i18n.json in the
@@ -201,7 +207,7 @@ Returns an object with all the supported languages and their names.
 
 A language is considred supported if it is in the supported_languages array of
 the project-tap.i18n json. If supported_languages is null or not defined in
-project-tap.i18n we consider all the languages we find *.i18n.json files to as
+project-tap.i18n we consider all the languages we find *.i18n.json/yml files to as
 supported.
 
 The returned object is in the following format:
