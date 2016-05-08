@@ -1,7 +1,6 @@
 _.extend TAPi18n.prototype,
   _languageSpecificTranslators: null
   _languageSpecificTranslatorsTrackers: null
-  _abortPreviousSetLang: null
 
   _getLanguageFilePath: (lang_tag) ->
     if not @_enabled()
@@ -172,25 +171,21 @@ _.extend TAPi18n.prototype,
   _onceEnabled: () ->
     @_registerHelpers globals.project_translations_domain
 
+  _abortPreviousSetLang: null
   setLanguage: (lang_tag) ->
     self = @
 
     @_abortPreviousSetLang?()
 
-    callback = do =>
-      isAborted = false
+    isAborted = false
+    @_abortPreviousSetLang = -> isAborted = true
+    
+    @_loadLanguage(lang_tag).then =>
+      if not isAborted
+        TAPi18next.setLng(lang_tag)
 
-      abort: ->
-        isAborted = true
-      fn: =>
-        unless isAborted
-          TAPi18next.setLng(lang_tag)
-
-          @_language_changed_tracker.changed()
-          Session.set @_loaded_lang_session_key, lang_tag
-
-    @_loadLanguage(lang_tag).then callback.fn
-    @_abortPreviousSetLang = callback.abort
+        @_language_changed_tracker.changed()
+        Session.set @_loaded_lang_session_key, lang_tag
 
   getLanguage: ->
     if not @._enabled()
