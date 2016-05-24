@@ -799,6 +799,7 @@ MIT
 * [Abe Pazos](https://github.com/hamoid/)
 * [@karfield](https://github.com/karfield/)
 * [@nscarcella](https://github.com/nscarcella/)
+* [@mpowaga](https://github.com/mpowaga/)
 
 ## Credits
 

@@ -1,3 +1,7 @@
+2016.05.24, Version 1.8.1
+
+* Avoid race condition in setLanguage method. Fixes #86, thanks @mpowaga
+
 2016.03.14, Version 1.8.0
 
 * YAML translations files support, thanks @karfield @nscarcella
