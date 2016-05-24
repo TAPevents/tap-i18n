@@ -110,6 +110,8 @@ _.extend TAPi18n.prototype,
       # {{languageTag}}
       UI.registerHelper "languageTag", () => @getLanguage()
 
+    return
+      
   _getRegisterHelpersProxy: (package_name) ->
     # A proxy to _registerHelpers where the package_name is fixed to package_name
     (template) =>

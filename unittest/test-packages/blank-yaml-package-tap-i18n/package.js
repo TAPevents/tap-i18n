@@ -8,6 +8,7 @@ server = 'server';
 client = 'client';
 Package.on_use(function (api) {
   api.use(['tap:i18n'], both);
+  api.export('TAPi18next');
 
   api.use(['templating'], client);
   api.use(['coffeescript'], both);

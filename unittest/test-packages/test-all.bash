@@ -13,7 +13,7 @@ for test_dir in *; do
         echo "*${test_dir}*"
         echo "*************************************************"
 
-        mrt test-packages ./
+        mrt --release METEOR@1.2 test-packages ./
 
         cd ..
     fi

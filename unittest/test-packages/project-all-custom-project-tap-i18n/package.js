@@ -8,6 +8,7 @@ server = 'server';
 client = 'client';
 Package.on_use(function (api) {
   api.use(['tap:i18n'], both);
+  api.export('TAPi18next');
 
   api.use(['tap-tests:blank-package-tap-i18n'], both);
   api.use(['tap-tests:custom-package-tap-i18n'], both);
@@ -21,14 +22,14 @@ Package.on_use(function (api) {
 
   api.export("TAPi18n");
 
+  api.add_files('project-tap.i18n', both);
+
   api.add_files([
     'i18n/file1.en.i18n.json',
     'i18n/file2.en.i18n.json',
     'i18n/bb.i18n.json',
     'i18n/cc-CC.i18n.json'
   ], both);
-
-  api.add_files('project-tap.i18n', both);
 });
 
 Package.onTest(function(api) {

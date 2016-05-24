@@ -11,7 +11,7 @@ if (typeof test_dir === 'undefined') {
 }
 
 var spawn = require('child_process').spawn;
-var args = ['test-packages', '--driver-package', 'test-in-console', '-p', port, './'];
+var args = ['test-packages', '--release', 'METEOR@1.2', '--driver-package', 'test-in-console', '-p', port, './'];
 
 var meteor = spawn('mrt', args, {cwd: test_dir});
 meteor.stdout.pipe(process.stdout);
