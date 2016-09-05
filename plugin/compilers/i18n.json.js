@@ -30,12 +30,7 @@ class i18nJsonCompiler extends i18nCompiler {
         try {            
             native = JSON.parse( fileContents );
         }catch( ex ){
-            const fileName = inputFile.getBasename();
-            const packageName = inputFile.getPackageName() || PROJECT_NAMESPACE;
-            
-            return inputFile.error({
-                message: `[ERR] language file ${fileName} in ${ packageName } contains invalid json`
-            });
+            throw new Error( `language file contains invalid json` );
         }
         
         return { native, raw: fileContents };

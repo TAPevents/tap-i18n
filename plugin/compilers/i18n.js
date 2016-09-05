@@ -44,7 +44,16 @@ class i18nCompiler extends CachingCompiler {
     compileOneFile( inputFile, allFiles ){
         const self = this;
 
-        const { native, raw } = self.preprocessContents( inputFile );
+        let preprocessedFileContents = Object.create( null );
+        try {
+            preprocessedFileContents = self.preprocessContents( inputFile );
+        }
+        catch( exc ){
+            inputFile.error( exc );
+            return preprocessedFileContents;
+        }
+        
+        const { native, raw } = preprocessedFileContents;
 
         const translationFileInfo = extractTranslationFileInfo( inputFile );
         const {
