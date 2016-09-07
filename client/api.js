@@ -31,7 +31,7 @@ Object.assign( api, {
         try{
             language = setLanguage( langTag );
             if( language === false ){
-                throw new Error( 'language already set' );
+                return Promise.resolve( 'language already set' );
             }
         }
         catch( exc ){
