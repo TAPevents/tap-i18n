@@ -56,6 +56,10 @@ Build Plugin API, introduced in meteor v1.2, has to be used. Also it heavily use
     translating anything. Remember, there is no `Tracker` on the server. At the moment on the 
     server all translations will be imported during startup. So they are available only after
     this has finished. And keep in mind all that is also contained in the app's footprint.
+    
++   the first statement to import `tapi18n` (see above) also instantiates the level-specific 
+    (and also namespace-specific) translator, thus `TAPi18n` and the API should be used afterwards,
+    otherwise one might end up getting wrong (or at that point non existing) data
 
 
 
