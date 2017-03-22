@@ -1,6 +1,7 @@
 helpers = share.helpers
 compilers = share.compilers
 compiler_configuration = share.compiler_configuration
+SimpleSchema = Npm.require('simpl-schema').default
 
 schema = new SimpleSchema
   translation_function_name:
