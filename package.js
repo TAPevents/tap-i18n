@@ -1,7 +1,7 @@
 Package.describe({
   name: 'tap:i18n',
   summary: 'A comprehensive internationalization solution for Meteor',
-  version: '1.8.1',
+  version: '1.8.2',
   git: 'https://github.com/TAPevents/tap-i18n'
 });
 
@@ -52,10 +52,11 @@ Package.onUse(function (api) {
 
 Package.registerBuildPlugin({
   name: 'tap-i18n-compiler',
-  use: ['coffeescript', 'underscore', 'aldeed:simple-schema@1.3.0', 'check@1.0.3', 'templating'],
+  use: ['coffeescript', 'underscore', 'templating'],
   npmDependencies: {
     "node-json-minify": "0.1.3-a",
-    "yamljs": "0.2.4"
+    "yamljs": "0.2.4",
+    "simpl-schema" : "0.2.3"
   },
   sources: [
     'lib/globals.js',

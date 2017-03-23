@@ -1,6 +1,7 @@
 helpers = share.helpers
 compilers = share.compilers
 compiler_configuration = share.compiler_configuration
+SimpleSchema = Npm.require('simpl-schema').default
 
 schema = new SimpleSchema
   translation_function_name:
@@ -50,10 +51,10 @@ compilers.package_tap_i18n = (compileStep) ->
   schema.clean package_tap_i18n
 
   try
-    check package_tap_i18n, schema
+    SimpleSchema.validate(package_tap_i18n, schema)
   catch error
     compileStep.error
-      message: "File `#{file_path}' is an invalid package-tap.i18n file (#{error})",
+      message: "File `#{input_path}' is an invalid package-tap.i18n file (#{error})",
       sourcePath: input_path
     return
 
