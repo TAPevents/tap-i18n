@@ -68,7 +68,7 @@ tap-i18n uses [i18next v1.11](http://i18next.github.io/i18next/) as its internat
 
 ```handlebars
 <template name="messages_today">
-  <p>{{_ "inbox_status" "Daniel" count=18}}</p>
+  <p>{{_ "inbox_status" "Daniel" 18 count=18}}</p>
 </template>
 ```
 
