@@ -29,6 +29,11 @@ describe('TAPi18n - client selection and loading', function () {
   if (TapI18nTest.regularCatalog()) {
     afterEach(async function () { await asPromise(TAPi18n.setLanguage('en')); });
 
+    if (TapI18nTest.scenario === 'inferred') it('renders the README plural example with both interpolation arguments', function () {
+      expect(Blaze.toHTML(Template.messages_today).trim()).to.equal(
+        '<p>Hey, Daniel! You have received 18 new messages today.</p>');
+    });
+
     it('reacts to selection and translation changes while getLanguages stays nonreactive', async function () {
       await asPromise(TAPi18n.setLanguage('en'));
       let languageRuns = 0, translationRuns = 0, catalogRuns = 0;

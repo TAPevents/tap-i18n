@@ -1,3 +1,8 @@
+FUTURE
+
+* Correct the README plural example's missing interpolation argument and test
+  the published example in Blaze. Thanks to tony13tv (#207).
+
 2026.09.30, Version 2.1.0
 
 * Isolate package-test source and npm dependencies so Meteor cannot rewrite the

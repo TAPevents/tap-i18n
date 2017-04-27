@@ -174,6 +174,19 @@ async function prepareFixture(item, directory) {
   } else if (item.files !== false) {
     await cp(path.join(testsDir, 'fixtures/project'), path.join(app, 'i18n'), {recursive: true});
   }
+  if (item.name === 'inferred') {
+    // Compile the published example itself so documentation argument mistakes
+    // are caught by the real Blaze helper, without maintaining a second copy.
+    const readme = await readFile(path.join(sourceDir, 'README.md'), 'utf8');
+    const example = readme.match(/### Advanced i18n\n([\s\S]*?)(?=\n### )/)?.[1] || '';
+    const template = example.match(/```handlebars\n([\s\S]*?)\n```/)?.[1];
+    const translations = example.match(/```json\n([\s\S]*?)\n```/)?.[1];
+    if (!template || !translations) throw new Error('Missing README Advanced i18n example.');
+    JSON.parse(translations);
+    await mkdir(path.join(app, 'client'), {recursive: true});
+    await writeFile(path.join(app, 'client/readme-example.html'), template);
+    await writeFile(path.join(app, 'i18n/readme-example.en.i18n.json'), translations);
+  }
   return {app, packageFixture};
 }
 

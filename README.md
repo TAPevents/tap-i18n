@@ -61,7 +61,7 @@ tap-i18n uses [i18next v1.11](http://i18next.github.io/i18next/) as its internat
 
 ```handlebars
 <template name="messages_today">
-  <p>{{_ "inbox_status" "Daniel" count=18}}</p>
+  <p>{{_ "inbox_status" "Daniel" 18 count=18}}</p>
 </template>
 ```
 
@@ -931,7 +931,7 @@ Scenarios:
 | --- | --- |
 | `disabled` | No project translations/configuration; disabled getters and language selection |
 | `package-api` | The same disabled baseline through `Package.onTest` and `meteor test-packages` |
-| `inferred` | Inferred language list, JSON/YAML merging, fallback and dialect loading |
+| `inferred` | Inferred language list, JSON/YAML merging, fallback and dialect loading, README plural example rendered in Blaze |
 | `catalog-initialization` | Cached reads before enablement, inside enablement, and between generated language files |
 | `configured` | Explicit language filtering, duplicate tags, custom helper/HTTP route, language without a translation file |
 | `preloaded` | `preloaded_langs: ["*"]` through the real HTTP endpoint |
