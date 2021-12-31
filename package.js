@@ -21,7 +21,7 @@ Package.onUse(function(api) {
 	api.use('templating', client);
 
 	api.use('raix:eventemitter@1.0.0', both);
-	api.use('cfs:http-methods@3.0.0', server);
+	api.use('simple:json-routes', server);
 
 	// load TAPi18n
 	api.add_files('lib/globals.js', both);

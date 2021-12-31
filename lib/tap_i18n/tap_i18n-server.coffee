@@ -6,7 +6,7 @@ _.extend TAPi18n.prototype,
       if not(lang_tag of @server_translators)
         @server_translators[lang_tag] = @_getSpecificLangTranslator(lang_tag)
 
-      # fallback language is integrated, and isn't part of @translations 
+      # fallback language is integrated, and isn't part of @translations
       if lang_tag != @_fallback_language
         @addResourceBundle(lang_tag, package_name, @translations[lang_tag][package_name])
 
@@ -38,48 +38,49 @@ _.extend TAPi18n.prototype,
     if not self._enabled()
       throw new Meteor.Error 500, "tap-i18n has to be enabled in order to register the HTTP method"
 
-    methods["#{self.conf.i18n_files_route.replace(/\/$/, "")}/multi/:langs"] =
-      get: () ->
-        if not RegExp("^((#{globals.langauges_tags_regex},)*#{globals.langauges_tags_regex}|all).json$").test(@params.langs)
-          return @setStatusCode(401)
+    JsonRoutes.add 'get', "#{self.conf.i18n_files_route.replace(/\/$/, "")}/multi/:langs", (req, res, next) ->
+      if not RegExp("^((#{globals.langauges_tags_regex},)*#{globals.langauges_tags_regex}|all).json$").test(req.params.langs)
+        return JsonRoutes.sendResult res,
+          code: 401
 
-        langs = @params.langs.replace ".json", ""
+      langs = req.params.langs.replace ".json", ""
 
-        if langs == "all"
-          output = self.translations
-        else
-          output = {}
+      if langs == "all"
+        output = self.translations
+      else
+        output = {}
 
-          langs = langs.split(",")
-          for lang_tag in langs
-            if lang_tag in self._getProjectLanguages() and \
-               lang_tag != self._fallback_language # fallback language is integrated to the bundle
-              language_translations = self.translations[lang_tag]
+        langs = langs.split(",")
+        for lang_tag in langs
+          if lang_tag in self._getProjectLanguages() and \
+              lang_tag != self._fallback_language # fallback language is integrated to the bundle
+            language_translations = self.translations[lang_tag]
 
-              if language_translations?
-                output[lang_tag] = language_translations
+            if language_translations?
+              output[lang_tag] = language_translations
 
-        return JSON.stringify(output)
+      return JsonRoutes.sendResult res,
+        data: output
 
-    methods["#{self.conf.i18n_files_route.replace(/\/$/, "")}/:lang"] =
-      get: () ->
-        if not RegExp("^#{globals.langauges_tags_regex}.json$").test(@params.lang)
-          return @setStatusCode(401)
+    JsonRoutes.add 'get', "#{self.conf.i18n_files_route.replace(/\/$/, "")}/:lang",  (req, res, next) ->
+      if not RegExp("^#{globals.langauges_tags_regex}.json$").test(req.params.lang)
+        return JsonRoutes.sendResult res,
+          code: 401
 
-        lang_tag = @params.lang.replace ".json", ""
+      lang_tag = req.params.lang.replace ".json", ""
 
-        if lang_tag not in self._getProjectLanguages() or \
-           lang_tag == self._fallback_language # fallback language is integrated to the bundle
-          return @setStatusCode(404) # not found
+      if lang_tag not in self._getProjectLanguages() or \
+          lang_tag == self._fallback_language # fallback language is integrated to the bundle
+        return JsonRoutes.sendResult res,
+          code: 404 # not found
 
-        language_translations = self.translations[lang_tag]
-        # returning {} if lang_tag is not in translations allows the project
-        # developer to force a language supporte with project-tap.i18n's
-        # supported_languages property, even if that language has no lang
-        # files.
-        return JSON.stringify(if language_translations? then language_translations else {})
-
-    HTTP.methods methods
+      language_translations = self.translations[lang_tag]
+      # returning {} if lang_tag is not in translations allows the project
+      # developer to force a language supporte with project-tap.i18n's
+      # supported_languages property, even if that language has no lang
+      # files.
+      return JsonRoutes.sendResult res,
+        data: (if language_translations? then language_translations else {})
 
   _onceEnabled: ->
     @_registerAllServerTranslators()
