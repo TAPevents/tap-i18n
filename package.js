@@ -15,15 +15,12 @@ Package.onUse(function(api) {
 	api.use('coffeescript', both);
 	api.use('underscore', both);
 	api.use('meteor', both);
-
-	api.use('raix:eventemitter@1.0.0', both);
-	api.use('meteorspark:util@0.2.0', both);
-
 	api.use('tracker', both);
 	api.use('session', client);
 	api.use('jquery', client);
 	api.use('templating', client);
 
+	api.use('raix:eventemitter@1.0.0', both);
 	api.use('cfs:http-methods@3.0.0', server);
 
 	// load TAPi18n
