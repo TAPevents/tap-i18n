@@ -11,7 +11,7 @@ _.extend share.helpers,
         return undefined
 
       if fstats.size == 0
-      	return null
+        return null
 
       try
         content = JSON.parse(fs.readFileSync(file_path, "utf8"))

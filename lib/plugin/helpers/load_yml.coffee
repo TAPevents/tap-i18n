@@ -12,7 +12,7 @@ _.extend share.helpers,
         return undefined
 
       if fstats.size == 0
-      	return null
+        return null
 
       try
         content = YAML.load(file_path)
