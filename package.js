@@ -17,11 +17,11 @@ Package.onUse(function(api) {
 	api.use('meteor', both);
 	api.use('tracker', both);
 	api.use('session', client);
-	api.use('jquery', client);
-	api.use('templating', client);
+	api.use('jquery@3.0.0', client);
+	api.use('templating@1.4.1', client);
 
 	api.use('raix:eventemitter@1.0.0', both);
-	api.use('simple:json-routes', server);
+	api.use('simple:json-routes@2.3.1', server);
 
 	// load TAPi18n
 	api.addFiles('lib/globals.js', both);
@@ -49,7 +49,7 @@ Package.onUse(function(api) {
 
 Package.registerBuildPlugin({
 	name: 'tap-i18n-compiler',
-	use: ['coffeescript', 'underscore', 'mdg:validation-error@0.5.1', 'aldeed:simple-schema@1.5.4', 'check', 'templating'],
+	use: ['coffeescript@2.4.1', 'underscore', 'mdg:validation-error@0.5.1', 'aldeed:simple-schema@1.5.4', 'check@1.3.1', 'templating@1.4.1'],
 	npmDependencies: {
 		yamljs: '0.3.0',
 	},
