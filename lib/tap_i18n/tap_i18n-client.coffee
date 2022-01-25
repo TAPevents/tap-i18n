@@ -1,4 +1,7 @@
-_.extend TAPi18n.prototype,
+import { TAPi18nClass } from './tap_i18n-common';
+import { globals } from './globals';
+
+_.extend TAPi18nClass.prototype,
   _languageSpecificTranslators: null
   _languageSpecificTranslatorsTrackers: null
 
@@ -111,7 +114,7 @@ _.extend TAPi18n.prototype,
       UI.registerHelper "languageTag", () => @getLanguage()
 
     return
-      
+
   _getRegisterHelpersProxy: (package_name) ->
     # A proxy to _registerHelpers where the package_name is fixed to package_name
     (template) =>
@@ -181,7 +184,7 @@ _.extend TAPi18n.prototype,
 
     isAborted = false
     @_abortPreviousSetLang = -> isAborted = true
-    
+
     @_loadLanguage(lang_tag).then =>
       if not isAborted
         TAPi18next.setLng(lang_tag)
@@ -196,3 +199,5 @@ _.extend TAPi18n.prototype,
     session_lang = Session.get @_loaded_lang_session_key
 
     if session_lang? then session_lang else @._fallback_language
+
+export { TAPi18nClass }

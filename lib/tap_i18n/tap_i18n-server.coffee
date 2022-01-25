@@ -1,10 +1,14 @@
-_.extend TAPi18n.prototype,
+import { TAPi18nClass } from './tap_i18n-common';
+import { globals } from './globals';
+
+export class TAPi18nServer extends TAPi18nClass
   server_translators: null
 
   _registerServerTranslator: (lang_tag, package_name) ->
     if @_enabled()
       if not(lang_tag of @server_translators)
         @server_translators[lang_tag] = @_getSpecificLangTranslator(lang_tag)
+        console.log "@server_translators[lang_tag]", lang_tag, @server_translators[lang_tag]
 
       # fallback language is integrated, and isn't part of @translations
       if lang_tag != @_fallback_language
@@ -12,6 +16,8 @@ _.extend TAPi18n.prototype,
 
     if not(@_fallback_language of @server_translators)
       @server_translators[@_fallback_language] = @_getSpecificLangTranslator(@_fallback_language)
+
+      console.log "@server_translators[@_fallback_language]", @_fallback_language, @server_translators[@_fallback_language]
 
   _registerAllServerTranslators: () ->
     for lang_tag in @_getProjectLanguages()
@@ -21,6 +27,7 @@ _.extend TAPi18n.prototype,
   _getPackageI18nextProxy: (package_name) ->
     # A proxy to TAPi18next.t where the namespace is preset to the package's
     (key, options, lang_tag=null) =>
+      console.log "@_fallback_language", @_fallback_language, @server_translators[@_fallback_language]
       if not lang_tag?
         # translate to fallback_language
         return @server_translators[@_fallback_language] "#{@_getPackageDomain(package_name)}:#{key}", options

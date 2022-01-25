@@ -1,6 +1,9 @@
+import TAPi18next from '../tap_i18next/tap_i18next-1.7.3.js'
+import { globals } from './globals'
+
 fallback_language = globals.fallback_language
 
-class TAPi18n extends EventEmitter
+export class TAPi18nClass extends EventEmitter
   _loaded_lang_session_key: "TAPi18n::loaded_lang"
 
   constructor: ->
@@ -72,12 +75,15 @@ class TAPi18n extends EventEmitter
     current_lang = TAPi18next.lng()
 
     translator = null
-    TAPi18next.setLng lang, {fixLng: true}, (lang_translator) =>
+    xxx = TAPi18next.setLng lang, {fixLng: true}, (lang_translator) =>
+      console.log "lang_translator", lang_translator
       translator = lang_translator
 
     # Restore i18next lang that had been changed in the process of generating
     # lang specific translator
     TAPi18next.setLng current_lang
+
+    console.log "_getSpecificLangTranslator", lang, translator, xxx
 
     return translator
 
