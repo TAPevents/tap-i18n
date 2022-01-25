@@ -3,6 +3,8 @@ import { globals } from './globals'
 
 fallback_language = globals.fallback_language
 
+TAPi18next.init({ resStore: {}, fallbackLng: globals.fallback_language, useCookie: false });
+
 export class TAPi18nClass extends EventEmitter
   _loaded_lang_session_key: "TAPi18n::loaded_lang"
 
@@ -75,15 +77,12 @@ export class TAPi18nClass extends EventEmitter
     current_lang = TAPi18next.lng()
 
     translator = null
-    xxx = TAPi18next.setLng lang, {fixLng: true}, (lang_translator) =>
-      console.log "lang_translator", lang_translator
+    TAPi18next.setLng lang, {fixLng: true}, (lang_translator) =>
       translator = lang_translator
 
     # Restore i18next lang that had been changed in the process of generating
     # lang specific translator
     TAPi18next.setLng current_lang
-
-    console.log "_getSpecificLangTranslator", lang, translator, xxx
 
     return translator
 
