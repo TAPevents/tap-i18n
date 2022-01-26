@@ -24,26 +24,9 @@ Package.onUse(function(api) {
 	api.use('raix:eventemitter@1.0.0', both);
 	api.use('simple:json-routes@2.3.1', server);
 
-	// load TAPi18n
-	// api.addFiles('lib/globals.js', both);
-
 	// load and init TAPi18next
 	api.addFiles('lib/tap_i18next/tap_i18next-1.7.3.js', both);
 	api.export('TAPi18next');
-	// api.addFiles('lib/tap_i18next/tap_i18next_init.js', both);
-
-	// api.addFiles('lib/tap_i18n/tap_i18n-helpers.coffee', both);
-
-	// api.addFiles('lib/tap_i18n/tap_i18n-common.coffee', server);
-	// api.addFiles('lib/tap_i18n/tap_i18n-common.coffee', client);
-
-	// // We use the bare option since we need TAPi18n in the package level and
-	// // coffee adds vars to all (so without bare all vars are in the file level)
-	// api.addFiles('lib/tap_i18n/tap_i18n-server.coffee', server);
-	// api.addFiles('lib/tap_i18n/tap_i18n-client.coffee', client, { bare: true });
-
-	// api.addFiles('lib/tap_i18n/tap_i18n-init.coffee', server);
-	// api.addFiles('lib/tap_i18n/tap_i18n-init.coffee', client, { bare: true });
 
 	api.mainModule('client.js', client);
 	api.mainModule('server.js', server);

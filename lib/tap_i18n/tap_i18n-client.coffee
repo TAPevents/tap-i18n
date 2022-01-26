@@ -1,7 +1,7 @@
 import { TAPi18nClass } from './tap_i18n-common';
 import { globals } from './globals';
 
-_.extend TAPi18nClass.prototype,
+export class TAPi18nClient extends TAPi18nClass
   _languageSpecificTranslators: null
   _languageSpecificTranslatorsTrackers: null
 
@@ -61,10 +61,10 @@ _.extend TAPi18nClass.prototype,
           jqXHR.fail (xhr, error_code) =>
             dfd.reject("Couldn't load language '#{languageTag}' JSON: #{error_code}")
 
-        directDependencyLanguageTag = if "-" in languageTag then languageTag.replace(/-.*/, "") else fallback_language
+        directDependencyLanguageTag = if "-" in languageTag then languageTag.replace(/-.*/, "") else @._fallback_language
 
         # load dependency language if it is part of the project and not the fallback language
-        if languageTag != fallback_language and directDependencyLanguageTag in project_languages
+        if languageTag != @._fallback_language and directDependencyLanguageTag in project_languages
           dependencyLoadDfd = @_loadLanguage directDependencyLanguageTag
 
           dependencyLoadDfd.done =>
@@ -163,15 +163,15 @@ _.extend TAPi18nClass.prototype,
         @_languageSpecificTranslatorsTrackers[lang_tag].depend()
 
         if lang_tag of @_languageSpecificTranslators
-          return @_languageSpecificTranslators[lang_tag] "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
+          return @_languageSpecificTranslators[lang_tag] "#{@_getPackageDomain(package_name)}:#{key}", options
         else
-          return TAPi18next.t "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
+          return TAPi18next.t "#{@_getPackageDomain(package_name)}:#{key}", options
 
       # If inside a reactive computation, we want to invalidate the computation if the client lang changes
       @_language_changed_tracker.depend()
 
 
-      TAPi18next.t "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
+      TAPi18next.t "#{@_getPackageDomain(package_name)}:#{key}", options
 
   _onceEnabled: () ->
     @_registerHelpers globals.project_translations_domain
@@ -199,5 +199,3 @@ _.extend TAPi18nClass.prototype,
     session_lang = Session.get @_loaded_lang_session_key
 
     if session_lang? then session_lang else @._fallback_language
-
-export { TAPi18nClass }
