@@ -2,32 +2,31 @@ helpers = share.helpers
 compilers = share.compilers
 compiler_configuration = share.compiler_configuration
 
-share.project_i18n_schema = schema = new SimpleSchema
+project_i18n_obj_schema =
   helper_name:
     type: String
     defaultValue: "_"
     label: "Helper Name"
-    optional: true
   supported_languages:
     type: [String]
     label: "Supported Languages"
     defaultValue: null
-    optional: true
   i18n_files_route:
     type: String
     label: "Unified languages files path"
     defaultValue: globals.browser_path
-    optional: true
   preloaded_langs:
     type: [String]
     label: "Preload languages"
     defaultValue: []
-    optional: true
+  'preloaded_langs.$':
+    type: String
   cdn_path:
     type: String
     label: "Unified languages files path on CDN"
     defaultValue: null
-    optional: true
+
+share.projectI18nObjCleaner = projectI18nObjCleaner = helpers.buildCleanerForSchema(project_i18n_obj_schema, "project-tap.i18n")
 
 getProjectConfJs = share.getProjectConfJs = (conf) ->
   fallback_language_name = language_names[globals.fallback_language]
@@ -75,16 +74,9 @@ compilers.project_tap_i18n = (compileStep) ->
   project_tap_i18n = helpers.loadJSON input_path, compileStep
 
   if not project_tap_i18n?
-    project_tap_i18n = schema.clean {}
-  schema.clean project_tap_i18n
-
-  try
-    check project_tap_i18n, schema
-  catch error
-    compileStep.error
-      message: "File `#{file_path}' is an invalid project-tap.i18n file (#{error})",
-      sourcePath: input_path
-    return
+    project_tap_i18n = projectI18nObjCleaner({})
+  else
+    projectI18nObjCleaner(project_tap_i18n)
 
   project_i18n_js_file = getProjectConfJs project_tap_i18n
 

@@ -62,7 +62,7 @@ compilers.generic_compiler = (extension, helper) -> (compileStep) ->
     # Reminder: we don't require projects to have project-tap.i18n
     if not(helpers.isDefaultProjectConfInserted(compileStep)) and \
        not(helpers.isProjectI18nLoaded(compileStep))
-      output += share.getProjectConfJs(share.project_i18n_schema.clean {}) # defined in project-tap.i18n.coffee
+      output += share.getProjectConfJs(share.projectI18nObjCleaner({})) # defined in project-tap.i18n.coffee
 
       helpers.markDefaultProjectConfInserted(compileStep)
 

@@ -2,7 +2,7 @@ helpers = share.helpers
 compilers = share.compilers
 compiler_configuration = share.compiler_configuration
 
-schema = new SimpleSchema
+package_i18n_obj_schema =
   translation_function_name:
     type: String
     defaultValue: "__"
@@ -18,6 +18,8 @@ schema = new SimpleSchema
     defaultValue: null
     label: "Translations Namespace"
     optional: true
+
+packageI18nObjCleaner = helpers.buildCleanerForSchema(package_i18n_obj_schema, "package-tap.i18n")
 
 compilers.package_tap_i18n = (compileStep) ->
   compiler_configuration.registerInputFile(compileStep)
@@ -46,16 +48,9 @@ compilers.package_tap_i18n = (compileStep) ->
   package_tap_i18n = helpers.loadJSON input_path, compileStep
 
   if not package_tap_i18n?
-    package_tap_i18n = schema.clean {}
-  schema.clean package_tap_i18n
-
-  try
-    check package_tap_i18n, schema
-  catch error
-    compileStep.error
-      message: "File `#{file_path}' is an invalid package-tap.i18n file (#{error})",
-      sourcePath: input_path
-    return
+    package_tap_i18n = packageI18nObjCleaner({})
+  else
+    packageI18nObjCleaner(package_tap_i18n)
 
   package_name = compileStep.packageName
 
