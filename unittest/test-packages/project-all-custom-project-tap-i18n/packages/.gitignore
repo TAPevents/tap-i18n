@@ -1,6 +1,0 @@
-/tap:i18n
-/tap-tests:blank-package-tap-i18n
-/tap-tests:custom-package-tap-i18n
-/tap-tests:empty-object-package-tap-i18n
-/tap-tests:pack-with-project-trans-tap-i18n
-/tap-tests:blank-yaml-package-tap-i18n
