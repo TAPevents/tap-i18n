@@ -10,11 +10,8 @@ server = 'server';
 client = 'client';
 
 Package.onUse(function (api) {
-  api.versionsFrom('0.9.4');
-
   api.use('coffeescript', both);
   api.use('underscore', both);
-  api.use('meteor', both);
 
   api.use('raix:eventemitter@0.1.1', both);
   api.use('meteorspark:util@0.2.0', both);
