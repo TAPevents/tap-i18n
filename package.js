@@ -1,7 +1,7 @@
 Package.describe({
   name: 'tap:i18n',
   summary: 'A comprehensive internationalization solution for Meteor',
-  version: '1.9.0',
+  version: '1.10.0',
   git: 'https://github.com/TAPevents/tap-i18n'
 });
 
