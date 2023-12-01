@@ -1,3 +1,7 @@
+2023.12.01, Version 1.10.1
+
+* package.js: Add packages versions required in order to publish to Atmosphere 
+
 2023.12.01, Version 1.10.0
 
 * Update package.js file that used deprecated non-camel-case api
