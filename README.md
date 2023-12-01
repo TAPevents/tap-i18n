@@ -722,8 +722,8 @@ The leanest set up (for instance in a private package, where you keep the transl
 
 Your package's package.js should be structured as follow:
 
-    Package.on_use(function (api) {
-      api.use(["tap:i18n@1.0.7"], ["client", "server"]);
+    Package.onUse(function (api) {
+      api.use(["tap:i18n"], ["client", "server"]);
 
       .
       .
@@ -731,7 +731,7 @@ Your package's package.js should be structured as follow:
 
       // You must load your package's package-tap.i18n before you load any
       // template
-      api.add_files("package-tap.i18n", ["client", "server"]);
+      api.addFiles("package-tap.i18n", ["client", "server"]);
 
       // Templates loads (if any)
 
@@ -740,7 +740,7 @@ Your package's package.js should be structured as follow:
       // You must load the languages files after you load your templates -
       // otherwise the templates won't have the i18n capabilities (unless
       // you'll register them with tap-i18n yourself, see below).
-      api.add_files([
+      api.addFiles([
         "i18n/en.i18n.json",
         "i18n/fr.i18n.json",
         "i18n/pt.i18n.json",
