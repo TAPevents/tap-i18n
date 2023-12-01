@@ -1,7 +1,7 @@
 Package.describe({
   name: 'tap:i18n',
   summary: 'A comprehensive internationalization solution for Meteor',
-  version: '1.10.0',
+  version: '1.10.1',
   git: 'https://github.com/TAPevents/tap-i18n'
 });
 
@@ -10,16 +10,18 @@ server = 'server';
 client = 'client';
 
 Package.onUse(function (api) {
-  api.use('coffeescript', both);
-  api.use('underscore', both);
+  api.versionsFrom("2.2.4");
+
+  api.use('coffeescript@2.4.1', both);
+  api.use('underscore@1.0.10', both);
 
   api.use('raix:eventemitter@0.1.1', both);
   api.use('meteorspark:util@0.2.0', both);
 
   api.use('tracker', both);
   api.use('session', client);
-  api.use('jquery', client);
-  api.use('templating', client);
+  api.use('jquery@1.0.10', client);
+  api.use('templating@1.4.0', client);
 
   api.use('cfs:http-methods@0.0.27', server);
 
@@ -49,7 +51,7 @@ Package.onUse(function (api) {
 
 Package.registerBuildPlugin({
   name: 'tap-i18n-compiler',
-  use: ['coffeescript', 'underscore', 'check'],
+  use: ['coffeescript@2.4.1', 'underscore@1.0.10', 'check@1.3.1'],
   npmDependencies: {
     "node-json-minify": "0.1.3-a",
     "yamljs": "0.2.4"
