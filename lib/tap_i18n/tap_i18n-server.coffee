@@ -37,49 +37,61 @@ _.extend TAPi18n.prototype,
 
     if not self._enabled()
       throw new Meteor.Error 500, "tap-i18n has to be enabled in order to register the HTTP method"
+    
+    base_route = "#{self.conf.i18n_files_route.replace(/\/$/, "")}"
 
-    methods["#{self.conf.i18n_files_route.replace(/\/$/, "")}/multi/:langs"] =
-      get: () ->
-        if not RegExp("^((#{globals.langauges_tags_regex},)*#{globals.langauges_tags_regex}|all).json$").test(@params.langs)
-          return @setStatusCode(401)
+    multi_lang_route = "#{base_route}/multi/"
+    multi_lang_regex = new RegExp "^((#{globals.langauges_tags_regex},)*#{globals.langauges_tags_regex}|all)\\.json$"
+    WebApp.connectHandlers.use (req, res, next) ->
+      if req.url.startsWith(multi_lang_route)
+        langs = req.url.replace multi_lang_route, ""
+        if not multi_lang_regex.test langs
+          res.writeHead 401
+          res.end()
+          return
+        
+        # If all lang is requested, return all.
+        if (langs = langs.replace ".json", "") is "all"
+          res.end JSON.stringify self.translations
+          return
+        
+        output = {}
+        lang_tags = langs.split ","
+        for lang_tag in lang_tags
+          if lang_tag in self._getProjectLanguages() and lang_tag isnt self._fallback_language
+            if (language_translations = self.translations[lang_tag])?
+              output[lang_tag] = language_translations
 
-        langs = @params.langs.replace ".json", ""
+        res.end JSON.stringify output
+      else
+        next()
+      return
 
-        if langs == "all"
-          output = self.translations
-        else
-          output = {}
+    single_lang_route = "#{base_route}/"
+    single_lang_regex = new RegExp "^#{globals.langauges_tags_regex}.json$"
+    WebApp.connectHandlers.use (req, res, next) ->
+      if req.url.startsWith(single_lang_route)
+        lang = req.url.replace single_lang_route, ""
+        if not single_lang_regex.test lang
+          res.writeHead 401
+          res.end()
+          return
+        lang_tag = lang.replace ".json", ""
 
-          langs = langs.split(",")
-          for lang_tag in langs
-            if lang_tag in self._getProjectLanguages() and \
-               lang_tag != self._fallback_language # fallback language is integrated to the bundle
-              language_translations = self.translations[lang_tag]
+        if (lang_tag not in self._getProjectLanguages()) or (lang_tag is self._fallback_language)
+          res.writeHead 404
+          res.end()
+          return
 
-              if language_translations?
-                output[lang_tag] = language_translations
-
-        return JSON.stringify(output)
-
-    methods["#{self.conf.i18n_files_route.replace(/\/$/, "")}/:lang"] =
-      get: () ->
-        if not RegExp("^#{globals.langauges_tags_regex}.json$").test(@params.lang)
-          return @setStatusCode(401)
-
-        lang_tag = @params.lang.replace ".json", ""
-
-        if lang_tag not in self._getProjectLanguages() or \
-           lang_tag == self._fallback_language # fallback language is integrated to the bundle
-          return @setStatusCode(404) # not found
-
-        language_translations = self.translations[lang_tag]
+        language_translations = self.translations[lang_tag] or {}
         # returning {} if lang_tag is not in translations allows the project
         # developer to force a language supporte with project-tap.i18n's
         # supported_languages property, even if that language has no lang
         # files.
-        return JSON.stringify(if language_translations? then language_translations else {})
-
-    HTTP.methods methods
-
+        res.end JSON.stringify language_translations 
+      else
+        next()
+      return
+    
   _onceEnabled: ->
     @_registerAllServerTranslators()

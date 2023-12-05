@@ -23,7 +23,7 @@ Package.onUse(function (api) {
   api.use('jquery@1.0.10', client);
   api.use('templating@1.4.0', client);
 
-  api.use('cfs:http-methods@0.0.27', server);
+  api.use("webapp", server);
 
   // load TAPi18n
   api.addFiles('lib/globals.js', both);
