@@ -23,7 +23,7 @@ project_i18n_obj_schema =
     type: String
   cdn_path:
     type: String
-    label: "Unified languages files path on CDN"
+    label: "[OBSOLETE] Unified languages files path on CDN"
     defaultValue: null
 
 share.projectI18nObjCleaner = projectI18nObjCleaner = helpers.buildCleanerForSchema(project_i18n_obj_schema, "project-tap.i18n")
@@ -78,6 +78,9 @@ compilers.project_tap_i18n = (compileStep) ->
   else
     projectI18nObjCleaner(project_tap_i18n)
 
+  if project_tap_i18n.cdn_path?
+    console.warn "As of version v1.11.0 of tap:i18n we no longer support the cdn_path option in project.tap.i18n please refer to our README on: https://github.com/TAPevents/tap-i18n to learn how to setup your CDN"
+
   project_i18n_js_file = getProjectConfJs project_tap_i18n
 
   if compileStep.archMatches("web") and not _.isEmpty project_tap_i18n.preloaded_langs
@@ -89,7 +92,7 @@ compilers.project_tap_i18n = (compileStep) ->
       """
       $.ajax({
           type: 'GET',
-          url: "#{project_tap_i18n.i18n_files_route}/multi/#{preloaded_langs}.json",
+          url: TAPi18n._cdn("#{project_tap_i18n.i18n_files_route}/multi/#{preloaded_langs}.json"),
           dataType: 'json',
           success: function(data) {
             for (lang_tag in data) {

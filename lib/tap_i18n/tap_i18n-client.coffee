@@ -6,12 +6,12 @@ _.extend TAPi18n.prototype,
     if not @_enabled()
       return null
 
-    path = if @.conf.cdn_path? then @.conf.cdn_path else @.conf.i18n_files_route
+    path = @conf.i18n_files_route
     path = path.replace /\/$/, ""
     if Meteor.isCordova and path[0] == "/"
       path = Meteor.absoluteUrl().replace(/\/+$/, "") + path
 
-    "#{path}/#{lang_tag}.json"
+    return @_cdn("#{path}/#{lang_tag}.json")
 
   _loadLanguage: (languageTag) ->
     # Load languageTag and its dependencies languages to TAPi18next if we

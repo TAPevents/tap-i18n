@@ -116,6 +116,11 @@ _.extend TAPi18n.prototype,
 
     languages
 
+  _cdn: (path) -> path
+  setCdnCb: (cb) ->
+    @_cdn = cb
+    return
+
   _loadLangFileObject: (language_tag, data) ->
     for package_name, package_keys of data
       # Translations that are added by loadTranslations() have higher priority

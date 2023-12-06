@@ -30,6 +30,7 @@ Maintained by: JustDo.com [Project Management Tool](https://justdo.com).
     - [Languages Tags and Translations Prioritization](#languages-tags-and-translations-prioritization)
     - [Structure of Languages Files](#structure-of-languages-files)
     - [Configuring tap-i18n](#configuring-tap-i18n)
+    - [Configuring CDN in tap-i18n](#configuring-cdn-in-tap-i18n)
     - [Disabling tap-i18n](#disabling-tap-i18n)
     - [Using tap-i18n in Cordova apps](#using-tap-i18n-in-cordova-apps)
 - [Developing Packages](#developing-packages)
@@ -590,7 +591,6 @@ are the defaults.
         "helper_name": "_",
         "supported_languages": null,
         "i18n_files_route": "/tap-i18n",
-        "cdn_path": null,
         "preloaded_langs": []
     }
 
@@ -604,13 +604,26 @@ project, will be available.
 
 **i18n\_files\_route:** The route in which the tap-i18n resources will be available in the project.
 
-**cdn\_path:** An alternative path from which you want tap-i18n resources to be loaded. Example: "http://cdn.example.com/tap-i18n".
-
 **preloaded_langs:** An array of languages tags. If isn't empty, a single synchronous ajax requrest will load the translation strings for all the languages tags listed. If you want to load all the supported languages set preloaded_langs to `["*"]` (`"*"` must be the first item of the array, the rest of the array will be ignored. `["zh-*"]` won't work).
 
 **Notes:**
 
 * We use AJAX to load the languages files so you'll have to set CORS on your CDN.
+
+### Configuring CDN in tap-i18n
+
+To utilize a Content Delivery Network (CDN) with tap:i18n, invoke `TAPi18n.setCdnCb(cb)`. This function expects cb, a callback function, which receives a URL path as its parameter and should return the CDN-modified URL.
+
+**Important:** If your project incorporates project-tap.i18n, it is crucial to execute TAPi18n.setCdnCb(cb) before project-tap.i18n loads. Arrange your configuration files such that the one for CDN setup is named in a way that it loads lexicographically prior to project-tap.i18n.
+
+For instance, in JustDo.com, the CDN setup is managed as follows:
+
+```coffeescript
+# /lib/030-i18n/000-tap-i18n-cdn-loader.coffee
+TAPi18n.setCdnCb JustdoCoreHelpers.getCDNUrl
+```
+
+This configuration file is placed lexicographically before /lib/030-i18n/project-tap.i18n in the directory structure, ensuring the correct load order.
 
 ### Disabling tap-i18n
 
