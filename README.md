@@ -4,15 +4,14 @@ A comprehensive internationalization solution for Meteor
 
 ### Internationalization for Meteor
 
-**tap-i18n** is a [Meteor](http://www.meteor.com) package that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for Meteor apps and packages,
-with the goal of standardizing the way package developers internationalize their
+**tap-i18n** is a [Meteor](http://www.meteor.com) package that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for Meteor apps and packages, with the goal of standardizing the way package developers internationalize their
 packages.
 
 [Watch a talk about tap:i18n & tap:i18n-db](https://www.youtube.com/watch?v=cu_dsoIc_0E)
 
-Developed by <a href="http://www.meteorspark.com"><img src="http://www.meteorspark.com/logo/logo-github.png" title="MeteorSpark" alt="MeteorSpark"></a> [Professional Meteor Services](http://www.meteorspark.com)<br/> for [TAPevents](http://tapevents.com/).
+**Developed by:** <a href="http://www.meteorspark.com"><img src="http://www.meteorspark.com/logo/logo-github.png" title="MeteorSpark" alt="MeteorSpark"></a> [Professional Meteor Services](http://www.meteorspark.com) for [TAPevents](http://tapevents.com/).
 
-Maintained by: JustDo.com [Project Management Tool](https://justdo.com).
+**Maintained by:** JustDo.com [Project Management Tool](https://justdo.com).
 
 **Related Packages:**
 
@@ -794,11 +793,12 @@ MIT
 
 ## Author
 
-[Daniel Chcouri](http://theosp.github.io/)
+[Daniel Chcouri](https://www.linkedin.com/in/danielchcouri/)
 
 ## Contributors
 
 * [Chris Hitchcott](https://github.com/hitchcott/)
+* [Brian Chan](http://github.com/iovecoldpizza)
 * [Kevin Iamburg](http://www.slickdevelopment.com)
 * [Abe Pazos](https://github.com/hamoid/)
 * [@karfield](https://github.com/karfield/)
