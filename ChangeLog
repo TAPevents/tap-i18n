@@ -1,3 +1,9 @@
+2023.12.06, Version 1.11.0
+
+* Introduce the ability to configure CDN using: TAPi18n.setCdnCb(cb)
+* Drop cfh:http-methods dependency and use Meteor's built-in
+WebApp.connectionHandler instead
+
 2023.12.01, Version 1.10.2
 
 * Fix an issue with the version of tap-i18next used by tap:i18n: avoid
