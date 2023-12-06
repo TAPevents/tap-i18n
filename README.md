@@ -10,22 +10,15 @@ packages.
 
 [Watch a talk about tap:i18n & tap:i18n-db](https://www.youtube.com/watch?v=cu_dsoIc_0E)
 
-**Get involved in tap:i18n:**
+Developed by <a href="http://www.meteorspark.com"><img src="http://www.meteorspark.com/logo/logo-github.png" title="MeteorSpark" alt="MeteorSpark"></a> [Professional Meteor Services](http://www.meteorspark.com)<br/> for [TAPevents](http://tapevents.com/).
 
-* [Mailing list](http://groups.google.com/d/forum/tap-i18n)
-* [tap:i18n chat on Gitter](https://gitter.im/TAPevents/tap-i18n)
-* [Roadmap](https://trello.com/b/w80JNkwf/tap-i18n-roadmap)
-* [New features planning on Hackpad](https://hackpad.com/collection/DRzcZ7sBdZV)
-
-Developed by <a href="http://www.meteorspark.com"><img src="http://www.meteorspark.com/logo/logo-github.png" title="MeteorSpark" alt="MeteorSpark"></a> [Professional Meteor Services](http://www.meteorspark.com)<br/> for <a href="http://tapevents.com/"><img src="http://tapevents.com/wp-content/uploads/2015/02/TAPevents_logo_144px.png" title="TAPevents" alt="TAPevents" style='margin-top:10px'>&nbsp; Leading Conference Technology</a>.
+Maintained by: JustDo.com [Project Management Tool](https://justdo.com).
 
 **Related Packages:**
 
 * Check [tap:i18n-db](https://github.com/TAPevents/tap-i18n-db) for Meteor collections internationalization.
 * Check [tap:i18n-ui](https://github.com/TAPevents/tap-i18n-ui) for bootstrap based UI components for tap:i18n.
 * Check [tap:i18n-bundler](https://github.com/TAPevents/i18n-bundler) for Cordova & static file deployments.
-
-**Users of tap-i18n v0.9** and below, read [tap:i18n v1.0 New Features & Backward Compatibility](https://github.com/TAPevents/tap-i18n/wiki/tap:i18n-v1.0-New-Feautres-&-Backward-Compatibility) and update your app to v1.0 .
 
 ## Contents
 
@@ -608,8 +601,6 @@ Options:
 **supported\_languages:** A list of languages tags you want to make available on
 your project. If null, all the languages we'll find translation files for, in the
 project, will be available.
-
-**build\_files\_path:** Can be an absolute path or relative to the project's root. If you change this value we assume you want to serve the files yourself (via cdn, or by other means) so we won't initiate the tap-i18n's built-in files server. Therefore if you set build\_files\_path you **must** set the browser\_path.
 
 **i18n\_files\_route:** The route in which the tap-i18n resources will be available in the project.
 
