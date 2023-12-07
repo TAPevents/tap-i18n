@@ -1,3 +1,8 @@
+2023.12.07, Version 1.11.1
+
+* Fix a bug in regex used to strip .json and query params when extracting lang
+tag
+
 2023.12.06, Version 1.11.0
 
 * Introduce the ability to configure CDN using: TAPi18n.setCdnCb(cb)
