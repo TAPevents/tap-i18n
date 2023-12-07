@@ -55,7 +55,7 @@ _.extend TAPi18n.prototype,
         return
       
       # If all lang is requested, return all.
-      if (langs = langs.replace /\.json\?.*/, "", "") is "all"
+      if (langs = langs.replace /\.json\??.*/, "", "") is "all"
         res.writeHead 200, {"Content-Type": "text/plain; charset=utf-8"}
         res.end JSON.stringify self.translations, "utf8"
         return
@@ -85,7 +85,7 @@ _.extend TAPi18n.prototype,
         res.writeHead 401
         res.end("tap:i18n: single language route: couldn't process url: #{req.url}")
         return
-      lang_tag = lang.replace /\.json\?.*/, ""
+      lang_tag = lang.replace /\.json\??.*/, ""
 
       if (lang_tag not in self._getProjectLanguages()) or (lang_tag is self._fallback_language)
         res.writeHead 404
