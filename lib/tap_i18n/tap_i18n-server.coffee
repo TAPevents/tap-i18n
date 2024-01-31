@@ -67,7 +67,9 @@ _.extend TAPi18n.prototype,
           if (language_translations = self.translations[lang_tag])?
             output[lang_tag] = language_translations
 
-      res.writeHead 200, {"Content-Type": "text/plain; charset=utf-8"}
+      res.writeHead 200, 
+        "Content-Type": "text/plain; charset=utf-8"
+        "Access-Control-Allow-Origin": "*"
       res.end JSON.stringify output, "utf8"
 
       return
@@ -97,7 +99,9 @@ _.extend TAPi18n.prototype,
       # developer to force a language supporte with project-tap.i18n's
       # supported_languages property, even if that language has no lang
       # files.
-      res.writeHead 200, {"Content-Type": "text/plain; charset=utf-8"}
+      res.writeHead 200, 
+        "Content-Type": "text/plain; charset=utf-8"
+        "Access-Control-Allow-Origin": "*"
       res.end JSON.stringify language_translations, "utf8"
 
       return
