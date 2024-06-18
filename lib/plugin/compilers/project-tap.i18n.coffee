@@ -88,18 +88,52 @@ compilers.project_tap_i18n = (compileStep) ->
     if project_tap_i18n.preloaded_langs[0] != "*"
       preloaded_langs = project_tap_i18n.preloaded_langs
 
-    project_i18n_js_file +=
-      """
-      var preloaded_langs = #{JSON.stringify preloaded_langs};
+    project_i18n_js_file += """
+      var project_preloaded_langs = #{JSON.stringify preloaded_langs};
 
-      if (preloaded_langs !== "all" && (typeof TAP_I18N_PRELOADED_LANGS !== "undefined" && TAP_I18N_PRELOADED_LANGS !== null)) {
-          preloaded_langs = _.union(preloaded_langs, TAP_I18N_PRELOADED_LANGS).join(",");
+      // The following code is generated from this coffeescript code:
+      // if TAP_I18N_PRELOADED_LANGS?
+      //   if not _.isArray TAP_I18N_PRELOADED_LANGS
+      //     console.error("tap-i18n: An invalid TAP_I18N_PRELOADED_LANGS encountered, skipping.")
+      //   else
+      //     alpha_numeric_regex = /^[a-z\-0-9]+$/i
+          
+      //     is_runtime_preloaded_langs_valid = _.every TAP_I18N_PRELOADED_LANGS, (lang_tag) -> 
+      //       return (lang_tag.length <= 10) and _.isString(lang_tag) and alpha_numeric_regex.test lang_tag
+
+      //     if not is_runtime_preloaded_langs_valid
+      //       console.error("tap-i18n: An invalid TAP_I18N_PRELOADED_LANGS encountered, skipping.")
+      //     else
+      //       runtime_preloaded_langs = TAP_I18N_PRELOADED_LANGS
+      var runtime_preloaded_langs = [];
+
+      if (typeof TAP_I18N_PRELOADED_LANGS !== "undefined" && TAP_I18N_PRELOADED_LANGS !== null) {
+        if (!_.isArray(TAP_I18N_PRELOADED_LANGS)) {
+          console.error("tap-i18n: An invalid TAP_I18N_PRELOADED_LANGS encountered, skipping.");
+        } else {
+          var alpha_numeric_regex = /^[a-z\-0-9]+$/i;
+          is_runtime_preloaded_langs_valid = _.every(TAP_I18N_PRELOADED_LANGS, function(lang_tag) {
+            return (lang_tag.length <= 10) && _.isString(lang_tag) && alpha_numeric_regex.test(lang_tag);
+          });
+          if (!is_runtime_preloaded_langs_valid) {
+            console.error("tap-i18n: An invalid TAP_I18N_PRELOADED_LANGS encountered, skipping.");
+          } else {
+            runtime_preloaded_langs = TAP_I18N_PRELOADED_LANGS;
+          }
         }
+      }
+
+      if (project_preloaded_langs[0] === "all") {
+        preloaded_langs = ["all"]
+      }
+      else if (!_.isEmpty(runtime_preloaded_langs)) {
+        preloaded_langs = _.union(project_preloaded_langs, runtime_preloaded_langs);
+      }
 
       if (!_.isEmpty(preloaded_langs)) {
         $.ajax({
             type: 'GET',
-            url: TAPi18n._cdn(`#{project_tap_i18n.i18n_files_route}/multi/${preloaded_langs}.json`),
+            url: TAPi18n._cdn(`#{project_tap_i18n.i18n_files_route}/multi/${preloaded_langs.join(",")}.json`),
             dataType: 'json',
             success: function(data) {
               for (lang_tag in data) {
@@ -111,8 +145,7 @@ compilers.project_tap_i18n = (compileStep) ->
             async: false
         });
       }
-
-      """
+    """
 
   helpers.markProjectI18nLoaded(compileStep)
 
