@@ -90,7 +90,7 @@ compilers.project_tap_i18n = (compileStep) ->
 
     project_i18n_js_file +=
       """
-      let preloaded_langs = #{JSON.stringify preloaded_langs};
+      var preloaded_langs = #{JSON.stringify preloaded_langs};
 
       if (preloaded_langs !== "all" && (typeof TAP_I18N_PRELOADED_LANGS !== "undefined" && TAP_I18N_PRELOADED_LANGS !== null)) {
           preloaded_langs = _.union(preloaded_langs, TAP_I18N_PRELOADED_LANGS).join(",");
