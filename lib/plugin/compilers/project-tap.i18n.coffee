@@ -84,7 +84,7 @@ compilers.project_tap_i18n = (compileStep) ->
   project_i18n_js_file = getProjectConfJs project_tap_i18n
 
   if compileStep.archMatches("web")
-    preloaded_langs = "all"
+    preloaded_langs = ["all"]
     if project_tap_i18n.preloaded_langs[0] != "*"
       preloaded_langs = project_tap_i18n.preloaded_langs
 
