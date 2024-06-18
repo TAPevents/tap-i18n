@@ -610,8 +610,7 @@ An alernative way to dynamically set preloaded_langs on runtime is by defining t
   <script>
     TAP_I18N_PRELOADED_LANGS = ["pt-BR", "zh-TW", "he"];
   </script>
-  <!-- ... other head elements ... -->
-  <script src="path/to/your/tapi18n/bundle.js"></script>
+  <!-- ... The JS Bundle of your Meteor APP ... -->
 </head>
 ```
 
