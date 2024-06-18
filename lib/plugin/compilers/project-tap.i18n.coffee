@@ -83,26 +83,34 @@ compilers.project_tap_i18n = (compileStep) ->
 
   project_i18n_js_file = getProjectConfJs project_tap_i18n
 
-  if compileStep.archMatches("web") and not _.isEmpty project_tap_i18n.preloaded_langs
+  if compileStep.archMatches("web")
     preloaded_langs = "all"
     if project_tap_i18n.preloaded_langs[0] != "*"
-      preloaded_langs = project_tap_i18n.preloaded_langs.join(",")
+      preloaded_langs = project_tap_i18n.preloaded_langs
 
     project_i18n_js_file +=
       """
-      $.ajax({
-          type: 'GET',
-          url: TAPi18n._cdn("#{project_tap_i18n.i18n_files_route}/multi/#{preloaded_langs}.json"),
-          dataType: 'json',
-          success: function(data) {
-            for (lang_tag in data) {
-              TAPi18n._loadLangFileObject(lang_tag, data[lang_tag]);
-              TAPi18n._loaded_languages.push(lang_tag);
-            }
-          },
-          data: {},
-          async: false
-      });
+      let preloaded_langs = #{JSON.stringify preloaded_langs};
+
+      if (preloaded_langs !== "all" && (typeof TAP_I18N_PRELOADED_LANGS !== "undefined" && TAP_I18N_PRELOADED_LANGS !== null)) {
+          preloaded_langs = _.union(preloaded_langs, TAP_I18N_PRELOADED_LANGS).join(",");
+        }
+
+      if (!_.isEmpty(preloaded_langs)) {
+        $.ajax({
+            type: 'GET',
+            url: TAPi18n._cdn(`#{project_tap_i18n.i18n_files_route}/multi/${preloaded_langs}.json`),
+            dataType: 'json',
+            success: function(data) {
+              for (lang_tag in data) {
+                TAPi18n._loadLangFileObject(lang_tag, data[lang_tag]);
+                TAPi18n._loaded_languages.push(lang_tag);
+              }
+            },
+            data: {},
+            async: false
+        });
+      }
 
       """
 
