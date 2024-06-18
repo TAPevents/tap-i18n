@@ -604,10 +604,23 @@ project, will be available.
 **i18n\_files\_route:** The route in which the tap-i18n resources will be available in the project.
 
 **preloaded_langs:** An array of languages tags. If isn't empty, a single synchronous ajax requrest will load the translation strings for all the languages tags listed. If you want to load all the supported languages set preloaded_langs to `["*"]` (`"*"` must be the first item of the array, the rest of the array will be ignored. `["zh-*"]` won't work).
+An alernative way to dynamically set preloaded_langs on runtime is by defining the **TAP_I18N_PRELOADED_LANGS** global variable. This variable should be an array of language tags.
+```html
+<head>
+  <script>
+    TAP_I18N_PRELOADED_LANGS = ["pt-BR", "zh-TW", "he"];
+  </script>
+  <!-- ... other head elements ... -->
+  <script src="path/to/your/tapi18n/bundle.js"></script>
+</head>
+```
+
 
 **Notes:**
 
+* English is loaded by default, so you don't need to include it in the preloaded language list.
 * We use AJAX to load the languages files so you'll have to set CORS on your CDN.
+*  Support of TAP_I18N_PRELOADED_LANGS relies on the `project-tap.i18n` build plugin. In other words, if `project-tap.i18n` doesn't exist, TAP_I18N_PRELOADED_LANGS will have **no** effect.
 
 ### Configuring CDN in tap-i18n
 
