@@ -123,6 +123,7 @@ compilers.project_tap_i18n = (compileStep) ->
         }
       }
 
+      var preloaded_langs = [];
       if (project_preloaded_langs[0] === "all") {
         preloaded_langs = ["all"]
       }
