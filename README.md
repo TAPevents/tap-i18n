@@ -620,7 +620,8 @@ An alernative way to dynamically set preloaded_langs on runtime is by defining t
 
 * English is loaded by default, so you don't need to include it in the preloaded language list.
 * We use AJAX to load the languages files so you'll have to set CORS on your CDN.
-*  Support of TAP_I18N_PRELOADED_LANGS relies on the `project-tap.i18n` build plugin. In other words, if `project-tap.i18n` doesn't exist, TAP_I18N_PRELOADED_LANGS will have **no** effect.
+* Support of TAP_I18N_PRELOADED_LANGS relies on the `project-tap.i18n` build plugin. In other words, if `project-tap.i18n` doesn't exist, TAP_I18N_PRELOADED_LANGS will have **no** effect.
+* TAP_I18N_PRELOADED_LANGS will add languages for preload to the preloaded_langs array in project-tap.i18n in run time. E.g. if preloaded_langs = ["fr"] and TAP_I18N_PRELOADED_LANGS = ["he"], both languages will be preloaded.
 
 ### Configuring CDN in tap-i18n
 
