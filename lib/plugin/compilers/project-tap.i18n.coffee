@@ -131,6 +131,8 @@ compilers.project_tap_i18n = (compileStep) ->
         preloaded_langs = _.union(project_preloaded_langs, runtime_preloaded_langs);
       }
 
+      preloaded_langs.sort()
+
       if (!_.isEmpty(preloaded_langs)) {
         $.ajax({
             type: 'GET',
