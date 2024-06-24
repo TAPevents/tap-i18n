@@ -41,7 +41,7 @@ routepolicy@1.1.1
 session@1.2.1
 spacebars@1.1.0
 spacebars-compiler@1.2.1
-tap:i18n@1.12.0
+tap:i18n@1.12.1
 templating@1.4.0
 templating-compiler@1.4.1
 templating-runtime@1.4.0
