@@ -56,7 +56,9 @@ _.extend TAPi18n.prototype,
       
       # If all lang is requested, return all.
       if (langs = langs.replace /\.json\??.*/, "", "") is "all"
-        res.writeHead 200, {"Content-Type": "text/plain; charset=utf-8"}
+        res.writeHead 200, 
+          "Content-Type": "text/plain; charset=utf-8"
+          "Access-Control-Allow-Origin": "*"
         res.end JSON.stringify self.translations, "utf8"
         return
       
