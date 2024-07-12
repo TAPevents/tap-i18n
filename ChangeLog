@@ -1,3 +1,7 @@
+2024.07.12, Version 1.12.4
+
+* Add be and tj to supported languages
+
 2024.07.09, Version 1.12.3
 
 * Bugfix: "Access-Control-Allow-Origin" header isn't added when requesting
