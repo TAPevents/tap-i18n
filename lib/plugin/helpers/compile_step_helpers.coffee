@@ -1,23 +1,26 @@
+path = Npm.require "path"
+
 compiler_configuration = share.compiler_configuration
 
 _.extend share.helpers,
-    getCompileStepArchAndPackage: (compileStep) ->
-      "#{compileStep.packageName}:#{compileStep.arch}"
+    getCompileStepArchAndPackage: (input_file_obj) ->
+      "#{input_file_obj.getPackageName()}:#{input_file_obj.getArch()}"
 
-    markAsPackage: (compileStep) ->
-      compiler_configuration.packages.push @.getCompileStepArchAndPackage(compileStep)
+    markAsPackage: (input_file_obj) ->
+      compiler_configuration.packages.push @getCompileStepArchAndPackage(input_file_obj)
 
-    isPackage: (compileStep) ->
-      @.getCompileStepArchAndPackage(compileStep) in compiler_configuration.packages
+    isPackage: (input_file_obj) ->
+      @getCompileStepArchAndPackage(input_file_obj) in compiler_configuration.packages
 
-    markProjectI18nLoaded: (compileStep) ->
-      compiler_configuration.project_tap_i18n_loaded_for.push @.getCompileStepArchAndPackage(compileStep)
+    markProjectI18nLoaded: (input_file_obj) ->
+      compiler_configuration.project_tap_i18n_loaded_for.push @getCompileStepArchAndPackage(input_file_obj)
 
-    isProjectI18nLoaded: (compileStep) ->
-      @.getCompileStepArchAndPackage(compileStep) in compiler_configuration.project_tap_i18n_loaded_for
+    isProjectI18nLoaded: (input_file_obj) ->
+      @getCompileStepArchAndPackage(input_file_obj) in compiler_configuration.project_tap_i18n_loaded_for
 
-    markDefaultProjectConfInserted: (compileStep) ->
-      compiler_configuration.default_project_conf_inserted_for.push @.getCompileStepArchAndPackage(compileStep)
+    markDefaultProjectConfInserted: (input_file_obj) ->
+      compiler_configuration.default_project_conf_inserted_for.push @getCompileStepArchAndPackage(input_file_obj)
 
-    isDefaultProjectConfInserted: (compileStep) ->
-      @.getCompileStepArchAndPackage(compileStep) in compiler_configuration.default_project_conf_inserted_for
+    isDefaultProjectConfInserted: (input_file_obj) ->
+      @getCompileStepArchAndPackage(input_file_obj) in compiler_configuration.default_project_conf_inserted_for
+
