@@ -14,6 +14,7 @@ Package.onUse(function (api) {
 
   api.use('coffeescript@2.4.1', both);
   api.use('underscore@1.0.10', both);
+  api.use('isobuild:compiler-plugin@1.0.0', both);
 
   api.use('raix:eventemitter@0.1.1', both);
   api.use('meteorspark:util@0.2.0', both);
