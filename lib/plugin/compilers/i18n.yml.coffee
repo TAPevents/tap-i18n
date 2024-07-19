@@ -1,4 +1,6 @@
 helpers = share.helpers
 compilers = share.compilers
-compilers.i18n_yml = compilers.generic_compiler('yml', helpers.loadYAML)
-Plugin.registerSourceHandler "i18n.yml", compilers.i18n_yml
+compilers.I18nYml = compilers.generic_compiler "yml", helpers.loadYAML
+Plugin.registerCompiler
+  extensions: ["i18n.yml"]
+, -> new compilers.I18nYml
