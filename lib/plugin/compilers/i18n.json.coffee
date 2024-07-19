@@ -1,4 +1,6 @@
 helpers = share.helpers
 compilers = share.compilers
-compilers.i18n_json = compilers.generic_compiler('json', helpers.loadJSON)
-Plugin.registerSourceHandler "i18n.json", compilers.i18n_json
+compilers.I18nJson = compilers.generic_compiler("json", helpers.loadJSON)
+Plugin.registerCompiler
+  extensions: ["i18n.json"]
+, -> new compilers.I18nJson
