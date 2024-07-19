@@ -1,3 +1,5 @@
+path = Npm.require "path"
+
 # Note: same compiler can be used to compile more then one package (at least in v0.9.x)
 
 share.compiler_configuration =
@@ -10,8 +12,9 @@ share.compiler_configuration =
   project_tap_i18n_loaded_for: [] # Keeps track of the archs we've loaded project_tap_i18n for
 
   tap_i18n_input_files: []
-  registerInputFile: (compileStep) ->
-    input_file = "#{compileStep.arch}:#{compileStep._fullInputPath}"
+  registerInputFile: (input_file_obj) ->
+    full_file_path = path.join input_file_obj.getSourceRoot(), input_file_obj.getPathInPackage()
+    input_file = "#{input_file_obj.getArch()}:#{full_file_path}"
     if input_file in @tap_i18n_input_files
       # A new build cycle
       @packages = []
