@@ -55,35 +55,35 @@ getProjectConfJs = share.getProjectConfJs = (conf) ->
 
   return project_conf_js
 
-compilers.project_tap_i18n = (compileStep) ->
-  compiler_configuration.registerInputFile(compileStep)
-  input_path = compileStep._fullInputPath
+compilers.projectTapI18n = (input_file_obj) ->
+  compiler_configuration.registerInputFile input_file_obj
+  input_path = helpers.getFullInputPath input_file_obj
 
-  if helpers.isPackage(compileStep)
-    compileStep.error
-      message: "Can't load project-tap.i18n in a package: #{compileStep.packageName}",
+  if helpers.isPackage input_file_obj
+    input_file_obj.error
+      message: "Can't load project-tap.i18n in a package: #{input_file_obj.packageName}",
       sourcePath: input_path
     return
 
-  if helpers.isProjectI18nLoaded(compileStep)
-    compileStep.error
+  if helpers.isProjectI18nLoaded input_file_obj
+    input_file_obj.error
       message: "Can't have more than one project-tap.i18n",
       sourcePath: input_path
     return
 
-  project_tap_i18n = helpers.loadJSON input_path, compileStep
+  project_tap_i18n = helpers.loadJSON input_file_obj
 
   if not project_tap_i18n?
     project_tap_i18n = projectI18nObjCleaner({})
   else
-    projectI18nObjCleaner(project_tap_i18n)
+    projectI18nObjCleaner project_tap_i18n
 
   if project_tap_i18n.cdn_path?
     console.warn "As of version v1.11.0 of tap:i18n we no longer support the cdn_path option in project.tap.i18n please refer to our README on: https://github.com/TAPevents/tap-i18n to learn how to setup your CDN"
 
   project_i18n_js_file = getProjectConfJs project_tap_i18n
 
-  if compileStep.archMatches("web")
+  if helpers.archMatches input_file_obj, "web"
     preloaded_langs = ["all"]
     if project_tap_i18n.preloaded_langs[0] != "*"
       preloaded_langs = project_tap_i18n.preloaded_langs
@@ -150,12 +150,10 @@ compilers.project_tap_i18n = (compileStep) ->
       }
     """
 
-  helpers.markProjectI18nLoaded(compileStep)
+  helpers.markProjectI18nLoaded(input_file_obj)
 
-  compileStep.addJavaScript
+  return input_file_obj.addJavaScript
     path: "project-i18n.js",
     sourcePath: input_path,
     data: project_i18n_js_file,
     bare: false
-
-Plugin.registerSourceHandler "project-tap.i18n", compilers.project_tap_i18n
