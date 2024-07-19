@@ -21,38 +21,38 @@ package_i18n_obj_schema =
 
 packageI18nObjCleaner = helpers.buildCleanerForSchema(package_i18n_obj_schema, "package-tap.i18n")
 
-compilers.package_tap_i18n = (compileStep) ->
-  compiler_configuration.registerInputFile(compileStep)
-  input_path = compileStep._fullInputPath
+compilers.packageTapI18n = (input_file_obj) ->
+  compiler_configuration.registerInputFile(input_file_obj)
+  input_path = helpers.getFullInputPath input_file_obj
 
-  if helpers.isPackage(compileStep)
-    compileStep.error
-      message: "More than one package-tap.i18n found for package: #{compileStep.packageName}",
+  if helpers.isPackage(input_file_obj)
+    input_file_obj.error
+      message: "More than one package-tap.i18n found for package: #{input_file_obj.getPackageName()}",
       sourcePath: input_path
     return
 
-  if helpers.isProjectI18nLoaded(compileStep)
-    compileStep.error
+  if helpers.isProjectI18nLoaded(input_file_obj)
+    input_file_obj.error
       message: "Can't compile package-tap.i18n if project-tap.i18n is present",
       sourcePath: input_path
     return
 
-  if helpers.isDefaultProjectConfInserted(compileStep)
-    compileStep.error
+  if helpers.isDefaultProjectConfInserted(input_file_obj)
+    input_file_obj.error
       message: "package-tap.i18n should be loaded before languages files (*.i18n.json)",
       sourcePath: input_path
     return
 
-  helpers.markAsPackage(compileStep)
+  helpers.markAsPackage(input_file_obj)
 
-  package_tap_i18n = helpers.loadJSON input_path, compileStep
+  package_tap_i18n = helpers.loadJSON input_file_obj
 
   if not package_tap_i18n?
     package_tap_i18n = packageI18nObjCleaner({})
   else
     packageI18nObjCleaner(package_tap_i18n)
 
-  package_name = compileStep.packageName
+  package_name = input_file_obj.getPackageName()
 
   if not package_tap_i18n.namespace?
     package_tap_i18n.namespace = package_name
@@ -68,7 +68,7 @@ compilers.package_tap_i18n = (compileStep) ->
 
     """
 
-  if compileStep.archMatches "web"
+  if helpers.archMatches input_file_obj, "web"
     package_i18n_js_file +=
       """
       // define the package's templates registrar
@@ -81,10 +81,8 @@ compilers.package_tap_i18n = (compileStep) ->
 
       """
 
-  compileStep.addJavaScript
+  return input_file_obj.addJavaScript
     path: "package-i18n.js",
     sourcePath: input_path,
     data: package_i18n_js_file,
     bare: false
-
-Plugin.registerSourceHandler "package-tap.i18n", compilers.package_tap_i18n
