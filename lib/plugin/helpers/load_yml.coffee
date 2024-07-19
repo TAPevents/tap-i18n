@@ -1,25 +1,23 @@
-fs = Npm.require 'fs'
 YAML = Npm.require 'yamljs'
+helpers = share.helpers
 
-# loads a yml from file_path
+# loads a yml from input_file_obj
 #
-# returns undefined if file doesn't exist null if file is empty, parsed content otherwise
+# returns undefined if file doesn't exist, null if file is empty, parsed content otherwise
 _.extend share.helpers,
-  loadYAML: (file_path, compileStep=null) ->
-    try # use try/catch to avoid the additional syscall to fs.existsSync
-      fstats = fs.statSync file_path
-    catch
+  loadYAML: (input_file_obj=null) ->
+    if not input_file_obj?
       return undefined
-
-    if fstats.size == 0
+      
+    if not (content_as_string = input_file_obj.getContentsAsString())?
       return null
 
     try
-      content = YAML.load(file_path)
+      content = YAML.parse content_as_string
     catch error
-      if compileStep?
-        compileStep.error
-          message: "Can't load `#{file_path}' YAML",
-          sourcePath: compileStep._fullInputPath
+      full_input_path = helpers.getFullInputPath input_file_obj
+      input_file_obj.error
+        message: "Can't load `#{full_input_path}' YAML",
+        sourcePath: full_input_path
 
-      throw new Error "Can't load `#{file_path}' YAML"
+      throw new Error "Can't load `#{full_input_path}' YAML"

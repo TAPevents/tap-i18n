@@ -1,25 +1,23 @@
-fs = Npm.require 'fs'
 JSON.minify = JSON.minify || Npm.require("node-json-minify")
+helpers = share.helpers
 
-# loads a json from file_path
+# loads a json from input_file_obj
 #
-# returns undefined if file doesn't exist null if file is empty, parsed content otherwise
+# returns undefined if file doesn't exist, null if file is empty, parsed content otherwise
 _.extend share.helpers,
-  loadJSON: (file_path, compileStep=null) ->
-    try # use try/catch to avoid the additional syscall to fs.existsSync
-      fstats = fs.statSync file_path
-    catch
+  loadJSON: (input_file_obj) ->
+    if not input_file_obj?
       return undefined
-
-    if fstats.size == 0
+      
+    if not (content_as_string = input_file_obj.getContentsAsString())?
       return null
 
     try
-      content = JSON.parse(JSON.minify(fs.readFileSync(file_path, "utf8")))
+      content = JSON.parse content_as_string
     catch error
-      if compileStep?
-        compileStep.error
-          message: "Can't load `#{file_path}' JSON",
-          sourcePath: compileStep._fullInputPath
+      full_input_path = helpers.getFullInputPath input_file_obj
+      input_file_obj.error
+        message: "Can't load `#{full_input_path}' JSON",
+        sourcePath: full_input_path
 
-      throw new Error "Can't load `#{file_path}' JSON"
+      throw new Error "Can't load `#{full_input_path}' JSON"
