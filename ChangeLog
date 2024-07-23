@@ -1,3 +1,7 @@
+2024.07.23, Version 2.0.1
+
+* Fix small issue during package deployment to Atmosphere
+
 2024.07.23, Version 2.0.0
 
 * Build plguin API updated: Replaced Plugin.registerSourceHandler with
