@@ -1,3 +1,27 @@
+2024.07.23, Version 2.0.0
+
+* Build plguin API updated: Replaced Plugin.registerSourceHandler with
+Plugin.registerCompiler.
+
+  * Background: The registerCompiler API, introduced in Meteor 1.2, replaces the
+  deprecated registerSourceHandler.
+
+  * Fix a bug that causes conflicts when tap:i18n is used in packages alongside
+  the ecmascript package.
+
+  * Fix an issue where i18n files inside packages are loaded without being
+  included in package.js.
+
+  * Fixes an issue where i18n files in the folder tree that were part of the
+  packages folder but weren't used by the project were still loaded to the
+  bundle.
+
+  * Major Version Increase: The major version increases to avoid potential
+  breaking changes with the transition to Plugin.registerCompiler.
+
+* Removed the incorrect tj language tag (correct lang tag should be tg, which
+is available in tap:i18n).
+
 2024.07.12, Version 1.12.4
 
 * Add be and tj to supported languages
