@@ -24,7 +24,7 @@ Package.onUse(function (api) {
   api.use('jquery@1.0.10', client);
   api.use('templating@1.4.0', client);
 
-  api.use("webapp", server);
+  api.use("webapp@2.0.0", server);
 
   // load TAPi18n
   api.addFiles('lib/globals.js', both);
