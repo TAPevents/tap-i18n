@@ -1,5 +1,6 @@
 Unreleased
 
+* Update the test-only meteor-node-stubs dependency from 1.2.8 to 1.2.30.
 * Add getLanguagesCached() for a shared frozen language catalog with client
   Tracker dependencies, plus invalidateLanguagesCache() for metadata changes.
   getLanguages() continues to return a new mutable dictionary and records.
