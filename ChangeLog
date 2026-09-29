@@ -1,3 +1,11 @@
+Unreleased
+
+* Fix compiler ordering across packages by processing configuration before
+  JSON/YAML translations in one compiler, preserving file order and resetting
+  compilation state explicitly between targets and rebuilds.
+  Initialize pending server namespaces when their language becomes active so
+  mixed JSON/YAML ordering cannot omit package translations.
+
 2024.07.23, Version 2.0.1
 
 * Fix small issue during package deployment to Atmosphere

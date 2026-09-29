@@ -1,6 +1,5 @@
 helpers = share.helpers
 compilers = share.compilers
-compiler_configuration = share.compiler_configuration
 
 project_i18n_obj_schema =
   helper_name:
@@ -56,7 +55,6 @@ getProjectConfJs = share.getProjectConfJs = (conf) ->
   return project_conf_js
 
 compilers.projectTapI18n = (input_file_obj) ->
-  compiler_configuration.registerInputFile input_file_obj
   input_path = helpers.getFullInputPath input_file_obj
 
   if helpers.isPackage input_file_obj

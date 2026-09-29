@@ -1,0 +1,2 @@
+# Exercise automatic project enablement before the JSON language files load.
+compiler_ordering_first: YAML first

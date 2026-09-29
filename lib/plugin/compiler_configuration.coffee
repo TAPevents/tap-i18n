@@ -1,6 +1,5 @@
-path = Npm.require "path"
-
-# Note: same compiler can be used to compile more then one package (at least in v0.9.x)
+# One compiler invocation includes all packages for a target. Keep their state
+# together, and reset it explicitly for each invocation (including rebuilds).
 
 share.compiler_configuration =
   fallback_language: globals.fallback_language
@@ -11,16 +10,9 @@ share.compiler_configuration =
                                         # in case the project has no project-tap.i18n
   project_tap_i18n_loaded_for: [] # Keeps track of the archs we've loaded project_tap_i18n for
 
-  tap_i18n_input_files: []
-  registerInputFile: (input_file_obj) ->
-    full_file_path = path.join input_file_obj.getSourceRoot(), input_file_obj.getPathInPackage()
-    input_file = "#{input_file_obj.getArch()}:#{full_file_path}"
-    if input_file in @tap_i18n_input_files
-      # A new build cycle
-      @packages = []
-      @templates_registered_for = []
-      @default_project_conf_inserted_for = []
-      @project_tap_i18n_loaded_for = []
-      @tap_i18n_input_files = []
-
-    @tap_i18n_input_files.push(input_file)
+  reset: ->
+    @packages = []
+    @templates_registered_for = []
+    @default_project_conf_inserted_for = []
+    @project_tap_i18n_loaded_for = []
+    return

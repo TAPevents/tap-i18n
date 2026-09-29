@@ -5,9 +5,15 @@ _.extend TAPi18n.prototype,
     if @_enabled()
       if not(lang_tag of @server_translators)
         @server_translators[lang_tag] = @_getSpecificLangTranslator(lang_tag)
-
-      # fallback language is integrated, and isn't part of @translations 
-      if lang_tag != @_fallback_language
+        # Packages can supply translations before the project is enabled and
+        # before it discovers this language. Load every pending namespace when
+        # the language first becomes active, regardless of source file order.
+        # The fallback language is already integrated, not in @translations.
+        if lang_tag != @_fallback_language
+          for own namespace, translations of @translations[lang_tag]
+            @addResourceBundle(lang_tag, namespace, translations)
+      else if lang_tag != @_fallback_language
+        # Subsequent files update only the namespace they belong to.
         @addResourceBundle(lang_tag, package_name, @translations[lang_tag][package_name])
 
     if not(@_fallback_language of @server_translators)

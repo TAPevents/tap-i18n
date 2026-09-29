@@ -8,8 +8,6 @@ compilers.generic_compiler = (extension, helper) ->
   GenericCompiler = ->
     @processFilesForTarget = (input_files) ->
       input_files.forEach (input_file) ->
-        compiler_configuration.registerInputFile input_file
-        
         input_path = helpers.getFullInputPath input_file
         language = path.basename(input_path).split(".").slice(0, -2).pop()
         if _.isUndefined(language) or _.isEmpty(language)

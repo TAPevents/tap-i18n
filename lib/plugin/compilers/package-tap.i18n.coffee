@@ -1,6 +1,5 @@
 helpers = share.helpers
 compilers = share.compilers
-compiler_configuration = share.compiler_configuration
 
 package_i18n_obj_schema =
   translation_function_name:
@@ -22,7 +21,6 @@ package_i18n_obj_schema =
 packageI18nObjCleaner = helpers.buildCleanerForSchema(package_i18n_obj_schema, "package-tap.i18n")
 
 compilers.packageTapI18n = (input_file_obj) ->
-  compiler_configuration.registerInputFile(input_file_obj)
   input_path = helpers.getFullInputPath input_file_obj
 
   if helpers.isPackage(input_file_obj)
@@ -34,12 +32,6 @@ compilers.packageTapI18n = (input_file_obj) ->
   if helpers.isProjectI18nLoaded(input_file_obj)
     input_file_obj.error
       message: "Can't compile package-tap.i18n if project-tap.i18n is present",
-      sourcePath: input_path
-    return
-
-  if helpers.isDefaultProjectConfInserted(input_file_obj)
-    input_file_obj.error
-      message: "package-tap.i18n should be loaded before languages files (*.i18n.json)",
       sourcePath: input_path
     return
 
