@@ -60,9 +60,13 @@ Package.onTest(function (api) {
   api.use(['tap:i18n', 'ecmascript', 'meteortesting:mocha@=3.2.0', 'tracker'], both);
   api.use(['jquery', 'templating', 'blaze'], client);
   api.addFiles('tests/mocha/both/api.app-test.js', both);
+  api.addFiles('tests/mocha/both/catalog-cache.app-test.js', both);
+  api.addFiles('tests/mocha/both/catalog-initialization.app-test.js', both);
+  api.addFiles('tests/mocha/both/catalog-benchmark.app-test.js', both);
   api.addFiles('tests/mocha/server/translations.app-test.js', server);
   api.addFiles('tests/mocha/server/initialization.app-test.js', server);
   api.addFiles('tests/mocha/client/reactivity.app-test.js', client);
+  api.addFiles('tests/mocha/client/catalog-cache.app-test.js', client);
 });
 
 Package.registerBuildPlugin({

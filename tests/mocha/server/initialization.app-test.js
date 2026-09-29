@@ -34,6 +34,7 @@ describe('TAPi18n - package resources before project enablement', function () {
   afterEach(function () {
     TAPi18n.conf = previous.conf;
     TAPi18n.languages_names = previous.names;
+    TAPi18n.invalidateLanguagesCache();
     if (previous.translations === undefined) delete TAPi18n.translations[tag];
     else TAPi18n.translations[tag] = previous.translations;
     if (previous.translator === undefined) delete TAPi18n.server_translators[tag];

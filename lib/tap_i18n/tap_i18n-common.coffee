@@ -7,6 +7,8 @@ TAPi18n = ->
 
   @_language_changed_tracker = new Tracker.Dependency
 
+  @_languages_cache = null
+
   @_loaded_languages = [fallback_language] # stores the loaded languages, the fallback language is loaded automatically
 
   @conf = null # If conf isn't null we assume that tap:i18n is enabled for the project.
@@ -25,6 +27,8 @@ TAPi18n = ->
 
 
   if Meteor.isClient
+    @_languages_catalog_dependency = new Tracker.Dependency
+
     Session.set @_loaded_lang_session_key, null
 
     @_languageSpecificTranslators = {}
@@ -55,6 +59,7 @@ _.extend TAPi18n.prototype,
     # a default conf, which is being added if the project has lang files
     # (*.i18n.json) but not project-tap.i18n
     @conf = conf
+    @invalidateLanguagesCache()
 
     @._onceEnabled()
 
@@ -115,6 +120,40 @@ _.extend TAPi18n.prototype,
         en: @.languages_names[lang_tag][0]
 
     languages
+
+  getLanguagesCached: ->
+    # Depend even on cache hits and while disabled. Selection and translation
+    # updates use their own dependencies; only catalog invalidation reruns this.
+    @_languages_catalog_dependency?.depend()
+
+    if not @_enabled()
+      return null
+
+    if not @_languages_cache?
+      # A dictionary without inherited keys preserves registered identifiers.
+      # Freeze only new records, never the application's mutable metadata.
+      languages = Object.create(null)
+      for lang_tag in @_getProjectLanguages()
+        names = @languages_names[lang_tag]
+        if typeof names?[0] != "string" or typeof names?[1] != "string"
+          throw new TypeError "getLanguagesCached requires string language names for #{lang_tag}"
+
+        languages[lang_tag] = Object.freeze
+          name: names[1]
+          en: names[0]
+
+      # Publish only a complete snapshot. A failed build must not poison the cache.
+      @_languages_cache = Object.freeze(languages)
+
+    # This is a shared reference, with no copying or scanning on cache hits.
+    return @_languages_cache
+
+  invalidateLanguagesCache: ->
+    # Call after direct writes to languages_names or conf.supported_languages.
+    # Existing snapshots stay unchanged; the next getter builds their replacement.
+    @_languages_cache = null
+    @_languages_catalog_dependency?.changed()
+    return
 
   _cdn: (path) -> path
   setCdnCb: (cb) ->

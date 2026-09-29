@@ -18,6 +18,7 @@ const cases = [
   {name: 'disabled', files: false},
   {name: 'package-api', files: false, packageTests: true, scenario: 'disabled'},
   {name: 'inferred'},
+  {name: 'catalog-initialization', files: false, catalogProbe: true},
   {name: 'configured', config: {
     helper_name: 'tr_project', i18n_files_route: '/fixture-translations',
     supported_languages: ['cc-CC', 'cc', 'fr', 'cc']
@@ -119,6 +120,10 @@ async function prepareFixture(item, directory) {
   await cp(path.join(testsDir, 'mocha'), path.join(app, 'app-tests/mocha'), {recursive: true});
   await cp(path.join(testsDir, 'helpers.js'), path.join(app, 'app-tests/helpers.js'));
 
+  if (item.catalogProbe) {
+    await cp(path.join(testsDir, 'fixtures/catalog-probe'), path.join(app, 'packages/catalog-probe'), {recursive: true});
+    packages.push('tap-i18n-tests:catalog-probe');
+  }
   if (item.namespaced) {
     const namespace = path.join(app, 'packages/namespaced');
     await cp(path.join(testsDir, 'fixtures/namespaced'), namespace, {recursive: true});
@@ -216,7 +221,10 @@ async function runScenario(item) {
   await mkdir(directory);
   const app = await prepareFixture(item, directory);
   const settings = path.join(directory, 'settings.json');
-  await writeFile(settings, JSON.stringify({public: {tapI18nTestScenario: item.scenario || item.name}}));
+  await writeFile(settings, JSON.stringify({public: {
+    tapI18nTestScenario: item.scenario || item.name,
+    tapI18nBenchmark: process.env.BENCHMARK === '1' && item.name === 'inferred'
+  }}));
   const port = await availablePorts();
   const url = `http://127.0.0.1:${port}/`;
   const env = {...process.env};

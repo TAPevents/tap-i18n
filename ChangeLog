@@ -1,5 +1,10 @@
 Unreleased
 
+* Add getLanguagesCached() for a shared frozen language catalog with client
+  Tracker dependencies, plus invalidateLanguagesCache() for metadata changes.
+  getLanguages() continues to return a new mutable dictionary and records.
+  Cached catalog keys retain registered language tags' spelling and capitalization.
+  Cover invalidation and startup behavior, and add an opt-in catalog benchmark.
 * Restore independent Mocha/Chai client and server tests, real compiler fixtures,
   headless Chrome execution, compiler lifecycle tests, and Package.onTest
   coverage. Reject exclusive/skipped tests and retain browser diagnostics on

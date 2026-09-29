@@ -59,12 +59,14 @@ describe('TAPi18n - catalog and registration', function () {
       expect(Object.prototype.hasOwnProperty.call(TAPi18n.languages_names, 'cc-CC')).to.equal(true);
       expect(Object.prototype.hasOwnProperty.call(TAPi18n.languages_names, 'CC-cc')).to.equal(false);
       expect(function () { TAPi18n.getLanguages(); }).to.throw();
+      expect(function () { TAPi18n.getLanguagesCached(); }).to.throw(TypeError);
     });
   }
 
   if (TapI18nTest.regularCatalog()) {
     it('compiler catalog includes fallback and filters supported languages', function () {
       var languages = TAPi18n.getLanguages();
+      expect(TAPi18n.getLanguagesCached()).to.deep.equal(languages);
       expect(Object.keys(languages).sort()).to.deep.equal(TapI18nTest.languages());
       expect(languages.en).to.deep.equal({name: 'English', en: 'English'});
       expect(languages['cc-CC']).to.deep.equal({name: 'cc-CC', en: 'cc-CC'});

@@ -52,6 +52,10 @@ getProjectConfJs = share.getProjectConfJs = (conf) ->
 
         """
 
+  # Configuration can supply names without a corresponding translation file.
+  # Invalidate after those writes, including a catalog read during _enable().
+  project_conf_js += "TAPi18n.invalidateLanguagesCache();\n"
+
   return project_conf_js
 
 compilers.projectTapI18n = (input_file_obj) ->

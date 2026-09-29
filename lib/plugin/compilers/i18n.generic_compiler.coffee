@@ -55,6 +55,7 @@ compilers.generic_compiler = (extension, helper) ->
             output +=
               """
               TAPi18n.languages_names["#{language}"] = #{JSON.stringify language_name};
+              TAPi18n.invalidateLanguagesCache();
 
               """
 

@@ -198,7 +198,15 @@ client language get changed (by TAPi18n.setLanguage)
 
 Returns an object with all the supported languages and their names.
 
-A language is considred supported if it is in the supported_languages array of
+Each call returns a new dictionary and new `{name, en}` records. Adding or
+removing entries, or assigning record fields, does not change later results or
+the library's language metadata. These copies are shallow: custom object-valued
+names, if supplied, remain shared with the source metadata.
+
+This getter is **not reactive**: use `getLanguage()` for the reactive selected
+language. Direct metadata changes are reflected on the next call.
+
+A language is considered supported if it is in the supported_languages array of
 the project-tap.i18n json. If supported_languages is null or not defined in
 project-tap.i18n we consider all the languages we find *.i18n.json/yml files to as
 supported.
@@ -220,6 +228,54 @@ The returned object is in the following format:
   .
 }
 ```
+
+**TAPi18n.getLanguagesCached() (Anywhere)**
+
+Returns the same language tags and `{name, en}` fields as `getLanguages()`, or
+`null` when translation is disabled. This opt-in getter returns a **shared,
+read-only snapshot by reference**. Repeated reads reuse the same object until
+the catalog is invalidated; cache hits do not copy or scan its entries.
+
+The dictionary has no prototype, and both it and its records are frozen.
+**Do not modify the returned object or its records.** Writes throw in strict
+mode or have no effect otherwise. Use `getLanguages()` when you need mutable
+copies, for example to attach UI-specific properties to each language.
+The cached API requires both language names to be strings; missing metadata or
+non-string names cause a `TypeError`. It never freezes your source metadata.
+Registered tag spelling is preserved; this API does not canonicalize aliases
+or change capitalization.
+
+On the client, this getter establishes a Tracker dependency on every call,
+including cache hits and disabled reads. Catalog invalidation reruns dependent
+computations. Selecting another language or updating translation text does not
+invalidate the catalog. On the server it shares the snapshot within the current
+process, with no reactive dependency.
+
+**TAPi18n.invalidateLanguagesCache() (Anywhere)**
+
+Discards the current cached catalog and notifies its client Tracker dependency.
+The next `getLanguagesCached()` call builds a new snapshot. Previously returned
+snapshots remain unchanged. This method returns `undefined` and does not change
+language selection or reload translation files.
+
+The library calls it when enabling the project and after generated language
+metadata is registered. If your application directly modifies `languages_names`
+or `conf.supported_languages`, call it after your changes, in each affected
+client or server process. Plain object writes cannot notify the cache or Tracker
+automatically:
+
+```javascript
+TAPi18n.languages_names['pt-BR'] = ['Brazilian Portuguese', 'Português brasileiro'];
+TAPi18n.invalidateLanguagesCache();
+
+Tracker.autorun(function () {
+  const languages = TAPi18n.getLanguagesCached();
+  // Read this snapshot; use getLanguages() if you need to modify a result.
+});
+```
+
+Without invalidation, cached reads keep their previous snapshot while legacy
+`getLanguages()` reads reflect direct metadata changes immediately.
 
 **TAPi18n.__(key, options, lang_tag=null) (Anywhere)**
 
@@ -872,6 +928,7 @@ Scenarios:
 | `disabled` | No project translations/configuration; disabled getters and language selection |
 | `package-api` | The same disabled baseline through `Package.onTest` and `meteor test-packages` |
 | `inferred` | Inferred language list, JSON/YAML merging, fallback and dialect loading |
+| `catalog-initialization` | Cached reads before enablement, inside enablement, and between generated language files |
 | `configured` | Explicit language filtering, duplicate tags, custom helper/HTTP route, language without a translation file |
 | `preloaded` | `preloaded_langs: ["*"]` through the real HTTP endpoint |
 | `raw-config` | Existing noncanonical configuration behavior, including the missing-metadata error |
@@ -890,6 +947,8 @@ batches, target changes, empty batches, and recovery after errors. It loads the
 actual plugin sources with a small InputFile adapter; schema validation and
 runtime integration are covered by the real Meteor scenarios.
 
+The suite also checks cached snapshot identity, mutation protection, explicit
+invalidation, startup invalidation, and Tracker dependencies on cache hits.
 The enabled scenarios check independent mutable `getLanguages()` results,
 direct metadata updates, unchanged spelling of programmatic translation tags,
 runtime translation precedence, Tracker behavior, and single/multi language HTTP
@@ -905,7 +964,15 @@ npm run test:runner --prefix tests    # Runner regressions, no Meteor/Chrome/Mon
 npm test --prefix tests -- --list
 npm test --prefix tests -- inferred configured
 KEEP_TEST_TMP=1 npm test --prefix tests
+BENCHMARK=1 KEEP_TEST_TMP=1 npm test --prefix tests -- inferred
 ```
+
+The optional benchmark runs in the `inferred` scenario and prints timings in `client.log` and
+`meteor.log`: median microseconds per read across five samples of 50,000 reads,
+for 4, 64, and 256 languages. It compares fresh mutable copies with warm cached
+reads outside a Tracker computation. Cache construction, invalidation, and
+dependent computations are excluded. Timings are diagnostic, not a pass/fail
+threshold; correctness assertions still run.
 
 Each scenario has an isolated temporary app, local Mongo database, and browser
 context. The runner checks a block of three local ports before starting Meteor,

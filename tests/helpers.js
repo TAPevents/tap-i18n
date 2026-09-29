@@ -8,7 +8,7 @@ export const TapI18nTest = {
   },
 
   regularCatalog: function () {
-    return this.enabled() && this.scenario !== 'raw-config';
+    return this.enabled() && this.scenario !== 'raw-config' && this.scenario !== 'catalog-initialization';
   },
 
   languages: function () {
