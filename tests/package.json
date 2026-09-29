@@ -1,0 +1,26 @@
+{
+  "name": "tap-i18n-tests",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "test": "node run.mjs",
+    "test:compiler": "mocha --config .mocharc.json --no-package compiler/*.test.cjs",
+    "test:runner": "mocha --config .mocharc.json --no-package runner/*.test.cjs"
+  },
+  "devDependencies": {
+    "@babel/runtime": "7.28.4",
+    "chai": "4.5.0",
+    "coffeescript": "2.4.1",
+    "jquery": "3.7.1",
+    "meteor-node-stubs": "1.2.8",
+    "mocha": "12.0.1",
+    "node-json-minify": "0.1.3-a",
+    "puppeteer-core": "25.12.0",
+    "underscore": "1.6.0",
+    "util": "0.12.5",
+    "yamljs": "0.2.4"
+  }
+}

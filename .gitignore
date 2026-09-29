@@ -5,3 +5,4 @@ smart.lock
 packages/test-pack-*
 public
 .test-run-log
+tests/node_modules/

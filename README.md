@@ -806,7 +806,128 @@ See "The tap-i18n helper" section above.
 
 ## Unit Testing
 
-See /unittest/test-packages/README.md .
+The suite uses Mocha and Chai on a real Meteor server and in headless Chrome.
+It runs fast compiler and runner regression suites, then compiles fixture translation files
+through the package's actual Meteor build plugin.
+All tests, fixtures, and runner dependencies live in this repository.
+
+Prerequisites:
+
+* Meteor, with access to download the selected release and its packages.
+* Node.js 22.12 or newer and npm for the **test runner only**. Meteor uses its own
+  bundled Node.js; this does not change tap:i18n's runtime requirements.
+* An installed Chrome or Chromium. The runner finds common macOS/Linux install
+  locations; set `CHROME_BIN` for another location. `puppeteer-core` does not
+  download a browser. The runner currently supports macOS and Linux.
+
+The npm scripts are defined in `tests/package.json`; there is no root npm
+package to install. `--prefix tests` selects that package, so run these commands
+from the tap-i18n checkout:
+
+```bash
+npm ci --prefix tests
+npm test --prefix tests
+```
+
+The default validation release is Meteor 2.16. To select another compatible
+release or Chrome executable:
+
+```bash
+METEOR_RELEASE=2.16 CHROME_BIN=/path/to/chrome npm test --prefix tests
+```
+
+Meteor 2.x's bundled Mongo may require Rosetta on Apple Silicon. If it cannot
+start, select an already installed native `mongod` executable, for example:
+
+```bash
+MONGOD_BIN=/opt/homebrew/bin/mongod npm test --prefix tests
+```
+
+This starts a separate, temporary Mongo process bound to localhost; it does not
+use an existing database or service. The runner stops it after each scenario.
+
+The runner creates disposable fixture applications and invokes
+`meteor test --full-app --once --driver-package meteortesting:mocha`, with the
+driver pinned to version 3.2.0. It uses the driver's manual-browser mode, opens
+Chrome with Puppeteer, and reads Mocha's JSON reports for both environments.
+The runner owns process shutdown and exits nonzero for assertion failures,
+missing or skipped client/server tests, browser errors, unexpected compiler
+outcomes, or timeouts. A successful run prints `PASS` for each scenario, ends
+with `All ... scenarios passed.`, and exits with status 0. A scenario reporting
+`expected compiler rejection` is a passing negative test: invalid input was
+correctly rejected. Shared Mocha settings reject exclusive (`.only`), pending
+or skipped tests, and empty suites, so a focused debug test cannot silently
+reduce the automated run. This is a validation baseline, not a claim that every
+Meteor release or browser has been tested.
+
+Tests use `describe`/`it`, Chai `expect` assertions, and promises/`async`/`await`.
+They live under `tests/mocha/both`, `tests/mocha/client`, and `tests/mocha/server`.
+`Package.onTest` in `package.js` also wires these files for standard package
+testing of the disabled baseline. Production `Package.onUse` does not load them.
+
+Scenarios:
+
+| Scenario | Coverage |
+| --- | --- |
+| `disabled` | No project translations/configuration; disabled getters and language selection |
+| `package-api` | The same disabled baseline through `Package.onTest` and `meteor test-packages` |
+| `inferred` | Inferred language list, JSON/YAML merging, fallback and dialect loading |
+| `configured` | Explicit language filtering, duplicate tags, custom helper/HTTP route, language without a translation file |
+| `preloaded` | `preloaded_langs: ["*"]` through the real HTTP endpoint |
+| `raw-config` | Existing noncanonical configuration behavior, including the missing-metadata error |
+| `package`, `package-configured` | Package configuration, separate namespace and template helper, with implicit or explicit project enablement |
+| `mixed-formats` | YAML/JSON/YAML override order and isolation between two package namespaces |
+| `late-package-config`, `duplicate-package-config` | Compiler rejects late or duplicate package configuration |
+| `invalid-case` | Compiler rejects incorrectly cased translation filenames |
+| `client-file`, `server-file` | Compiler rejects project translation files restricted to one architecture |
+| `invalid-config` | Compiler rejects the wrong type for `supported_languages` |
+
+The package scenarios cover translations supplied before project enablement,
+including languages discovered later from project files. The mixed-format
+fixture checks YAML/JSON override order and isolation between two namespaces.
+The Node Mocha suite in `tests/compiler` additionally exercises repeated compiler
+batches, target changes, empty batches, and recovery after errors. It loads the
+actual plugin sources with a small InputFile adapter; schema validation and
+runtime integration are covered by the real Meteor scenarios.
+
+The enabled scenarios check independent mutable `getLanguages()` results,
+direct metadata updates, unchanged spelling of programmatic translation tags,
+runtime translation precedence, Tracker behavior, and single/multi language HTTP
+responses. These are characterization tests of existing behavior, including its
+limitations; a deliberate breaking change must update the relevant tests and
+document the migration in this README and `ChangeLog`.
+
+Useful commands:
+
+```bash
+npm run test:compiler --prefix tests  # Fast compiler tests, no Meteor/Chrome/Mongo
+npm run test:runner --prefix tests    # Runner regressions, no Meteor/Chrome/Mongo
+npm test --prefix tests -- --list
+npm test --prefix tests -- inferred configured
+KEEP_TEST_TMP=1 npm test --prefix tests
+```
+
+Each scenario has an isolated temporary app, local Mongo database, and browser
+context. The runner checks a block of three local ports before starting Meteor,
+clears inherited database/settings/package-override variables, and stops its
+processes after each scenario. This port check is not an atomic reservation;
+another process taking the ports will fail the run. Logs and generated apps are
+retained on failure, or when `KEEP_TEST_TMP=1`; their directory is printed.
+Browser console output and page errors are saved in `client.log`, including
+when navigation or test completion fails or times out.
+Successful runs otherwise remove their temporary files. `TEST_TIMEOUT_MS`
+overrides the ten-minute per-scenario deadline (including a first-time build),
+and `METEOR_BIN` selects a Meteor executable.
+
+For interactive inspection of the disabled baseline, Meteor's standard driver
+also works:
+
+```bash
+TEST_WATCH=1 meteor --release 2.16 test-packages ./ --driver-package meteortesting:mocha
+```
+
+Use the npm runner for the full fixture matrix. The old Meteorite/PhantomJS
+`unittest/` instructions no longer apply.
 
 ## License
 

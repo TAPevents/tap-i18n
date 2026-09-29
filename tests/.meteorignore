@@ -1,0 +1,11 @@
+# Host-only test dependencies must not be scanned as Meteor package sources.
+node_modules/coffeescript/
+node_modules/mocha/
+node_modules/puppeteer-core/
+node_modules/underscore/
+node_modules/yamljs/
+node_modules/node-json-minify/
+compiler/
+runner/
+browser.mjs
+run.mjs

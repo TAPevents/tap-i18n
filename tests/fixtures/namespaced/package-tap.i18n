@@ -1,0 +1,5 @@
+{
+  "namespace": "tap-fixture",
+  "translation_function_name": "translateFixture",
+  "helper_name": "tr_fixture"
+}

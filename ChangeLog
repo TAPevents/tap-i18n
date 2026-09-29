@@ -1,5 +1,9 @@
 Unreleased
 
+* Restore independent Mocha/Chai client and server tests, real compiler fixtures,
+  headless Chrome execution, compiler lifecycle tests, and Package.onTest
+  coverage. Reject exclusive/skipped tests and retain browser diagnostics on
+  failure. Document installation and test commands in README.md.
 * Fix compiler ordering across packages by processing configuration before
   JSON/YAML translations in one compiler, preserving file order and resetting
   compilation state explicitly between targets and rebuilds.

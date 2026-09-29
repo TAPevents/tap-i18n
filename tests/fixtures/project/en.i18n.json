@@ -1,0 +1,5 @@
+{
+  "message": "English message",
+  "fallback_only": "English fallback",
+  "greeting": "Hello __name__!"
+}

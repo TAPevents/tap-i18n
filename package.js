@@ -50,6 +50,21 @@ Package.onUse(function (api) {
   api.export('TAPi18n');
 });
 
+// Test-only dependencies and files. From this checkout, run:
+//   npm ci --prefix tests
+//   npm test --prefix tests
+// The runner builds isolated fixture apps and executes Mocha/Chai on both
+// the real Meteor server and headless Chrome. See README.md, Unit Testing.
+Package.onTest(function (api) {
+  api.versionsFrom('2.2.4');
+  api.use(['tap:i18n', 'ecmascript', 'meteortesting:mocha@=3.2.0', 'tracker'], both);
+  api.use(['jquery', 'templating', 'blaze'], client);
+  api.addFiles('tests/mocha/both/api.app-test.js', both);
+  api.addFiles('tests/mocha/server/translations.app-test.js', server);
+  api.addFiles('tests/mocha/server/initialization.app-test.js', server);
+  api.addFiles('tests/mocha/client/reactivity.app-test.js', client);
+});
+
 Package.registerBuildPlugin({
   name: 'tap-i18n-compiler',
   use: ['coffeescript@2.4.1', 'underscore@1.0.10', 'check@1.3.1'],
