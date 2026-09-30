@@ -1,5 +1,7 @@
 FUTURE
 
+2026.09.30, Version 2.2.0
+
 * Correct the README plural example's missing interpolation argument and test
   the published example in Blaze. Thanks to tony13tv (#207).
 * Add friendly names for en-US, fr-CA and fr-FR, correct generic French's English
