@@ -1,5 +1,8 @@
 {
   "message": "English message",
   "fallback_only": "English fallback",
-  "greeting": "Hello __name__!"
+  "greeting": "Hello __name__!",
+  "sprintf_greeting": "Hello %s!",
+  "sprintf_number": "Number %d",
+  "sprintf_fallback": "Fallback %s"
 }

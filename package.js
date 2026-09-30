@@ -60,6 +60,7 @@ Package.onTest(function (api) {
   api.use(['tap:i18n', 'ecmascript', 'meteortesting:mocha@=3.2.0', 'tracker'], both);
   api.use(['jquery', 'templating', 'blaze'], client);
   api.addFiles('tests/mocha/both/api.app-test.js', both);
+  api.addFiles('tests/mocha/both/fixed-translator.app-test.js', both);
   api.addFiles('tests/mocha/both/catalog-cache.app-test.js', both);
   api.addFiles('tests/mocha/both/catalog-initialization.app-test.js', both);
   api.addFiles('tests/mocha/both/catalog-benchmark.app-test.js', both);

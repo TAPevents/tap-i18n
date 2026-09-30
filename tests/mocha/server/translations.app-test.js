@@ -13,6 +13,13 @@ describe('TAPi18n - server translation', function () {
       expect(TAPi18n.__('fallback_only', {}, 'cc-CC')).to.deep.equal('English fallback');
     });
 
+    it('formats shorthand arguments in the requested language and its fallback', function () {
+      expect(TAPi18n.__('sprintf_greeting', 'Ada', 'cc-CC')).to.equal('cc-CC hello Ada!');
+      expect(TAPi18n.__('sprintf_number', 0, 'cc-CC')).to.equal('cc-CC number 0');
+      expect(TAPi18n.__('sprintf_fallback', 'Ada', 'cc-CC')).to.equal('Fallback Ada');
+      expect(TAPi18n.__('sprintf_greeting', 'Ada')).to.equal('Hello Ada!');
+    });
+
     if (TapI18nTest.scenario === 'package') it('compiled package namespace is isolated from the project', function () {
       var translate = Package['tap-i18n-tests:namespaced'].translateFixture;
       expect(translate('package_message')).to.deep.equal('English package');

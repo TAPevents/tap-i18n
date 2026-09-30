@@ -100,6 +100,14 @@ describe('TAPi18n - client selection and loading', function () {
       expect(TAPi18n.getLanguage()).to.equal(previous);
     });
 
+    it('formats shorthand arguments in an explicit language without changing selection', async function () {
+      const previous = TAPi18n.getLanguage();
+      await asPromise(TAPi18n._prepareLanguageSpecificTranslator('cc-CC'));
+      expect(TAPi18n.__('sprintf_greeting', 'Ada', 'cc-CC')).to.equal('cc-CC hello Ada!');
+      expect(TAPi18n.__('sprintf_number', 0, 'cc-CC')).to.equal('cc-CC number 0');
+      expect(TAPi18n.getLanguage()).to.equal(previous);
+    });
+
     if (TapI18nTest.scenario === 'package') it('registers the compiled package template helper in its own namespace', function () {
       expect(Blaze.toHTML(Template.tapI18nFixture).trim()).to.equal('English package');
       expect(TAPi18n.__('yaml_only')).to.equal('English YAML');

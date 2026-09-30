@@ -8,6 +8,10 @@ FUTURE
 * Serve single and multi-language JSON responses with application/json instead
   of text/plain, preserving UTF-8 and CORS headers. Cover populated and empty
   responses through the default and custom routes. Reported by nagelflorian (#201).
+* Fix shorthand string and numeric formatting arguments in fixed-language
+  translators, including the server API and explicit client language calls.
+  Preserve null/object options and the configured default-value shorthand mode.
+  Add client/server regressions. Reported by Jessedev1 (#234).
 
 2026.09.30, Version 2.1.0
 

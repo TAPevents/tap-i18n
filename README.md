@@ -301,6 +301,12 @@ The function is a proxy to the i18next.t() method.
 Refer to the [documentation of i18next.t()](http://i18next.github.io/i18next/pages/doc_features.html)
 to learn about its possible options. (Make sure you refer to i18next v1.11 documentation and not v2)
 
+For a single sprintf argument, the second parameter can be a string or number:
+`TAPi18n.__("greeting", "Ada", "nl")`. The third parameter remains the language
+tag. For multiple formatting arguments, pass an options object such as
+`{sprintf: ["Ada", 18]}`. Language-specific translators support the configured
+i18next shorthand mode, including `defaultValue` when explicitly selected.
+
 **On the server**, TAPi18n.__ is not a reactive resource. You have to specify
 the language tag you want to translate the key to.
 
@@ -953,6 +959,9 @@ runtime integration are covered by the real Meteor scenarios. Language-name
 regressions execute compiler output from both translation files and explicit
 configuration. HTTP tests verify JSON content types, CORS, and empty responses
 through the default and custom routes.
+
+The client/server unit suites also cover fixed-language shorthand arguments,
+null and object options, and language overrides.
 
 The suite also checks cached snapshot identity, mutation protection, explicit
 invalidation, startup invalidation, and Tracker dependencies on cache hits.

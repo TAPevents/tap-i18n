@@ -1,3 +1,5 @@
 {
-  "message": "cc-CC message"
+  "message": "cc-CC message",
+  "sprintf_greeting": "cc-CC hello %s!",
+  "sprintf_number": "cc-CC number %d"
 }
