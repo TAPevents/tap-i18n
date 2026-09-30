@@ -1,4 +1,4 @@
-Unreleased
+2026.09.30, Version 2.1.0
 
 * Isolate package-test source and npm dependencies so Meteor cannot rewrite the
   host test runner's installed dependencies. Pin the generated app dependencies.
