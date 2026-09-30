@@ -5,6 +5,9 @@ FUTURE
 * Add friendly names for en-US, fr-CA and fr-FR, correct generic French's English
   name to "French", and align the fr-BE native name. Thanks to ubald (#103).
   Cover names from translation files and configuration on client and server.
+* Serve single and multi-language JSON responses with application/json instead
+  of text/plain, preserving UTF-8 and CORS headers. Cover populated and empty
+  responses through the default and custom routes. Reported by nagelflorian (#201).
 
 2026.09.30, Version 2.1.0
 

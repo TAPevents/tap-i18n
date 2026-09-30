@@ -951,7 +951,8 @@ batches, target changes, empty batches, and recovery after errors. It loads the
 actual plugin sources with a small InputFile adapter; schema validation and
 runtime integration are covered by the real Meteor scenarios. Language-name
 regressions execute compiler output from both translation files and explicit
-configuration.
+configuration. HTTP tests verify JSON content types, CORS, and empty responses
+through the default and custom routes.
 
 The suite also checks cached snapshot identity, mutation protection, explicit
 invalidation, startup invalidation, and Tracker dependencies on cache hits.

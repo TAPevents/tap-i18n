@@ -107,9 +107,17 @@ describe('TAPi18n - client selection and loading', function () {
 
     it('serves compiled resources through the single and multi language HTTP routes', async function () {
       const route = TAPi18n.conf.i18n_files_route;
-      const single = await asPromise($.getJSON(route + '/cc-CC.json?cache=1'));
-      const multi = await asPromise($.getJSON(route + '/multi/cc,cc-CC,en.json?cache=1'));
-      const all = await asPromise($.getJSON(route + '/multi/all.json'));
+      const requests = [
+        $.getJSON(route + '/cc-CC.json?cache=1'),
+        $.getJSON(route + '/multi/cc,cc-CC,en.json?cache=1'),
+        $.getJSON(route + '/multi/all.json')
+      ];
+      const [single, multi, all] = await Promise.all(requests.map(asPromise));
+      for (const xhr of requests) {
+        expect(xhr.status).to.equal(200);
+        expect(xhr.getResponseHeader('Content-Type')).to.equal('application/json; charset=utf-8');
+        expect(xhr.getResponseHeader('Access-Control-Allow-Origin')).to.equal('*');
+      }
       expect(single.project.message).to.equal('cc-CC message');
       expect(Object.keys(multi).sort()).to.deep.equal(['cc', 'cc-CC']);
       expect(multi.cc.project.base_only).to.equal('cc base');
@@ -129,6 +137,16 @@ describe('TAPi18n - client selection and loading', function () {
     }
 
     if (TapI18nTest.scenario === 'configured') {
+      it('serves empty single and multi language responses as JSON', async function () {
+        for (const suffix of ['/fr.json', '/multi/en.json']) {
+          const xhr = $.getJSON(TAPi18n.conf.i18n_files_route + suffix);
+          expect(await asPromise(xhr)).to.deep.equal({});
+          expect(xhr.status).to.equal(200);
+          expect(xhr.getResponseHeader('Content-Type')).to.equal('application/json; charset=utf-8');
+          expect(xhr.getResponseHeader('Access-Control-Allow-Origin')).to.equal('*');
+        }
+      });
+
       it('loads a configured language that has no translation file', async function () {
         await asPromise(TAPi18n.setLanguage('fr'));
         expect(TAPi18n.getLanguage()).to.equal('fr');
