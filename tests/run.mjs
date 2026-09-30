@@ -9,6 +9,7 @@ import {setTimeout as delay} from 'node:timers/promises';
 import puppeteer from 'puppeteer-core';
 import Mocha from 'mocha';
 import {runBrowserTests} from './browser.mjs';
+import {preparePackageFixture} from './package-fixture.mjs';
 
 const testsDir = path.dirname(fileURLToPath(import.meta.url));
 const sourceDir = path.dirname(testsDir);
@@ -51,6 +52,7 @@ const hostSuite = new Mocha(mochaConfig);
 hostSuite.addFile(path.join(testsDir, 'compiler/batches.test.cjs'));
 hostSuite.addFile(path.join(testsDir, 'runner/browser.test.cjs'));
 hostSuite.addFile(path.join(testsDir, 'runner/config.test.cjs'));
+hostSuite.addFile(path.join(testsDir, 'runner/package-fixture.test.cjs'));
 await new Promise((resolve, reject) => hostSuite.run(failures => {
   if (failures) reject(new Error(`${failures} host tests failed.`));
   else resolve();
@@ -103,8 +105,11 @@ async function prepareFixture(item, directory) {
   const app = path.join(directory, 'app');
   await mkdir(path.join(app, '.meteor'), {recursive: true});
   await mkdir(path.join(app, 'packages'));
-  await symlink(sourceDir, path.join(app, 'packages/tap-i18n'), 'dir');
-  await symlink(path.join(testsDir, 'node_modules'), path.join(app, 'node_modules'), 'dir');
+  // The package-test app installs its own dependencies. Even the enclosing
+  // fixture app must not expose the host's node_modules to Meteor's bundler.
+  if (!item.packageTests) {
+    await symlink(path.join(testsDir, 'node_modules'), path.join(app, 'node_modules'), 'dir');
+  }
   await writeFile(path.join(app, '.meteor/release'), `METEOR@${release}\n`);
   await writeFile(path.join(app, '.meteor/platforms'), 'browser\nserver\n');
   await cp(path.join(testsDir, '.mocharc.json'), path.join(app, '.mocharc.json'));
@@ -116,6 +121,10 @@ async function prepareFixture(item, directory) {
   for (const name of ['@babel/runtime', 'chai', 'jquery', 'meteor-node-stubs', 'util']) {
     dependencies[name] = testPackage.devDependencies[name];
   }
+  const packageFixture = item.packageTests
+    ? await preparePackageFixture(sourceDir, directory, dependencies) : null;
+  await symlink(packageFixture ? packageFixture.packageSource : sourceDir,
+    path.join(app, 'packages/tap-i18n'), 'dir');
   await writeFile(path.join(app, 'package.json'), JSON.stringify({private: true, dependencies}));
   await cp(path.join(testsDir, 'mocha'), path.join(app, 'app-tests/mocha'), {recursive: true});
   await cp(path.join(testsDir, 'helpers.js'), path.join(app, 'app-tests/helpers.js'));
@@ -165,7 +174,7 @@ async function prepareFixture(item, directory) {
   } else if (item.files !== false) {
     await cp(path.join(testsDir, 'fixtures/project'), path.join(app, 'i18n'), {recursive: true});
   }
-  return app;
+  return {app, packageFixture};
 }
 
 function signalChild(child, signal) {
@@ -219,7 +228,7 @@ async function waitForApp(url, child, deadline) {
 async function runScenario(item) {
   const directory = path.join(workspace, item.name);
   await mkdir(directory);
-  const app = await prepareFixture(item, directory);
+  const {app, packageFixture} = await prepareFixture(item, directory);
   const settings = path.join(directory, 'settings.json');
   await writeFile(settings, JSON.stringify({public: {
     tapI18nTestScenario: item.scenario || item.name,
@@ -258,7 +267,7 @@ async function runScenario(item) {
     env.MONGO_URL = `mongodb://127.0.0.1:${port + 2}/tap_i18n_tests`;
   }
   const args = ['--release', release,
-    ...(item.packageTests ? ['test-packages', sourceDir, '--test-app-path', path.join(directory, 'package-app')] : ['test', '--full-app']),
+    ...(item.packageTests ? ['test-packages', packageFixture.packageSource, '--test-app-path', packageFixture.packageApp] : ['test', '--full-app']),
     '--once', '--headless',
     '--driver-package', 'meteortesting:mocha', '--exclude-archs', 'web.browser.legacy',
     '--disable-oplog', '--port', `127.0.0.1:${port}`, '--settings', settings];

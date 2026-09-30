@@ -920,6 +920,10 @@ Tests use `describe`/`it`, Chai `expect` assertions, and promises/`async`/`await
 They live under `tests/mocha/both`, `tests/mocha/client`, and `tests/mocha/server`.
 `Package.onTest` in `package.js` also wires these files for standard package
 testing of the disabled baseline. Production `Package.onUse` does not load them.
+The automated `package-api` scenario copies the package source without installed
+dependencies or build state and gives Meteor a separate npm installation with
+the fixture's exact dependency versions. This prevents Meteor's package-test
+bundler from rewriting the host runner's `tests/node_modules`.
 
 Scenarios:
 

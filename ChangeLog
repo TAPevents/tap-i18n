@@ -1,5 +1,7 @@
 Unreleased
 
+* Isolate package-test source and npm dependencies so Meteor cannot rewrite the
+  host test runner's installed dependencies. Pin the generated app dependencies.
 * Update the test-only meteor-node-stubs dependency from 1.2.8 to 1.2.30.
 * Add getLanguagesCached() for a shared frozen language catalog with client
   Tracker dependencies, plus invalidateLanguagesCache() for metadata changes.
