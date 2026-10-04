@@ -27,6 +27,11 @@ _.extend share.TAPi18nClass.prototype,
   _getPackageI18nextProxy: (package_name) ->
     # A proxy to TAPi18next.t where the namespace is preset to the package's
     (key, options, lang_tag=null) =>
+      options = @_resolveLanguageOption(options)
+      # Preserve exact translator keys, including package-only languages, and
+      # retain the existing fallback for inputs outside the supported catalog.
+      if lang_tag? and not (lang_tag of @server_translators)
+        lang_tag = @getCanonicalLanguageTag(lang_tag) or lang_tag
       if not lang_tag?
         # translate to fallback_language
         return @server_translators[@_fallback_language] "#{@_getPackageDomain(package_name)}:#{key}", options
@@ -46,8 +51,11 @@ _.extend share.TAPi18nClass.prototype,
     
     base_route = "#{self.conf.i18n_files_route.replace(/\/$/, "")}"
 
+    # Apply case-insensitivity only to tags, preserving the .json suffix and
+    # query parsing. Both routes share the compiler's tag grammar.
+    language_tag_regex = new RegExp "^(?:#{@language_tag_pattern})$", "i"
+    resource_path_regex = /^([^?]+)\.json(?:\?.*)?$/
     multi_lang_route = "#{base_route}/multi/"
-    multi_lang_regex = new RegExp "^((#{globals.langauges_tags_regex},)*#{globals.langauges_tags_regex}|all)\\.json(\\?.*)?$"
     WebApp.connectHandlers.use (req, res, next) ->
       if not req.url.startsWith(multi_lang_route)
         next()
@@ -55,13 +63,15 @@ _.extend share.TAPi18nClass.prototype,
         return
 
       langs = req.url.replace multi_lang_route, ""
-      if not multi_lang_regex.test langs
+      match = resource_path_regex.exec(langs)
+      lang_tags = match?[1].split(",")
+      if not match? or (match[1] isnt "all" and not _.every(lang_tags, (tag) -> language_tag_regex.test(tag)))
         res.writeHead 401
         res.end("tap:i18n: multi language route: couldn't process url: `#{req.url}'; Couldn't parse lang portion of route: `#{langs}'")
         return
       
       # If all lang is requested, return all.
-      if (langs = langs.replace /\.json\??.*/, "", "") is "all"
+      if match[1] is "all"
         res.writeHead 200, 
           "Content-Type": "application/json; charset=utf-8"
           "Access-Control-Allow-Origin": "*"
@@ -69,9 +79,11 @@ _.extend share.TAPi18nClass.prototype,
         return
       
       output = {}
-      lang_tags = langs.split ","
+      project_languages = self._getProjectLanguages()
       for lang_tag in lang_tags
-        if lang_tag in self._getProjectLanguages() and lang_tag isnt self._fallback_language
+        if lang_tag not in project_languages
+          lang_tag = self.getCanonicalLanguageTag(lang_tag)
+        if lang_tag in project_languages and lang_tag isnt self._fallback_language
           if (language_translations = self.translations[lang_tag])?
             output[lang_tag] = language_translations
 
@@ -83,7 +95,6 @@ _.extend share.TAPi18nClass.prototype,
       return
 
     single_lang_route = "#{base_route}/"
-    single_lang_regex = new RegExp "^#{globals.langauges_tags_regex}.json(\\?.*)?$"
     WebApp.connectHandlers.use (req, res, next) ->
       if not req.url.startsWith(single_lang_route)
         next()
@@ -91,13 +102,17 @@ _.extend share.TAPi18nClass.prototype,
         return
 
       lang = req.url.replace single_lang_route, ""
-      if not single_lang_regex.test lang
+      match = resource_path_regex.exec(lang)
+      lang_tag = match?[1]
+      if not lang_tag? or not language_tag_regex.test(lang_tag)
         res.writeHead 401
         res.end("tap:i18n: single language route: couldn't process url: #{req.url}")
         return
-      lang_tag = lang.replace /\.json\??.*/, ""
+      project_languages = self._getProjectLanguages()
+      if lang_tag not in project_languages
+        lang_tag = self.getCanonicalLanguageTag(lang_tag)
 
-      if (lang_tag not in self._getProjectLanguages()) or (lang_tag is self._fallback_language)
+      if (lang_tag not in project_languages) or (lang_tag is self._fallback_language)
         res.writeHead 404
         res.end()
         return

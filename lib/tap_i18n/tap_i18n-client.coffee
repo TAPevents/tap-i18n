@@ -42,6 +42,8 @@ _.extend share.TAPi18nClass.prototype,
       return dfd.reject "tap-i18n is not enabled in the project level, check tap-i18n README"
 
     project_languages = @_getProjectLanguages()
+    if languageTag not in project_languages
+      languageTag = Tracker.nonreactive => @getCanonicalLanguageTag(languageTag) or languageTag
 
     if languageTag in project_languages
       if languageTag not in @_loaded_languages
@@ -58,10 +60,12 @@ _.extend share.TAPi18nClass.prototype,
           jqXHR.fail (xhr, error_code) =>
             dfd.reject("Couldn't load language '#{languageTag}' JSON: #{error_code}")
 
-        directDependencyLanguageTag = if "-" in languageTag then languageTag.replace(/-.*/, "") else fallback_language
+        directDependencyLanguageTag = if "-" in languageTag then languageTag.replace(/-.*/, "") else @fallback_language
 
         # load dependency language if it is part of the project and not the fallback language
-        if languageTag != fallback_language and directDependencyLanguageTag in project_languages
+        if directDependencyLanguageTag not in project_languages
+          directDependencyLanguageTag = Tracker.nonreactive => @getCanonicalLanguageTag(directDependencyLanguageTag)
+        if languageTag != @fallback_language and directDependencyLanguageTag in project_languages
           dependencyLoadDfd = @_loadLanguage directDependencyLanguageTag
 
           dependencyLoadDfd.done =>
@@ -82,10 +86,10 @@ _.extend share.TAPi18nClass.prototype,
     return dfd.promise()
 
   _registerHelpers: (package_name, template) ->
-    if package_name != globals.project_translations_domain
+    if package_name != @project_translations_domain
       tapI18nextProxy = @_getPackageI18nextProxy(@packages[package_name].namespace)
     else
-      tapI18nextProxy = @_getPackageI18nextProxy(globals.project_translations_domain)
+      tapI18nextProxy = @_getPackageI18nextProxy(@project_translations_domain)
 
     underscore_helper = (key, args...) ->
       options = (args.pop()).hash
@@ -95,7 +99,7 @@ _.extend share.TAPi18nClass.prototype,
       tapI18nextProxy(key, options)
 
     # template specific helpers
-    if package_name != globals.project_translations_domain
+    if package_name != @project_translations_domain
       # {{_ }}
       if Template[template]? and Template[template].helpers?
         helpers = {}
@@ -118,6 +122,8 @@ _.extend share.TAPi18nClass.prototype,
       @_registerHelpers(package_name, template)
 
   _prepareLanguageSpecificTranslator: (lang_tag) ->
+    if lang_tag not in @_getProjectLanguages()
+      lang_tag = Tracker.nonreactive => @getCanonicalLanguageTag(lang_tag) or lang_tag
     dfd = (new $.Deferred()).resolve().promise()
 
     if lang_tag of @_languageSpecificTranslatorsTrackers
@@ -154,7 +160,10 @@ _.extend share.TAPi18nClass.prototype,
         # options.lng.
         delete options.lng
 
+      options = @_resolveLanguageOption(options)
       if lang_tag?
+        if not (lang_tag of @_languageSpecificTranslators) and lang_tag not in @_getProjectLanguages()
+          lang_tag = @getCanonicalLanguageTag(lang_tag) or lang_tag
         @_prepareLanguageSpecificTranslator(lang_tag)
 
         @_languageSpecificTranslatorsTrackers[lang_tag].depend()
@@ -171,11 +180,15 @@ _.extend share.TAPi18nClass.prototype,
       TAPi18next.t "#{TAPi18n._getPackageDomain(package_name)}:#{key}", options
 
   _onceEnabled: () ->
-    @_registerHelpers globals.project_translations_domain
+    @_registerHelpers @project_translations_domain
 
   _abortPreviousSetLang: null
   setLanguage: (lang_tag) ->
     self = @
+
+    # Preserve fresh exact membership. Case resolution is a nonreactive command.
+    if lang_tag not in @_getProjectLanguages()
+      lang_tag = Tracker.nonreactive => @getCanonicalLanguageTag(lang_tag) or lang_tag
 
     @_abortPreviousSetLang?()
 

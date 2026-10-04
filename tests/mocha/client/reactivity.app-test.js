@@ -20,7 +20,7 @@ describe('TAPi18n - client selection and loading', function () {
   it('rejects disabled or unsupported selection without changing the selected language', async function () {
     const previous = TAPi18n.getLanguage();
     let rejection;
-    try { await asPromise(TAPi18n.setLanguage('cc-cc')); } catch (error) { rejection = error; }
+    try { await asPromise(TAPi18n.setLanguage('xy')); } catch (error) { rejection = error; }
     expect(rejection).to.be.an('error');
     expect(rejection.message).to.include(TapI18nTest.enabled() ? 'not supported' : 'not enabled');
     expect(TAPi18n.getLanguage()).to.equal(previous);
@@ -134,7 +134,7 @@ describe('TAPi18n - client selection and loading', function () {
       expect(all.bb.project.message).to.equal('bb message');
     });
 
-    for (const [tag, status] of [['en', 404], ['xy', 404], ['cc-cc', 401]]) {
+    for (const [tag, status] of [['en', 404], ['xy', 404], ['invalid_tag', 401]]) {
       it('rejects HTTP requests for ' + tag + ' with status ' + status, async function () {
         const xhr = $.ajax({url: TAPi18n.conf.i18n_files_route + '/' + tag + '.json'});
         let rejected = false;

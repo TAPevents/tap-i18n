@@ -13,7 +13,7 @@ project_i18n_obj_schema =
   i18n_files_route:
     type: String
     label: "Unified languages files path"
-    defaultValue: globals.browser_path
+    defaultValue: share.constants.default_i18n_files_route
   preloaded_langs:
     type: [String]
     label: "Preload languages"
@@ -28,11 +28,11 @@ project_i18n_obj_schema =
 share.projectI18nObjCleaner = projectI18nObjCleaner = helpers.buildCleanerForSchema(project_i18n_obj_schema, "project-tap.i18n")
 
 getProjectConfJs = share.getProjectConfJs = (conf) ->
-  fallback_language_name = language_names[globals.fallback_language]
+  fallback_language_name = language_names[share.constants.fallback_language]
 
   project_conf_js = """
     TAPi18n._enable(#{JSON.stringify(conf)});
-    TAPi18n.languages_names["#{globals.fallback_language}"] = #{JSON.stringify fallback_language_name};
+    TAPi18n.languages_names["#{share.constants.fallback_language}"] = #{JSON.stringify fallback_language_name};
 
   """
 
@@ -93,29 +93,16 @@ compilers.projectTapI18n = (input_file_obj) ->
     project_i18n_js_file += """
       var project_preloaded_langs = #{JSON.stringify preloaded_langs};
 
-      // The following code is generated from this coffeescript code:
-      // if TAP_I18N_PRELOADED_LANGS?
-      //   if not _.isArray TAP_I18N_PRELOADED_LANGS
-      //     console.error("tap-i18n: An invalid TAP_I18N_PRELOADED_LANGS encountered, skipping.")
-      //   else
-      //     alpha_numeric_regex = /^[a-z\-0-9]+$/i
-          
-      //     is_runtime_preloaded_langs_valid = _.every TAP_I18N_PRELOADED_LANGS, (lang_tag) -> 
-      //       return (lang_tag.length <= 10) and _.isString(lang_tag) and alpha_numeric_regex.test lang_tag
-
-      //     if not is_runtime_preloaded_langs_valid
-      //       console.error("tap-i18n: An invalid TAP_I18N_PRELOADED_LANGS encountered, skipping.")
-      //     else
-      //       runtime_preloaded_langs = TAP_I18N_PRELOADED_LANGS
+      // Match the same runtime tag syntax as the HTTP resource endpoints.
       var runtime_preloaded_langs = [];
 
       if (typeof TAP_I18N_PRELOADED_LANGS !== "undefined" && TAP_I18N_PRELOADED_LANGS !== null) {
         if (!_.isArray(TAP_I18N_PRELOADED_LANGS)) {
           console.error("tap-i18n: An invalid TAP_I18N_PRELOADED_LANGS encountered, skipping.");
         } else {
-          var alpha_numeric_regex = /^[a-z\-0-9]+$/i;
-          is_runtime_preloaded_langs_valid = _.every(TAP_I18N_PRELOADED_LANGS, function(lang_tag) {
-            return (lang_tag.length <= 10) && _.isString(lang_tag) && alpha_numeric_regex.test(lang_tag);
+          var language_tag_regex = new RegExp("^(?:" + TAPi18n.language_tag_pattern + ")$", "i");
+          var is_runtime_preloaded_langs_valid = _.every(TAP_I18N_PRELOADED_LANGS, function(lang_tag) {
+            return _.isString(lang_tag) && language_tag_regex.test(lang_tag);
           });
           if (!is_runtime_preloaded_langs_valid) {
             console.error("tap-i18n: An invalid TAP_I18N_PRELOADED_LANGS encountered, skipping.");

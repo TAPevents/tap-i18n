@@ -25,6 +25,9 @@ const cases = [
     supported_languages: ['cc-CC', 'cc', 'fr', 'cc']
   }},
   {name: 'preloaded', config: {preloaded_langs: ['*']}},
+  {name: 'expanded-tags', expandedTags: true},
+  {name: 'expanded-preloaded', expandedTags: true,
+    config: {preloaded_langs: ['hmn', 'hmn-US']}, runtimePreloaded: ['ES', 'ES-419']},
   {name: 'raw-config', config: {supported_languages: ['CC-cc']}},
   {name: 'package', namespaced: true},
   {name: 'package-configured', namespaced: true, config: {}, scenario: 'package'},
@@ -173,6 +176,14 @@ async function prepareFixture(item, directory) {
     await writeFile(path.join(app, item.invalidFile), '{"message":"invalid location or tag"}');
   } else if (item.files !== false) {
     await cp(path.join(testsDir, 'fixtures/project'), path.join(app, 'i18n'), {recursive: true});
+  }
+  if (item.expandedTags) {
+    await cp(path.join(testsDir, 'fixtures/expanded-tags'), path.join(app, 'i18n'), {recursive: true});
+  }
+  if (item.runtimePreloaded) {
+    await mkdir(path.join(app, 'client'), {recursive: true});
+    await writeFile(path.join(app, 'client/preloaded.html'),
+      '<head><script>TAP_I18N_PRELOADED_LANGS = ' + JSON.stringify(item.runtimePreloaded) + ';</script></head>');
   }
   if (item.name === 'inferred') {
     // Compile the published example itself so documentation argument mistakes

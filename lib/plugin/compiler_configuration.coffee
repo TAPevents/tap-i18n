@@ -2,7 +2,6 @@
 # together, and reset it explicitly for each invocation (including rebuilds).
 
 share.compiler_configuration =
-  fallback_language: globals.fallback_language
   packages: [] # Each time we compile package-tap.i18n we push "package_name:arch" to this array
   templates_registered_for: [] # Each time we register a template we push "package_name:arch" to this array
   default_project_conf_inserted_for: [] # Keeps track of the archs we've inserted the default project conf for.

@@ -27,12 +27,12 @@ Package.onUse(function (api) {
   api.use("webapp", server);
 
   // load TAPi18n
-  api.addFiles('lib/globals.js', both);
+  api.addFiles('lib/static.coffee', both);
 
   // load and init TAPi18next
   api.addFiles('lib/tap_i18next/tap_i18next-1.7.3.js', both);
   api.export('TAPi18next');
-  api.addFiles('lib/tap_i18next/tap_i18next_init.js', both);
+  api.addFiles('lib/tap_i18next/tap_i18next_init.coffee', both);
 
   api.addFiles('lib/tap_i18n/tap_i18n-helpers.coffee', both);
 
@@ -63,12 +63,14 @@ Package.onTest(function (api) {
   api.addFiles('tests/mocha/both/fixed-translator.app-test.js', both);
   api.addFiles('tests/mocha/both/plural-rules.app-test.js', both);
   api.addFiles('tests/mocha/both/catalog-cache.app-test.js', both);
+  api.addFiles('tests/mocha/both/language-tags.app-test.js', both);
   api.addFiles('tests/mocha/both/catalog-initialization.app-test.js', both);
   api.addFiles('tests/mocha/both/catalog-benchmark.app-test.js', both);
   api.addFiles('tests/mocha/server/translations.app-test.js', server);
   api.addFiles('tests/mocha/server/initialization.app-test.js', server);
   api.addFiles('tests/mocha/client/reactivity.app-test.js', client);
   api.addFiles('tests/mocha/client/catalog-cache.app-test.js', client);
+  api.addFiles('tests/mocha/client/language-tags.app-test.js', client);
 });
 
 Package.registerBuildPlugin({
@@ -79,7 +81,7 @@ Package.registerBuildPlugin({
     "yamljs": "0.2.4"
   },
   sources: [
-    'lib/globals.js',
+    'lib/static.coffee',
 
     'lib/plugin/etc/language_names.js',
 

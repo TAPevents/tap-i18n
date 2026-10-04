@@ -154,3 +154,54 @@ describe('TAPi18n compiler - language names', function () {
     });
   });
 });
+
+
+describe('TAPi18n compiler - shared language tag grammar', function () {
+  for (const extension of ['json', 'yml']) {
+    for (const arch of ['web.browser', 'os.osx.arm64']) {
+      it('accepts the bounded tag forms in ' + extension + ' on ' + arch, function () {
+        for (const tag of ['en', 'pt-BR', 'hmn', 'hmn-US', 'es-419', 'hmn-419']) {
+          const file = input(tag + '.i18n.' + extension, null, arch, extension === 'json' ? '{}' : 'message: fixture');
+          expect(() => createCompiler().processFilesForTarget([file]), tag).not.to.throw();
+          expect(code(file), tag).to.include('TAPi18n.languages_names["' + tag + '"]');
+        }
+      });
+    }
+    it('rejects filename casing and shapes outside the subset in ' + extension, function () {
+      for (const tag of ['HMN', 'hmn-us', 'ES-419', 'e', 'abcd', 'en-USA', 'es-41', 'es-4199', 'zh-Hant', 'zh-Hant-TW', 'sl-rozaj', 'es_419']) {
+        const file = input(tag + '.i18n.' + extension, null, 'web.browser', extension === 'json' ? '{}' : 'message: fixture');
+        expect(() => createCompiler().processFilesForTarget([file]), tag).to.throw("Can't recognise '" + tag + "' as a language-tag");
+      }
+    });
+  }
+
+  function preload(runtimeTags, projectTags) {
+    const file = input('project-tap.i18n', null, 'web.browser', JSON.stringify({preloaded_langs: projectTags}));
+    createCompiler().processFilesForTarget([file]);
+    const requests = [], errors = [];
+    const context = vm.createContext({share: {}});
+    vm.runInContext(coffee.compile(fs.readFileSync(path.join(source, 'lib/static.coffee'), 'utf8')), context);
+    Object.assign(context, {
+      TAP_I18N_PRELOADED_LANGS: runtimeTags, _: require('underscore'),
+      console: {error: message => errors.push(message)},
+      TAPi18n: {...context.share.constants, languages_names: {}, _enable() {}, invalidateLanguagesCache() {}, _cdn: url => url},
+      $: {ajax: options => requests.push(options.url)}
+    });
+    vm.runInContext(code(file), context);
+    return {requests, errors};
+  }
+
+  it('uses runtime casing and the same tag grammar in generated preloading code', function () {
+    expect(preload(['ES-419', 'HMN-us'], ['hmn'])).to.deep.equal({
+      requests: ['/tap-i18n/multi/ES-419,HMN-us,hmn.json'], errors: []
+    });
+  });
+
+  it('rejects invalid runtime preload entries without throwing or requesting resources', function () {
+    for (const tags of [[null], [42], ['zh-Hant'], ['en-USA'], ['es-41'], ['es-419/path'], 'hmn']) {
+      const result = preload(tags, []);
+      expect(result.requests).to.deep.equal([]);
+      expect(result.errors).to.have.length(1);
+    }
+  });
+});

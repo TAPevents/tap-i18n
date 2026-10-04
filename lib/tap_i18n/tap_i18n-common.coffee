@@ -1,16 +1,20 @@
-fallback_language = globals.fallback_language
-
 # Package-private constructor; TAPi18n names only the exported instance.
 share.TAPi18nClass = ->
   EventEmitter.call @
 
-  @_fallback_language = fallback_language
+  for own name, value of share.constants
+    Object.defineProperty @, name,
+      value: value
+      enumerable: true
+
+  @_fallback_language = @fallback_language
 
   @_language_changed_tracker = new Tracker.Dependency
 
   @_languages_cache = null
+  @_language_tag_cache = null
 
-  @_loaded_languages = [fallback_language] # stores the loaded languages, the fallback language is loaded automatically
+  @_loaded_languages = [@fallback_language] # stores the loaded languages, the fallback language is loaded automatically
 
   @conf = null # If conf isn't null we assume that tap:i18n is enabled for the project.
              # We assume conf is valid, we sterilize and validate it during the build process.
@@ -43,9 +47,9 @@ share.TAPi18nClass = ->
       if @_enabled()
         @_registerHTTPMethod()
 
-  @__ = @_getPackageI18nextProxy(globals.project_translations_domain)
+  @__ = @_getPackageI18nextProxy(@project_translations_domain)
 
-  TAPi18next.setLng fallback_language
+  TAPi18next.setLng @fallback_language
 
   return @
 
@@ -149,12 +153,51 @@ _.extend share.TAPi18nClass.prototype,
     # This is a shared reference, with no copying or scanning on cache hits.
     return @_languages_cache
 
+  getCanonicalLanguageTag: (lang_tag) ->
+    # Return a supported, registered tag for case-varied external input, or
+    # undefined for non-string, unsupported or disabled input. Exact spelling
+    # wins; otherwise use the first registered case-insensitive match. This
+    # returns only a string and never rewrites identifiers or resolves aliases.
+    if not _.isString(lang_tag)
+      return undefined
+
+    # Track every string lookup, including warm, missing and disabled reads.
+    @_languages_catalog_dependency?.depend()
+    if not @_enabled()
+      return undefined
+
+    if not @_language_tag_cache?
+      exact = Object.create(null)
+      folded = Object.create(null)
+      # Display-name metadata is not needed and may still be loading.
+      for registered_tag in @_getProjectLanguages()
+        exact[registered_tag] = registered_tag
+        folded[registered_tag.toLowerCase()] ?= registered_tag
+      @_language_tag_cache = {exact, folded}
+
+    # Warm reads are O(1) in language count, plus O(input length) to lowercase.
+    return @_language_tag_cache.exact[lang_tag] ? @_language_tag_cache.folded[lang_tag.toLowerCase()]
+
   invalidateLanguagesCache: ->
     # Call after direct writes to languages_names or conf.supported_languages.
     # Existing snapshots stay unchanged; the next getter builds their replacement.
     @_languages_cache = null
+    @_language_tag_cache = null
     @_languages_catalog_dependency?.changed()
     return
+
+  _resolveLanguageOption: (options) ->
+    # A fixed translator still honors options.lng. Resolve that independent
+    # lookup too, without changing precedence or the caller's options object.
+    # Resource-only exact keys remain valid even outside the project catalog.
+    if not options?.lng? or Object.prototype.hasOwnProperty.call(TAPi18next.options.resStore or {}, options.lng)
+      return options
+
+    resolved_tag = @getCanonicalLanguageTag(options.lng)
+    if resolved_tag? and resolved_tag != options.lng
+      return _.extend({}, options, {lng: resolved_tag})
+
+    return options
 
   _cdn: (path) -> path
   setCdnCb: (cb) ->

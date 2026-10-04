@@ -3,6 +3,28 @@ FUTURE
 * Name the package-private constructor TAPi18nClass and reserve TAPi18n for
   the exported singleton, preserving initialization order and the public API.
 
+* Centralize compiler/runtime constants in static.coffee and expose read-only
+  language_tag_pattern, fallback_language, project_translations_domain and
+  default_i18n_files_route properties directly on TAPi18n.
+* Accept three-letter primary languages (such as hmn; #181) and three-digit
+  regions (such as es-419), using one grammar for files, HTTP and preloading.
+  Preserve filename casing and case-insensitive runtime lookup. Scripts,
+  variants and additional subtags require a separate engine update.
+  Reject malformed runtime preload entries before requesting resources, and
+  require the literal .json suffix on single-language HTTP resource paths.
+  Cover compiler output, client/server translation, loading and fallback.
+
+* Add getCanonicalLanguageTag() to resolve supported tags case-insensitively
+  with exact-match priority, shared invalidation, client Tracker dependencies,
+  and constant-time warm lookup in the number of supported languages.
+* Resolve supported case variants in language selection, explicit translation
+  calls, and single/multi language HTTP requests. Keep resource-registration
+  keys, strict compiler filename rules, and unsupported-language fallback.
+  Direct catalog writes must call invalidateLanguagesCache() to refresh the
+  new resolver; existing exact-membership checks and mutable reads stay fresh.
+  Resolve translation lng options too, preserving caller options, the existing
+  option-over-argument precedence, and exact resource-only language keys.
+
 2026.09.30, Version 2.2.0
 
 * Correct the README plural example's missing interpolation argument and test

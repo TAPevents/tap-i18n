@@ -251,6 +251,122 @@ computations. Selecting another language or updating translation text does not
 invalidate the catalog. On the server it shares the snapshot within the current
 process, with no reactive dependency.
 
+**TAPi18n.getCanonicalLanguageTag(language_tag) (Anywhere)**
+
+Returns the supported tag with its registered spelling, or `undefined` for
+non-string input, an unsupported tag, or a disabled project. For a catalog
+containing `pt-BR`, both `PT-br` and `pt-br` resolve to `pt-BR`. Exact registered
+spelling has priority. If distinct registered tags differ only by case, other
+case variations resolve to the first registered match. Here "canonical" means
+this project's registered spelling: this API does not convert language aliases,
+trim input, select a dialect, fall back to another language, or rewrite storage.
+
+Browser language settings, URLs, saved preferences, and external integrations
+can supply a supported language with different capitalization. Previously each
+consumer had to enumerate the language catalog and repeat case-insensitive
+matching. Centralizing that operation gives callers one consistent resolution
+rule and avoids repeated scans and language-record allocations.
+
+Normal `setLanguage()` calls, client explicit-language translations (including
+`lang`/`lng` helper options), server explicit-language arguments and `lng` options,
+and single or multi-language HTTP requests resolve supported case variations
+internally.
+Consumers usually need this API only to validate input, choose among candidate
+preferences, or obtain the registered tag for another API or application storage:
+
+```js
+const tag = TAPi18n.getCanonicalLanguageTag(savedLanguage);
+if (tag !== undefined) {
+  // For ordinary selection, setLanguage(savedLanguage) already resolves case.
+  useSupportedLanguage(tag);
+}
+```
+
+**Cost and invalidation:** the first valid string lookup enumerates supported
+tags, then builds exact and lowercase hash indexes in O(N) time and space for
+N tags (assuming bounded tag lengths). The existing catalog enumeration can
+cost O(N²) for an explicit `supported_languages` array because of its legacy
+deduplication. That enumeration occurs only once per cache build. Warm lookups
+use at most two hash accesses: expected O(1)
+in language count, plus O(L) to lowercase a non-exact input of length L. They do
+not scan the catalog or copy language records. The indexes need supported tags,
+not display-name metadata. Only a string result is exposed, so callers receive
+no shared object to mutate.
+
+`invalidateLanguagesCache()` clears both these indexes and the frozen language
+catalog. Compiler-generated registration and project enablement already call
+it. After directly changing `languages_names` or `conf.supported_languages`,
+call it explicitly to refresh case-insensitive resolution. Existing APIs retain
+fresh exact-membership checks, and `getLanguages()` still returns fresh mutable
+records. The O(1) guarantee applies to this resolver, not to all work performed
+by selection, translation loading, or HTTP serialization.
+
+**Reactivity:** on the client, every string lookup inside a Tracker computation
+tracks the language catalog, including warm, unsupported, and disabled reads.
+Invalidation reruns those computations; selection or translation-resource changes
+alone do not invalidate this index. Non-string inputs return before subscribing.
+`setLanguage()` and internal loading commands resolve inside `Tracker.nonreactive`
+so commands do not add a catalog subscription to their callers. Client explicit
+translation reads using case resolution also track the catalog; exact reads
+retain their existing translator-readiness dependencies.
+On the server, lookups are nonreactive and caches belong to each process;
+metadata updates must invalidate each affected process independently.
+
+Case handling is deliberately applied at input boundaries:
+
+| Path | Handling |
+| --- | --- |
+| `setLanguage`, `_loadLanguage`, `_prepareLanguageSpecificTranslator` | Resolve before loading, cache indexing, and selected-language assignment. |
+| Client translation proxy and Blaze `lang`/`lng` options | Resolve once the requested language has been extracted; share translator/dependency keys. |
+| Server translation proxy's explicit argument | Preserve exact registered translator keys, then resolve supported case variants; keep unsupported-language fallback. |
+| Surviving translation `lng` options, on client and server | Resolve supported case variants without mutating options; retain the engine's option-over-argument precedence and exact resource-only keys. |
+| Single/multi HTTP routes and runtime preload requests | Accept case variants within the supported tag syntax below; return registered keys in multi-language responses. The `all` response is unchanged. |
+| `_getLanguageFilePath`, `_getSpecificLangTranslator` | Receive resolved tags from normal lookup paths; preserve their existing low-level behavior. |
+| `addResourceBundle`, `loadTranslations`, `_loadLangFileObject`, server registration | Preserve registration keys and resource precedence, including package-only languages. |
+| Compiler filenames | Accept the bounded tag syntax below; retain lowercase language and uppercase alphabetic region casing. |
+| Configuration identifiers and embedded `TAPi18next` | Preserve identifiers and engine behavior. |
+
+**Shared read-only properties (Anywhere)**
+
+`lib/static.coffee` owns the constants loaded by both the compiler and runtime.
+The exported `TAPi18n` instance exposes these string values directly, even when
+the project is disabled:
+
+| Property | Value / meaning |
+| --- | --- |
+| `TAPi18n.language_tag_pattern` | `[a-z]{2,3}(?:-(?:[A-Z]{2}|[0-9]{3}))?`, without anchors or capture groups |
+| `TAPi18n.fallback_language` | `"en"` |
+| `TAPi18n.project_translations_domain` | `"project"` |
+| `TAPi18n.default_i18n_files_route` | `"/tap-i18n"`; the active route remains `TAPi18n.conf.i18n_files_route` |
+
+These properties cannot be assigned, deleted, or redefined. They are immutable
+strings, so consumers cannot mutate a shared regex's flags or `lastIndex`.
+Create your own regex when composing a parser:
+
+```js
+const runtimeTag = new RegExp('^(?:' + TAPi18n.language_tag_pattern + ')$', 'i');
+runtimeTag.test('HMN');     // true
+runtimeTag.test('ES-419');  // true
+// This tests syntax only. Check project availability with:
+TAPi18n.getCanonicalLanguageTag('ES-419'); // 'es-419' only if supported
+```
+
+The supported subset is a two- or three-letter primary language, optionally
+followed by a two-letter or three-digit region: for example `hmn`, `hmn-US`,
+and `es-419`. It follows those productions in
+[BCP 47 / RFC 5646 section 2.1](https://www.rfc-editor.org/rfc/rfc5646.html#section-2.1),
+but does not check IANA registry membership or implement the entire BCP 47 grammar.
+Translation filenames retain conventional casing (`hmn-US.i18n.json` is valid;
+`HMN-us.i18n.json` is not). Runtime requests and preload input accept any casing.
+Invalid runtime preload entries are logged and skipped before a request is made.
+
+This addresses the three-letter primary language reported for Hmong in
+[#181](https://github.com/TAPevents/tap-i18n/issues/181). Script tags (`zh-Hant`),
+variants, extensions, and tags with multiple subtags remain outside this
+compiler/HTTP syntax: the bundled engine needs separate changes to handle them
+correctly. Existing programmatic registration and configuration keys are not
+renamed or newly validated, and the resolver's caching/reactivity is unchanged.
+
 **TAPi18n.invalidateLanguagesCache() (Anywhere)**
 
 Discards the current cached catalog and notifies its client Tracker dependency.
@@ -294,8 +410,10 @@ the first time with that lang_tag, or until language data load from the server
 finishes) and will get invalidated (trigger reactivity) when the translator to
 that lang_tag is ready to be used to translate the key.
 
-Using `i18next.t` `lng` option or `lang`, which we made as alias to `lang` in
-tap:i18n, is equivalent to setting the `lang_tag` attribute.
+On the client, the `i18next.t` `lng` option and its `lang` alias select an explicit
+language when no `lang_tag` argument is supplied. On the server, use `lang_tag`
+or `lng`; the `lang` alias is client-only. When both `lang_tag` and `lng` are
+supplied, the embedded engine's `lng` override retains precedence.
 
 The function is a proxy to the i18next.t() method.
 Refer to the [documentation of i18next.t()](http://i18next.github.io/i18next/pages/doc_features.html)
@@ -949,6 +1067,8 @@ Scenarios:
 | `catalog-initialization` | Cached reads before enablement, inside enablement, and between generated language files |
 | `configured` | Explicit language filtering, duplicate tags, custom helper/HTTP route, language without a translation file |
 | `preloaded` | `preloaded_langs: ["*"]` through the real HTTP endpoint |
+| `expanded-tags` | Three-letter languages and numeric regions: compiler, lazy loading, case resolution, base/English fallback, HTTP acceptance and rejection |
+| `expanded-preloaded` | The expanded tags through the union of configured and runtime preload lists, including runtime case variants |
 | `raw-config` | Existing noncanonical configuration behavior, including the missing-metadata error |
 | `package`, `package-configured` | Package configuration, separate namespace and template helper, with implicit or explicit project enablement |
 | `mixed-formats` | YAML/JSON/YAML override order and isolation between two package namespaces |

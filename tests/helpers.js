@@ -13,6 +13,7 @@ export const TapI18nTest = {
 
   languages: function () {
     if (this.scenario === 'configured') return ['cc', 'cc-CC', 'en', 'fr'];
+    if (this.scenario.startsWith('expanded-')) return ['bb', 'cc', 'cc-CC', 'en', 'es', 'es-419', 'hmn', 'hmn-US'];
     return ['bb', 'cc', 'cc-CC', 'en'];
   }
 };

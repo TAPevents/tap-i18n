@@ -16,7 +16,7 @@ compilers.generic_compiler = (extension, helper) ->
             sourcePath: input_path
           return
 
-        if not RegExp("^#{globals.langauges_tags_regex}$").test(language)
+        if not RegExp("^#{share.constants.language_tag_pattern}$").test(language)
           input_file.error
             message: "Can't recognise '#{language}' as a language-tag: `#{input_path}'",
             sourcePath: input_path
@@ -24,14 +24,14 @@ compilers.generic_compiler = (extension, helper) ->
 
         translations = helper input_file
 
-        package_name = if helpers.isPackage(input_file) then input_file.getPackageName() else globals.project_translations_domain
+        package_name = if helpers.isPackage(input_file) then input_file.getPackageName() else share.constants.project_translations_domain
         output =
           """
           var _ = Package.underscore._,
               package_name = "#{package_name}",
               namespace = "#{package_name}";
 
-          if (package_name != "#{globals.project_translations_domain}") {
+          if (package_name != "#{share.constants.project_translations_domain}") {
               namespace = TAPi18n.packages[package_name].namespace;
           }
 
@@ -50,7 +50,7 @@ compilers.generic_compiler = (extension, helper) ->
           if language_names[language]?
             language_name = language_names[language]
 
-          if language != globals.fallback_language
+          if language != share.constants.fallback_language
             # the name for the fallback_language is part of the getProjectConfJs()'s output
             output +=
               """
@@ -70,18 +70,18 @@ compilers.generic_compiler = (extension, helper) ->
 
 
         # if fallback_language -> integrate, otherwise add to TAPi18n.translations if server arch.
-        if language == compiler_configuration.fallback_language
+        if language == share.constants.fallback_language
           output +=
             """
             // integrate the fallback language translations 
             translations = {};
             translations[namespace] = #{JSON.stringify translations};
-            TAPi18n._loadLangFileObject("#{compiler_configuration.fallback_language}", translations);
+            TAPi18n._loadLangFileObject("#{share.constants.fallback_language}", translations);
 
             """
 
         if helpers.archMatches input_file, "os"
-          if language != compiler_configuration.fallback_language
+          if language != share.constants.fallback_language
             output +=
               """
               if(_.isUndefined(TAPi18n.translations["#{language}"])) {
