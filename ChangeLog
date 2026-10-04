@@ -1,5 +1,7 @@
 FUTURE
 
+2026.10.04, Version 2.3.1
+
 * Update the compiler and test YAML parser to 0.3.0, refreshing its
   transitive glob and minimatch dependencies.
 * Update the npm test harness to Underscore 1.13.8. Keep the Meteor
