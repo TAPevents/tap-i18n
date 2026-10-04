@@ -78,7 +78,7 @@ Package.registerBuildPlugin({
   use: ['coffeescript@2.4.1', 'underscore@1.0.10', 'check@1.3.1'],
   npmDependencies: {
     "node-json-minify": "0.1.3-a",
-    "yamljs": "0.2.4"
+    "yamljs": "0.3.0"
   },
   sources: [
     'lib/static.coffee',
