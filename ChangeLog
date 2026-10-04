@@ -1,5 +1,12 @@
 FUTURE
 
+* Honor configured preload lists even without runtime preload tags. Load a
+  supported base language when selecting an already-preloaded regional tag,
+  preserving base-language fallback.
+* Retry failed explicit-language downloads on later translation calls, share
+  pending loads across case variants, and update existing reactive readers
+  when the retry succeeds.
+
 * Name the package-private constructor TAPi18nClass and reserve TAPi18n for
   the exported singleton, preserving initialization order and the public API.
 

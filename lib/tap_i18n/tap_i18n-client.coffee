@@ -46,40 +46,40 @@ _.extend share.TAPi18nClass.prototype,
       languageTag = Tracker.nonreactive => @getCanonicalLanguageTag(languageTag) or languageTag
 
     if languageTag in project_languages
-      if languageTag not in @_loaded_languages
-        loadLanguageTag = =>
-          jqXHR = $.getJSON(@_getLanguageFilePath(languageTag))
+      loadLanguageTag = =>
+        if languageTag in @_loaded_languages
+          dfd.resolve()
+          return
 
-          jqXHR.done (data) =>
-            @_loadLangFileObject(languageTag, data)
+        jqXHR = $.getJSON(@_getLanguageFilePath(languageTag))
 
-            @_loaded_languages.push languageTag
+        jqXHR.done (data) =>
+          @_loadLangFileObject(languageTag, data)
 
-            dfd.resolve()
+          @_loaded_languages.push languageTag
 
-          jqXHR.fail (xhr, error_code) =>
-            dfd.reject("Couldn't load language '#{languageTag}' JSON: #{error_code}")
+          dfd.resolve()
 
-        directDependencyLanguageTag = if "-" in languageTag then languageTag.replace(/-.*/, "") else @fallback_language
+        jqXHR.fail (xhr, error_code) =>
+          dfd.reject("Couldn't load language '#{languageTag}' JSON: #{error_code}")
 
-        # load dependency language if it is part of the project and not the fallback language
-        if directDependencyLanguageTag not in project_languages
-          directDependencyLanguageTag = Tracker.nonreactive => @getCanonicalLanguageTag(directDependencyLanguageTag)
-        if languageTag != @fallback_language and directDependencyLanguageTag in project_languages
-          dependencyLoadDfd = @_loadLanguage directDependencyLanguageTag
+      directDependencyLanguageTag = if "-" in languageTag then languageTag.replace(/-.*/, "") else @fallback_language
 
-          dependencyLoadDfd.done =>
-            # All dependencies loaded successfully
-            loadLanguageTag()
+      # A preloaded dialect can still be missing its supported base language.
+      # Resolve dependencies even when the requested language is already loaded.
+      if directDependencyLanguageTag not in project_languages
+        directDependencyLanguageTag = Tracker.nonreactive => @getCanonicalLanguageTag(directDependencyLanguageTag)
+      if languageTag != @fallback_language and directDependencyLanguageTag in project_languages
+        dependencyLoadDfd = @_loadLanguage directDependencyLanguageTag
 
-          dependencyLoadDfd.fail (message) =>
-            dfd.reject("Loading process failed since dependency language
-              '#{directDependencyLanguageTag}' failed to load: " + message)
-        else
+        dependencyLoadDfd.done =>
           loadLanguageTag()
+
+        dependencyLoadDfd.fail (message) =>
+          dfd.reject("Loading process failed since dependency language
+            '#{directDependencyLanguageTag}' failed to load: " + message)
       else
-        # languageTag loaded already
-        dfd.resolve()
+        loadLanguageTag()
     else
       dfd.reject(["Language #{languageTag} is not supported"])
 
@@ -124,19 +124,25 @@ _.extend share.TAPi18nClass.prototype,
   _prepareLanguageSpecificTranslator: (lang_tag) ->
     if lang_tag not in @_getProjectLanguages()
       lang_tag = Tracker.nonreactive => @getCanonicalLanguageTag(lang_tag) or lang_tag
-    dfd = (new $.Deferred()).resolve().promise()
+    # Keep the dependency across failures so existing readers react to a retry.
+    @_languageSpecificTranslatorsTrackers[lang_tag] ?= new Tracker.Dependency
 
-    if lang_tag of @_languageSpecificTranslatorsTrackers
-      return dfd
+    if lang_tag of @_languageSpecificTranslators
+      return (new $.Deferred()).resolve().promise()
 
-    @_languageSpecificTranslatorsTrackers[lang_tag] = new Tracker.Dependency
+    if lang_tag of @_languageSpecificTranslatorsLoading
+      return @_languageSpecificTranslatorsLoading[lang_tag]
 
-    if not(lang_tag of @_languageSpecificTranslators)
-      dfd = @_loadLanguage(lang_tag)
-        .done =>
-          @_languageSpecificTranslators[lang_tag] = @_getSpecificLangTranslator(lang_tag)
-
-          @_languageSpecificTranslatorsTrackers[lang_tag].changed()
+    dfd = @_loadLanguage(lang_tag)
+    # Store before attaching callbacks: loading may resolve or reject immediately.
+    @_languageSpecificTranslatorsLoading[lang_tag] = dfd
+    dfd.done =>
+      @_languageSpecificTranslators[lang_tag] = @_getSpecificLangTranslator(lang_tag)
+      @_languageSpecificTranslatorsTrackers[lang_tag].changed()
+      return
+    dfd.always =>
+      delete @_languageSpecificTranslatorsLoading[lang_tag]
+      return
 
     return dfd
 

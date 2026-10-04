@@ -197,6 +197,16 @@ describe('TAPi18n compiler - shared language tag grammar', function () {
     });
   });
 
+  it('preloads configured tags without a usable runtime list', function () {
+    for (const runtimeTags of [undefined, null, [], ['zh-Hant']]) {
+      const result = preload(runtimeTags, ['hmn-US']);
+      expect(result.requests).to.deep.equal(['/tap-i18n/multi/hmn-US.json']);
+      expect(result.errors).to.have.length(Array.isArray(runtimeTags) && runtimeTags.length ? 1 : 0);
+    }
+    expect(preload(undefined, []).requests).to.deep.equal([]);
+    expect(preload(undefined, ['*']).requests).to.deep.equal(['/tap-i18n/multi/all.json']);
+  });
+
   it('rejects invalid runtime preload entries without throwing or requesting resources', function () {
     for (const tags of [[null], [42], ['zh-Hant'], ['en-USA'], ['es-41'], ['es-419/path'], 'hmn']) {
       const result = preload(tags, []);

@@ -140,6 +140,47 @@ if (TapI18nTest.regularCatalog()) describe('TAPi18n - automatic case resolution'
     }
   });
 
+  it('retries a failed explicit translation and shares the pending retry across case variants', async function () {
+    await asPromise(TAPi18n.setLanguage('cc'));
+    await asPromise(TAPi18n.setLanguage('en'));
+    const tag = 'cc-CC';
+    const dictionaries = [TAPi18n._languageSpecificTranslators,
+      TAPi18n._languageSpecificTranslatorsTrackers, TAPi18n._languageSpecificTranslatorsLoading];
+    const descriptors = dictionaries.map(dictionary => Object.getOwnPropertyDescriptor(dictionary, tag));
+    const loaded = TAPi18n._loaded_languages, getJSON = $.getJSON;
+    const requests = [], values = [], pending = $.Deferred();
+    let computation;
+    try {
+      for (const dictionary of dictionaries) delete dictionary[tag];
+      TAPi18n._loaded_languages = loaded.filter(language => language !== tag);
+      $.getJSON = url => {
+        requests.push(url);
+        return requests.length === 1 ? $.Deferred().reject({}, 'error').promise() : pending.promise();
+      };
+      computation = Tracker.autorun(() => values.push(TAPi18n.__('message', {}, 'CC-cc')));
+      expect(values).to.deep.equal(['English message']);
+      expect(requests).to.have.length(1);
+      expect(TAPi18n.__('message', {}, 'cc-CC')).to.equal('English message');
+      expect(TAPi18n.__('message', {lng: 'CC-cc'})).to.equal('English message');
+      expect(requests).to.deep.equal([TAPi18n._getLanguageFilePath(tag), TAPi18n._getLanguageFilePath(tag)]);
+      expect(TAPi18n._prepareLanguageSpecificTranslator('CC-cc').state()).to.equal('pending');
+      pending.resolve({project: {message: 'cc-CC message'}});
+      Tracker.flush();
+      expect(values).to.deep.equal(['English message', 'cc-CC message']);
+      expect(TAPi18n.__('message', {}, 'CC-cc')).to.equal('cc-CC message');
+      expect(requests).to.have.length(2);
+      expect(TAPi18n.getLanguage()).to.equal('en');
+    } finally {
+      if (computation) computation.stop();
+      $.getJSON = getJSON;
+      TAPi18n._loaded_languages = loaded;
+      dictionaries.forEach((dictionary, index) => {
+        if (descriptors[index]) Object.defineProperty(dictionary, tag, descriptors[index]);
+        else delete dictionary[tag];
+      });
+    }
+  });
+
   it('does not subscribe language selection commands to catalog changes', async function () {
     let runs = 0, selection;
     const computation = Tracker.autorun(() => { runs++; selection = TAPi18n.setLanguage('CC-cc'); });
@@ -167,13 +208,14 @@ if (TapI18nTest.scenario.startsWith('expanded-')) describe('TAPi18n - expanded l
 
   it('preloads configured and runtime tags together, or keeps them cold until requested', function () {
     for (const tag of ['hmn', 'hmn-US', 'es', 'es-419']) {
-      expect(TAPi18n._loaded_languages.includes(tag), tag).to.equal(TapI18nTest.scenario === 'expanded-preloaded');
+      const preloaded = TapI18nTest.scenario !== 'expanded-tags' && tag.includes('-');
+      expect(TAPi18n._loaded_languages.includes(tag), tag).to.equal(preloaded);
     }
     expect(TAPi18n._loaded_languages).not.to.include('ES-419');
   });
 
   it('selects three-letter and numeric-region tags with base and English fallback', async function () {
-    for (const [input, tag, base] of [['HMN', 'hmn', 'hmn'], ['HMN-us', 'hmn-US', 'hmn'], ['ES-419', 'es-419', 'es']]) {
+    for (const [input, tag, base] of [['HMN-us', 'hmn-US', 'hmn'], ['HMN', 'hmn', 'hmn'], ['ES-419', 'es-419', 'es']]) {
       await asPromise(TAPi18n.setLanguage(input));
       expect(TAPi18n.getLanguage()).to.equal(tag);
       expect(TAPi18n.__('message')).to.equal(tag + ' message');

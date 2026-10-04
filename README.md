@@ -807,7 +807,9 @@ An alernative way to dynamically set preloaded_langs on runtime is by defining t
 * English is loaded by default, so you don't need to include it in the preloaded language list.
 * We use AJAX to load the languages files so you'll have to set CORS on your CDN.
 * Support of TAP_I18N_PRELOADED_LANGS relies on the `project-tap.i18n` build plugin. In other words, if `project-tap.i18n` doesn't exist, TAP_I18N_PRELOADED_LANGS will have **no** effect.
-* Preloaded languages are the union of `preloaded_langs` (specified in `project-tap.i18n`) and `TAP_I18N_PRELOADED_LANGS` (specified in the `<head>`).
+* Preloaded languages are the union of `preloaded_langs` (specified in `project-tap.i18n`) and `TAP_I18N_PRELOADED_LANGS` (specified in the `<head>`). Either list works on its own.
+* Preloading a regional tag does not preload its base automatically. Selecting it or preparing an explicit translation loads any supported base language before declaring it ready, preserving base-language fallback.
+* A failed explicit-language download can be retried by a later translation call. Concurrent explicit calls for the same registered tag share the pending request, and existing reactive readers update when a retry succeeds.
 Examples:
    1. `preloaded_langs = ["fr"] `
    `TAP_I18N_PRELOADED_LANGS = ["he"]`
@@ -1068,7 +1070,8 @@ Scenarios:
 | `configured` | Explicit language filtering, duplicate tags, custom helper/HTTP route, language without a translation file |
 | `preloaded` | `preloaded_langs: ["*"]` through the real HTTP endpoint |
 | `expanded-tags` | Three-letter languages and numeric regions: compiler, lazy loading, case resolution, base/English fallback, HTTP acceptance and rejection |
-| `expanded-preloaded` | The expanded tags through the union of configured and runtime preload lists, including runtime case variants |
+| `expanded-preloaded` | Regional tags through the union of configured and runtime preload lists, including case variants; selection loads their missing bases |
+| `expanded-config-preloaded` | Configured regional tags preload without a runtime list, with base-language fallback on selection |
 | `raw-config` | Existing noncanonical configuration behavior, including the missing-metadata error |
 | `package`, `package-configured` | Package configuration, separate namespace and template helper, with implicit or explicit project enablement |
 | `mixed-formats` | YAML/JSON/YAML override order and isolation between two package namespaces |

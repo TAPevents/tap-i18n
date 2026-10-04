@@ -116,7 +116,7 @@ compilers.projectTapI18n = (input_file_obj) ->
       if (project_preloaded_langs[0] === "all") {
         preloaded_langs = ["all"]
       }
-      else if (!_.isEmpty(runtime_preloaded_langs)) {
+      else {
         preloaded_langs = _.union(project_preloaded_langs, runtime_preloaded_langs);
       }
 

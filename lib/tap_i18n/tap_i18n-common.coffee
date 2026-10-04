@@ -38,6 +38,7 @@ share.TAPi18nClass = ->
 
     @_languageSpecificTranslators = {}
     @_languageSpecificTranslatorsTrackers = {}
+    @_languageSpecificTranslatorsLoading = Object.create(null)
 
   if Meteor.isServer
     @server_translators = {}
