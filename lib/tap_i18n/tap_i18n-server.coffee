@@ -1,4 +1,4 @@
-_.extend TAPi18n.prototype,
+_.extend share.TAPi18nClass.prototype,
   server_translators: null
 
   _registerServerTranslator: (lang_tag, package_name) ->

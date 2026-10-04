@@ -36,8 +36,8 @@ Package.onUse(function (api) {
 
   api.addFiles('lib/tap_i18n/tap_i18n-helpers.coffee', both);
 
-  // We use the bare option since we need TAPi18n in the package level and
-  // coffee adds vars to all (so without bare all vars are in the file level)
+  // share.TAPi18nClass keeps the constructor private across CoffeeScript files.
+  // Build its prototype before creating the exported TAPi18n singleton below.
   api.addFiles('lib/tap_i18n/tap_i18n-common.coffee', server);
   api.addFiles('lib/tap_i18n/tap_i18n-common.coffee', client, {bare: true});
 

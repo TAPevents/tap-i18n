@@ -1,5 +1,8 @@
 FUTURE
 
+* Name the package-private constructor TAPi18nClass and reserve TAPi18n for
+  the exported singleton, preserving initialization order and the public API.
+
 2026.09.30, Version 2.2.0
 
 * Correct the README plural example's missing interpolation argument and test

@@ -1,4 +1,4 @@
-_.extend TAPi18n.prototype,
+_.extend share.TAPi18nClass.prototype,
   _languageSpecificTranslators: null
   _languageSpecificTranslatorsTrackers: null
 

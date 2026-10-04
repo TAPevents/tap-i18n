@@ -1,6 +1,7 @@
 fallback_language = globals.fallback_language
 
-TAPi18n = ->
+# Package-private constructor; TAPi18n names only the exported instance.
+share.TAPi18nClass = ->
   EventEmitter.call @
 
   @_fallback_language = fallback_language
@@ -48,9 +49,9 @@ TAPi18n = ->
 
   return @
 
-Util.inherits TAPi18n, EventEmitter
+Util.inherits share.TAPi18nClass, EventEmitter
 
-_.extend TAPi18n.prototype,
+_.extend share.TAPi18nClass.prototype,
   _loaded_lang_session_key: "TAPi18n::loaded_lang"
 
   _enable: (conf) ->

@@ -1,1 +1,2 @@
-TAPi18n = new TAPi18n()
+# Instantiate after common and platform-specific prototype methods are installed.
+TAPi18n = new share.TAPi18nClass()
