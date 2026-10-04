@@ -1,5 +1,7 @@
 FUTURE
 
+2026.10.04, Version 2.3.0
+
 * Honor configured preload lists even without runtime preload tags. Load a
   supported base language when selecting an already-preloaded regional tag,
   preserving base-language fallback.
