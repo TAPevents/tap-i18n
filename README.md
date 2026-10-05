@@ -9,7 +9,7 @@ packages.
 
 [Watch a talk about tap:i18n & tap:i18n-db](https://www.youtube.com/watch?v=cu_dsoIc_0E)
 
-**Developed by:** <a href="http://www.meteorspark.com"><img src="http://www.meteorspark.com/logo/logo-github.png" title="MeteorSpark" alt="MeteorSpark"></a> [Professional Meteor Services](http://www.meteorspark.com) for [TAPevents](http://tapevents.com/).
+**Developed by:** <a href="https://www.meteorspark.com/"><img src="docs/images/meteorspark-logo.png" width="215" height="38" title="MeteorSpark" alt="MeteorSpark"></a> [Professional Meteor Services](https://www.meteorspark.com/) for TAPevents.
 
 **Maintained by:** JustDo.com [Project Management Tool](https://justdo.com).
 
