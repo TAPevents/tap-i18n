@@ -4,7 +4,7 @@ A comprehensive internationalization solution for Meteor
 
 ### Internationalization for Meteor
 
-**tap-i18n** is a [Meteor](http://www.meteor.com) package that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for Meteor apps and packages, with the goal of standardizing the way package developers internationalize their
+**tap-i18n** is a [Meteor](https://www.meteor.com) package that provides a comprehensive [i18n](http://www.i18nguy.com/origini18n.html) solution for Meteor apps and packages, with the goal of standardizing the way package developers internationalize their
 packages.
 
 [Watch a talk about tap:i18n & tap:i18n-db](https://www.youtube.com/watch?v=cu_dsoIc_0E)
@@ -16,7 +16,7 @@ packages.
 **Related Packages:**
 
 * Check [tap:i18n-db](https://github.com/TAPevents/tap-i18n-db) for Meteor collections internationalization.
-* Check [tap:i18n-ui](https://github.com/TAPevents/tap-i18n-ui) for bootstrap based UI components for tap:i18n.
+* Check [tap:i18n-ui](https://github.com/TAPevents/tap-i18n-ui) for UI components and helpers for tap:i18n.
 * Check [tap:i18n-bundler](https://github.com/TAPevents/i18n-bundler) for Cordova & static file deployments.
 
 ## Contents
@@ -55,7 +55,7 @@ tap-i18n is designed in a way that distinguishes the role of the package develop
 
 ### Advanced i18n
 
-tap-i18n uses [i18next v1.11](http://i18next.github.io/i18next/) as its internationalization engine and exposes all its capabilities to the Meteor's templates - variables, dialects, count/context aware keys, and more.
+tap-i18n uses [i18next v1.11](https://i18next.github.io/i18next/) as its internationalization engine and exposes all its capabilities to the Meteor's templates - variables, dialects, count/context aware keys, and more.
 
 **client/messages.html**
 
@@ -184,7 +184,7 @@ succeed and fails otherwise.
 **Notes:**
 
   * language\_tag has to be a supported Language.
-  * jQuery deferred docs: [jQuery Deferred](http://api.jquery.com/jQuery.Deferred/)
+  * jQuery deferred docs: [jQuery Deferred](https://api.jquery.com/jQuery.Deferred/)
 
 **TAPi18n.getLanguage() (Client)**
 
@@ -416,7 +416,7 @@ or `lng`; the `lang` alias is client-only. When both `lang_tag` and `lng` are
 supplied, the embedded engine's `lng` override retains precedence.
 
 The function is a proxy to the i18next.t() method.
-Refer to the [documentation of i18next.t()](http://i18next.github.io/i18next/pages/doc_features.html)
+Refer to the [documentation of i18next.t()](https://i18next.github.io/i18next/pages/doc_features.html)
 to learn about its possible options. (Make sure you refer to i18next v1.11 documentation and not v2)
 
 For a single sprintf argument, the second parameter can be a string or number:
@@ -670,7 +670,7 @@ Assuming the client language is en.
     There are 2 actors in the movie
     There are 2 actresses in the movie
 
-* Refer to the [documentation of i18next.t() v1.11](http://i18next.github.io/i18next/pages/doc_features.html)
+* Refer to the [documentation of i18next.t() v1.11](https://i18next.github.io/i18next/pages/doc_features.html)
   to learn more about its possible options. (Make sure you refer to i18next v1.11 documentation and not v2)
 * The translation will get updated automatically after calls to
   TAPi18n.setLanguage().
@@ -692,7 +692,7 @@ example:
 
 ### Languages Tags and Translations Prioritization
 
-We use the [IETF language tag system](http://en.wikipedia.org/wiki/IETF_language_tag)
+We use the [IETF language tag system](https://en.wikipedia.org/wiki/IETF_language_tag)
 for languages tagging. With it developers can refer to a certain language or
 pick one of its dialects.
 
@@ -757,7 +757,7 @@ Example for languages files:
   dialect file.
 * The French file above have no translation for the color key above, it will
   fallback to English.
-* Check [i18next features documentation](http://i18next.github.io/i18next/pages/doc_features.html) for
+* Check [i18next features documentation](https://i18next.github.io/i18next/pages/doc_features.html) for
   more advanced translations structures you can use in your JSONs files (Such as
   variables, plural form, etc.).   (Make sure you refer to i18next v1.11 documentation and not v2)
 
@@ -1154,15 +1154,17 @@ MIT
 ## Contributors
 
 * [Chris Hitchcott](https://github.com/hitchcott/)
-* [Brian Chan](http://github.com/iovecoldpizza)
-* [Kevin Iamburg](http://www.slickdevelopment.com)
+* [Brian Chan](https://github.com/caffeinated10xprogrammer/)
+* [Kevin Iamburg](https://slickdevelopment.com/)
 * [Abe Pazos](https://github.com/hamoid/)
 * [@karfield](https://github.com/karfield/)
 * [@nscarcella](https://github.com/nscarcella/)
 * [@mpowaga](https://github.com/mpowaga/)
+* [@ubald](https://github.com/ubald/)
+* [Cristian Torres (@tony13tv)](https://github.com/tony13tv/)
 
 ## Credits
 
-* [i18next v1.11](http://i18next.github.io/i18next/)
-* [simple-schema](https://github.com/aldeed/meteor-simple-schema)
-* [http-methods](https://github.com/CollectionFS/Meteor-http-methods)
+* [i18next v1.11](https://i18next.github.io/i18next/)
+* [simple-schema](https://github.com/Meteor-Community-Packages/meteor-simple-schema)
+* [http-methods](https://github.com/chandonnet/Meteor-http-methods) (preserved source fork)
