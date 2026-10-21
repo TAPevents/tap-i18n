@@ -1,5 +1,7 @@
 FUTURE
 
+2026.10.21, Version 2.3.2
+
 * Reduce repeated browser translation metadata output with a private shared
   language-name table and registration helper. Preserve every registration's
   position, fresh mutable names, immediate cache invalidation, and unchanged
