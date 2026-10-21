@@ -2,6 +2,15 @@ _.extend share.TAPi18nClass.prototype,
   _languageSpecificTranslators: null
   _languageSpecificTranslatorsTrackers: null
 
+  # Generated browser files call this at their original execution position.
+  # Never expose the private defaults: every registration owns a fresh array,
+  # even when the same language was registered by an earlier file.
+  _registerLanguage: (lang_tag) ->
+    names = language_names[lang_tag] ? [lang_tag, lang_tag]
+    @languages_names[lang_tag] = names.slice()
+    @invalidateLanguagesCache()
+    return
+
   _getLanguageFilePath: (lang_tag) ->
     if not @_enabled()
       return null

@@ -994,6 +994,12 @@ and before you start adding the languages files you won't need to register templ
 
 See "The tap-i18n helper" section above.
 
+## Compiler Output
+
+See [Generated language registration](docs/compiler-output.md) for the shared
+name table, preserved execution order, size tradeoff, and rebuild acceptance
+checks.
+
 ## Unit Testing
 
 The suite uses Mocha and Chai on a real Meteor server and in headless Chrome.
@@ -1108,6 +1114,7 @@ Useful commands:
 ```bash
 npm run test:compiler --prefix tests  # Fast compiler tests, no Meteor/Chrome/Mongo
 npm run test:runner --prefix tests    # Runner regressions, no Meteor/Chrome/Mongo
+TEST_CLIENT_ARCH=web.browser.legacy npm test --prefix tests  # Real legacy bundle
 npm test --prefix tests -- --list
 npm test --prefix tests -- inferred configured
 KEEP_TEST_TMP=1 npm test --prefix tests

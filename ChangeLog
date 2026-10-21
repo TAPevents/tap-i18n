@@ -1,5 +1,13 @@
 FUTURE
 
+* Reduce repeated browser translation metadata output with a private shared
+  language-name table and registration helper. Preserve every registration's
+  position, fresh mutable names, immediate cache invalidation, and unchanged
+  English, configuration, namespaced-package, and server paths. Small apps
+  incur the fixed table cost; large apps avoid repeated names and unused setup.
+* Add real-Meteor classic/module ordering and repeated-registration coverage,
+  plus explicit legacy-browser suite selection and served-architecture checks.
+
 2026.10.04, Version 2.3.1
 
 * Update the compiler and test YAML parser to 0.3.0, refreshing its

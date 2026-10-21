@@ -42,6 +42,8 @@ Package.onUse(function (api) {
   api.addFiles('lib/tap_i18n/tap_i18n-common.coffee', client, {bare: true});
 
   api.addFiles('lib/tap_i18n/tap_i18n-server.coffee', server);
+  // Share the compiler's private default names with browser registration.
+  api.addFiles('lib/plugin/etc/language_names.js', client);
   api.addFiles('lib/tap_i18n/tap_i18n-client.coffee', client, {bare: true});
 
   api.addFiles('lib/tap_i18n/tap_i18n-init.coffee', server);

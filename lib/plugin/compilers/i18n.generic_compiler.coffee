@@ -25,17 +25,23 @@ compilers.generic_compiler = (extension, helper) ->
         translations = helper input_file
 
         package_name = if helpers.isPackage(input_file) then input_file.getPackageName() else share.constants.project_translations_domain
-        output =
-          """
-          var _ = Package.underscore._,
-              package_name = "#{package_name}",
-              namespace = "#{package_name}";
+        # Project metadata-only browser files need neither namespace setup nor
+        # Underscore. Preserve the server, fallback and package-template paths.
+        browser_metadata_only = helpers.archMatches(input_file, "web") and \
+          not helpers.isPackage(input_file) and language != share.constants.fallback_language
+        output = ""
+        if not browser_metadata_only
+          output =
+            """
+            var _ = Package.underscore._,
+                package_name = "#{package_name}",
+                namespace = "#{package_name}";
 
-          if (package_name != "#{share.constants.project_translations_domain}") {
-              namespace = TAPi18n.packages[package_name].namespace;
-          }
+            if (package_name != "#{share.constants.project_translations_domain}") {
+                namespace = TAPi18n.packages[package_name].namespace;
+            }
 
-          """
+            """
 
         # only for project
         if not helpers.isPackage(input_file)
@@ -52,12 +58,15 @@ compilers.generic_compiler = (extension, helper) ->
 
           if language != share.constants.fallback_language
             # the name for the fallback_language is part of the getProjectConfJs()'s output
-            output +=
-              """
-              TAPi18n.languages_names["#{language}"] = #{JSON.stringify language_name};
-              TAPi18n.invalidateLanguagesCache();
+            if browser_metadata_only
+              output += "TAPi18n._registerLanguage(#{JSON.stringify language});\n"
+            else
+              output +=
+                """
+                TAPi18n.languages_names["#{language}"] = #{JSON.stringify language_name};
+                TAPi18n.invalidateLanguagesCache();
 
-              """
+                """
 
           # If this is a project but project-tap.i18n haven't compiled yet add default project conf
           # for case there is no project-tap.i18n defined in this project.

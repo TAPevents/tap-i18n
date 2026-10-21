@@ -1,7 +1,7 @@
 import path from 'node:path';
 import {writeFile} from 'node:fs/promises';
 
-export async function runBrowserTests(browser, url, deadline, directory) {
+export async function runBrowserTests(browser, url, deadline, directory, expectedArch) {
   const context = await browser.createBrowserContext();
   const pageErrors = [];
   const messages = [];
@@ -31,6 +31,11 @@ export async function runBrowserTests(browser, url, deadline, directory) {
       const failures = results?.failures.map(test => ({test: test.fullTitle, error: test.err.message}));
       throw new Error(JSON.stringify({stats: results?.stats, failures, failureCount, pageErrors,
         diagnostics: path.join(directory, 'client.log')}, null, 2));
+    }
+    if (expectedArch) {
+      const actualArch = await page.evaluate(() => Package.meteor.Meteor.isModern ? 'web.browser' : 'web.browser.legacy');
+      if (actualArch !== expectedArch) throw new Error(`Expected ${expectedArch}, received ${actualArch}`);
+      messages.push('Verified client architecture: ' + actualArch);
     }
     return results.stats.tests;
   } finally {

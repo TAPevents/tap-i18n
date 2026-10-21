@@ -14,6 +14,10 @@ import {preparePackageFixture} from './package-fixture.mjs';
 const testsDir = path.dirname(fileURLToPath(import.meta.url));
 const sourceDir = path.dirname(testsDir);
 const release = process.env.METEOR_RELEASE || '2.16';
+const browserArch = process.env.TEST_CLIENT_ARCH || 'web.browser';
+if (!['web.browser', 'web.browser.legacy'].includes(browserArch)) {
+  throw new Error('TEST_CLIENT_ARCH must be web.browser or web.browser.legacy.');
+}
 const timeout = Number(process.env.TEST_TIMEOUT_MS || 600000);
 const cases = [
   {name: 'disabled', files: false},
@@ -137,6 +141,8 @@ async function prepareFixture(item, directory) {
   if (item.catalogProbe) {
     await cp(path.join(testsDir, 'fixtures/catalog-probe'), path.join(app, 'packages/catalog-probe'), {recursive: true});
     packages.push('tap-i18n-tests:catalog-probe');
+    await cp(path.join(testsDir, 'fixtures/catalog-module-probe'), path.join(app, 'packages/catalog-module-probe'), {recursive: true});
+    packages.push('tap-i18n-tests:catalog-module-probe');
   }
   if (item.namespaced) {
     const namespace = path.join(app, 'packages/namespaced');
@@ -295,9 +301,10 @@ async function runScenario(item) {
   const args = ['--release', release,
     ...(item.packageTests ? ['test-packages', packageFixture.packageSource, '--test-app-path', packageFixture.packageApp] : ['test', '--full-app']),
     '--once', '--headless',
-    '--driver-package', 'meteortesting:mocha', '--exclude-archs', 'web.browser.legacy',
+    '--driver-package', 'meteortesting:mocha',
+    ...(browserArch === 'web.browser' ? ['--exclude-archs', 'web.browser.legacy'] : []),
     '--disable-oplog', '--port', `127.0.0.1:${port}`, '--settings', settings];
-  console.log(`Running ${item.name} (Meteor ${release})`);
+  console.log(`Running ${item.name} (Meteor ${release}, ${browserArch})`);
   const child = startChild(process.env.METEOR_BIN || 'meteor', args, {cwd: app, env}, path.join(directory, 'meteor.log'));
   activeChild = child;
   let timer;
@@ -315,7 +322,8 @@ async function runScenario(item) {
         return 'expected compiler rejection';
       }
       await waitForApp(url, child, deadline);
-      const client = await runBrowserTests(browser, url, deadline, directory);
+      const clientUrl = browserArch === 'web.browser.legacy' ? url + '__browser.legacy/' : url;
+      const client = await runBrowserTests(browser, clientUrl, deadline, directory, browserArch);
       const serverResults = JSON.parse(await readFile(path.join(directory, 'server-results.json'), 'utf8'));
       if (!Number.isInteger(serverResults.stats.tests) || serverResults.stats.tests <= 0 ||
           serverResults.stats.failures !== 0 || serverResults.stats.pending !== 0) {

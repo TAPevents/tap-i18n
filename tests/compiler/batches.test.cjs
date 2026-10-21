@@ -46,6 +46,28 @@ function input(name, pkg = 'fixture', arch = 'web.browser', contents = '{}') {
 
 function code(file) { return file.output.join('\n'); }
 
+function registrationRuntime() {
+  const underscore = require('underscore');
+  const TAPi18n = {
+    languages_names: {}, translations: {}, invalidations: [],
+    _enable() {}, _registerServerTranslator() {}, _loadLangFileObject() {},
+    invalidateLanguagesCache() {
+      this.invalidations.push(JSON.parse(JSON.stringify(this.languages_names)));
+    }
+  };
+  const context = vm.createContext({
+    TAPi18n, _: underscore, Package: {underscore: {_: underscore}},
+    share: {TAPi18nClass: function () {}}
+  });
+  // Use the actual client implementation, not a second copy of its helper.
+  for (const file of ['lib/plugin/etc/language_names.js', 'lib/tap_i18n/tap_i18n-client.coffee']) {
+    const contents = fs.readFileSync(path.join(source, file), 'utf8');
+    vm.runInContext(file.endsWith('.coffee') ? coffee.compile(contents) : contents, context);
+  }
+  Object.setPrototypeOf(TAPi18n, context.share.TAPi18nClass.prototype);
+  return {TAPi18n, context};
+}
+
 describe('TAPi18n compiler - batch lifecycle', function () {
   let compiler;
   beforeEach(function () { compiler = createCompiler(); });
@@ -67,7 +89,8 @@ describe('TAPi18n compiler - batch lifecycle', function () {
     compile([input('package-tap.i18n'), input('en.i18n.yml', 'fixture', 'web.browser', 'key: value')]);
     const next = input('different.fr.i18n.json');
     compile([next]);
-    expect(code(next)).to.include('package_name = "project"').and.include('TAPi18n._enable');
+    expect(code(next)).to.include('TAPi18n._enable');
+    expect(code(next)).not.to.match(/\b_\.|namespace|package_name/);
     expect(code(next)).not.to.include('var package_templates');
   });
 
@@ -123,12 +146,7 @@ describe('TAPi18n compiler - language names', function () {
     createCompiler().processFilesForTarget(files);
     // Execute the compiler output with registration sinks. This checks the
     // metadata supplied to the runtime, rather than reading the source table.
-    const TAPi18n = {
-      languages_names: {}, translations: {},
-      _enable() {}, invalidateLanguagesCache() {}, _registerServerTranslator() {}
-    };
-    const underscore = require('underscore');
-    const context = vm.createContext({TAPi18n, _: underscore, Package: {underscore: {_: underscore}}});
+    const {TAPi18n, context} = registrationRuntime();
     for (const file of files) vm.runInContext(code(file), context);
     return TAPi18n.languages_names;
   }
@@ -163,7 +181,9 @@ describe('TAPi18n compiler - shared language tag grammar', function () {
         for (const tag of ['en', 'pt-BR', 'hmn', 'hmn-US', 'es-419', 'hmn-419']) {
           const file = input(tag + '.i18n.' + extension, null, arch, extension === 'json' ? '{}' : 'message: fixture');
           expect(() => createCompiler().processFilesForTarget([file]), tag).not.to.throw();
-          expect(code(file), tag).to.include('TAPi18n.languages_names["' + tag + '"]');
+          const {TAPi18n, context} = registrationRuntime();
+          vm.runInContext(code(file), context);
+          expect(TAPi18n.languages_names, tag).to.have.own.property(tag);
         }
       });
     }
@@ -214,4 +234,54 @@ describe('TAPi18n compiler - shared language tag grammar', function () {
       expect(result.errors).to.have.length(1);
     }
   });
+});
+
+
+describe('TAPi18n compiler - repeated browser metadata', function () {
+  it('matches server-emitted defaults for every known language without registering unused tags', function () {
+    const table = {};
+    vm.runInNewContext(fs.readFileSync(path.join(source, 'lib/plugin/etc/language_names.js'), 'utf8'), table);
+    const tags = Object.keys(table.language_names);
+    const namesFor = arch => {
+      const files = tags.map(tag => input(tag + '.i18n.json', null, arch));
+      createCompiler().processFilesForTarget(files);
+      const {TAPi18n, context} = registrationRuntime();
+      expect(Object.keys(TAPi18n.languages_names)).to.deep.equal([]);
+      files.forEach(file => vm.runInContext(code(file), context));
+      return JSON.parse(JSON.stringify(TAPi18n.languages_names));
+    };
+    const server = namesFor('os.osx.arm64');
+    for (const arch of ['web.browser', 'web.browser.legacy', 'web.cordova']) {
+      expect(namesFor(arch)).to.deep.equal(server);
+    }
+    expect(Object.keys(server).sort()).to.deep.equal(tags.sort());
+  });
+
+  for (const arch of ['web.browser', 'web.browser.legacy', 'web.cordova']) {
+    it('keeps every resource slot, fresh arrays and invalidations on ' + arch, function () {
+      const files = ['first.fr.i18n.json', 'second.fr.i18n.yml', 'third.fr.i18n.json', 'hmn-US.i18n.json']
+        .map(name => input(name, null, arch, name.endsWith('.yml') ? 'message: second' : '{}'));
+      createCompiler().processFilesForTarget([input('en.i18n.json', null, arch), ...files]);
+      const {TAPi18n, context} = registrationRuntime();
+      files.forEach(file => expect(file.output).to.have.length(1));
+      vm.runInContext(code(files[0]), context);
+      const first = TAPi18n.languages_names.fr;
+      first[1] = 'Application override between files';
+      vm.runInContext(code(files[1]), context);
+      const second = TAPi18n.languages_names.fr;
+      expect(second).to.deep.equal(['French', 'Français']);
+      expect(second).not.to.equal(first);
+      vm.runInContext(code(files[2]), context);
+      expect(TAPi18n.languages_names.fr).to.deep.equal(second);
+      expect(TAPi18n.languages_names.fr).not.to.equal(second);
+      vm.runInContext(code(files[3]), context);
+      expect(TAPi18n.languages_names['hmn-US']).to.deep.equal(['hmn-US', 'hmn-US']);
+      expect(Object.keys(TAPi18n.languages_names)).to.deep.equal(['fr', 'hmn-US']);
+      expect(TAPi18n.invalidations).to.have.length(4);
+      expect(TAPi18n.invalidations.map(names => names.fr[1])).to.deep.equal(Array(4).fill('Français'));
+      for (const file of files) {
+        expect(code(file)).to.match(/^TAPi18n\._registerLanguage\("[^"\n]+"\);\n$/);
+      }
+    });
+  }
 });

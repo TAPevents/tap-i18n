@@ -19,7 +19,9 @@ function browserFixture(options = {}) {
     if (options.report) page.emit('console', {text: () => JSON.stringify(options.report)});
     if (options.completionError) throw new Error(options.completionError);
   };
-  page.evaluate = async () => options.failures === undefined ? 0 : options.failures;
+  let evaluations = 0;
+  page.evaluate = async () => evaluations++ === 0
+    ? (options.failures === undefined ? 0 : options.failures) : options.arch;
   return {state, browser: {createBrowserContext: async () => ({
     newPage: async () => page,
     close: async () => { state.closed = true; }
@@ -45,6 +47,20 @@ describe('Test runner - browser results and diagnostics', function () {
     expect(await run(fixture)).to.equal(1);
     expect(fixture.state.closed).to.equal(true);
     expect(JSON.parse(await readFile(path.join(directory, 'client-results.json'), 'utf8'))).to.deep.equal(passingReport());
+  });
+
+  it('verifies the served architecture instead of silently accepting modern fallback', async function () {
+    const passing = browserFixture({report: passingReport(), arch: 'web.browser.legacy'});
+    expect(await runBrowserTests(passing.browser, 'http://127.0.0.1:1/__browser.legacy/',
+      Date.now() + 1000, directory, 'web.browser.legacy')).to.equal(1);
+    const fallback = browserFixture({report: passingReport(), arch: 'web.browser'});
+    let error;
+    try {
+      await runBrowserTests(fallback.browser, 'http://127.0.0.1:1/__browser.legacy/',
+        Date.now() + 1000, directory, 'web.browser.legacy');
+    } catch (caught) { error = caught; }
+    expect(error).to.be.an('error').with.property('message', 'Expected web.browser.legacy, received web.browser');
+    expect(fallback.state.closed).to.equal(true);
   });
 
   for (const phase of ['navigationError', 'completionError']) {
