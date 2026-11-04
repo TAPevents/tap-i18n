@@ -10,7 +10,7 @@ server = 'server';
 client = 'client';
 
 Package.onUse(function (api) {
-  api.versionsFrom("2.2.4");
+  api.versionsFrom(["2.2.4", "3.0"]);
 
   api.use('coffeescript@2.4.1', both);
   api.use('underscore@1.0.10', both);
@@ -21,7 +21,7 @@ Package.onUse(function (api) {
 
   api.use('tracker', both);
   api.use('session', client);
-  api.use('jquery@1.0.10', client);
+  api.use('jquery@1.0.10 || 3.0.0', client);
   api.use('templating@1.4.0', client);
 
   api.use("webapp", server);
@@ -58,7 +58,7 @@ Package.onUse(function (api) {
 // The runner builds isolated fixture apps and executes Mocha/Chai on both
 // the real Meteor server and headless Chrome. See README.md, Unit Testing.
 Package.onTest(function (api) {
-  api.versionsFrom('2.2.4');
+  api.versionsFrom(['2.2.4', '3.0']);
   api.use(['tap:i18n', 'ecmascript', 'meteortesting:mocha@=3.2.0', 'tracker'], both);
   api.use(['jquery', 'templating', 'blaze'], client);
   api.addFiles('tests/mocha/both/api.app-test.js', both);
