@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {default: Mocha} = require('mocha');
+const Mocha = require('mocha');
 const config = require('../.mocharc.json');
 
 function suite() {
